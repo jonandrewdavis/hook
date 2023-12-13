@@ -4,7 +4,10 @@ const PORT = 8888
 var upnp_on = false
 var quick_quit_enabled = true
 
-@onready var world_ref = get_node('/root/Main/World')
+@export var world_ref: Node3D
+@export var player_scene: PackedScene
+@export var level_one: PackedScene
+
 @onready var ip_ref = $Panel/MarginContainer/VBoxContainer/IP
 @onready var nickname = $Panel/MarginContainer/VBoxContainer/Nickname
 @onready var upnp_ref = $Panel/MarginContainer/VBoxContainer/UPNP
@@ -75,7 +78,7 @@ func start_game():
 	}
 	
 	if multiplayer.is_server():
-		change_level.call_deferred(load("res://Levels/Lobby.tscn"))
+		change_level.call_deferred(level_one)
 
 func change_level(scene: PackedScene):
 	for c in world_ref.get_children():
@@ -130,7 +133,7 @@ func ready_server_world():
 			add_player_in_server(1)
 
 func add_player_in_server(id: int):
-	var character_scene = preload("res://Player/Player.tscn")
+	var character_scene = player_scene
 	var character =  character_scene.instantiate()
 	character.name = str(id)
 	world_ref.add_child(character, true)	

@@ -11,7 +11,7 @@ corner_radius_bottom_left = 12
 
 [node name="Main" type="Node"]
 
-[node name="World" type="Node2D" parent="."]
+[node name="World" type="Node3D" parent="."]
 
 [node name="LevelSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://Levels/Lobby.tscn")
@@ -27,7 +27,7 @@ spawn_path = NodePath("../World")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="MainMenu" type="Control" parent="CanvasLayer"]
+[node name="MainMenu" type="Control" parent="CanvasLayer" node_paths=PackedStringArray("world_ref")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,6 +35,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_quv7y")
+world_ref = NodePath("../../World")
 
 [node name="Panel" type="PanelContainer" parent="CanvasLayer/MainMenu"]
 layout_mode = 1
