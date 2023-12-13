@@ -1,0 +1,126 @@
+[gd_scene load_steps=3 format=3 uid="uid://cyp7bqax8lumo"]
+
+[ext_resource type="Script" path="res://MainMenu.gd" id="1_quv7y"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wjd7j"]
+bg_color = Color(0.6, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="Main" type="Node"]
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="LevelSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://Levels/Lobby.tscn")
+spawn_path = NodePath("../World")
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://Player/Player.tscn")
+spawn_path = NodePath("../World")
+
+[node name="EntitySpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://Projectiles/Fireball.tscn")
+spawn_path = NodePath("../World")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="MainMenu" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_quv7y")
+
+[node name="Panel" type="PanelContainer" parent="CanvasLayer/MainMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -163.0
+offset_right = 128.0
+offset_bottom = 163.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MainMenu/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MainMenu/Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Hook"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "A Godot 4.2 multiplayer template
+
+"
+horizontal_alignment = 1
+
+[node name="Error" type="Label" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Error: Couldn't connect to the multiplayer server."
+
+[node name="Nickname" type="LineEdit" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+placeholder_text = "Nickname"
+
+[node name="Label" type="Label" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Color Picker:
+"
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+color = Color(1, 1, 1, 1)
+edit_alpha = false
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="IP" type="LineEdit" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+placeholder_text = "IP Address (Blank for local)"
+
+[node name="Join" type="Button" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_wjd7j")
+text = "Join"
+
+[node name="HSeparator2" type="HSeparator" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Host" type="Button" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_wjd7j")
+text = "Host"
+
+[node name="UPNP" type="CheckButton" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Host with UPNP"
+
+[connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Join" to="CanvasLayer/MainMenu" method="_on_join_pressed"]
+[connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Host" to="CanvasLayer/MainMenu" method="_on_host_pressed"]
+[connection signal="toggled" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/UPNP" to="CanvasLayer/MainMenu" method="_on_upnp_toggled"]

@@ -1,0 +1,5 @@
+# Godot 4+ specific ignores
+.godot/
+DEDICATED_SERVER_SECRET.txt
+*.tmp
+*.exe

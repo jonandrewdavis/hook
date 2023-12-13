@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8ayks814m6tp"]
+
+[ext_resource type="Script" path="res://Player/Player.gd" id="1_7eh7o"]
+[ext_resource type="Texture2D" uid="uid://bfvj6d5wyv6jf" path="res://Assets/ghostco.png" id="2_8vw4a"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_4bbbp"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Sample:modulate")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath("Nickname:text")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c5xbu"]
+radius = 6.0
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_7eh7o")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_4bbbp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_c5xbu")
+
+[node name="Sample" type="Sprite2D" parent="."]
+texture = ExtResource("2_8vw4a")
+region_enabled = true
+region_rect = Rect2(7, 4, 16, 28)
+
+[node name="Nickname" type="Label" parent="."]
+offset_left = -100.0
+offset_top = -35.0
+offset_right = 100.0
+offset_bottom = -15.0
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1

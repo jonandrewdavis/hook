@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://2werrxb7feou"]
+
+[ext_resource type="Texture2D" uid="uid://e6c1l3vqjryy" path="res://Assets/TX Tileset Grass.png" id="1_0sr6y"]
+
+[node name="Lobby" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(4, -7)
+texture = ExtResource("1_0sr6y")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -122.0
+offset_top = -162.0
+offset_right = 3.0
+offset_bottom = -139.0
+text = "LOBBY
+"
