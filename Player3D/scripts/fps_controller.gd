@@ -78,6 +78,9 @@ func _process(_delta):
 	get_input()
 
 func get_input():
+	if is_multiplayer_authority() == false:
+		return
+	
 	if Input.is_action_pressed("exit"):
 		get_tree().quit()
 	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == true:

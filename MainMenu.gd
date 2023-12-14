@@ -138,7 +138,7 @@ func ready_server_world():
 			add_player_in_server(1)
 
 func add_player_in_server(id: int):
-	var character_scene = preload("res://Player3D/fps_controller.tscn")
+	var character_scene = load("res://Player3D/fps_controller.tscn")
 	var character =  character_scene.instantiate()
 	character.name = str(id)
 	world_ref.add_child(character, true)

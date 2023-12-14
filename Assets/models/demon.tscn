@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://bf5fyb7ys0v8e"]
+
+[ext_resource type="PackedScene" uid="uid://darvkbaubkysc" path="res://Assets/models/Demon.glb" id="1_r0qn1"]
+[ext_resource type="Script" path="res://Assets/models/demon.gd" id="2_ew2go"]
+
+[node name="Demon" node_paths=PackedStringArray("animation_player") instance=ExtResource("1_r0qn1")]
+transform = Transform3D(-0.7, 0, -6.11959e-08, 0, 0.7, 0, 6.11959e-08, 0, -0.7, 0, 0, 0)
+script = ExtResource("2_ew2go")
+animation_player = NodePath("AnimationPlayer")
+
+[node name="Skeleton3D" parent="RootNode/EnemyArmature" index="0"]
+bones/11/rotation = Quaternion(1.15416e-07, -4.50339e-08, 0.99571, -0.0925312)
+bones/14/rotation = Quaternion(-1.15416e-07, -4.50339e-08, 0.99571, 0.0925312)
