@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://c3ffql15mo0aj"]
+[gd_scene load_steps=18 format=3 uid="uid://c3ffql15mo0aj"]
 
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="2_gldw4"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Player3D/scripts/states/Sprint.gd" id="9_4fvia"]
 [ext_resource type="PackedScene" uid="uid://bf5fyb7ys0v8e" path="res://Assets/models/demon.tscn" id="9_ab58g"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Walking.gd" id="9_cybia"]
+[ext_resource type="PackedScene" uid="uid://c5io863yqwynd" path="res://Player3D/Hook.tscn" id="10_tnoo1"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u6tj1"]
 
@@ -112,6 +113,9 @@ mesh = SubResource("CapsuleMesh_6tv51")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraController"]
+
+[node name="Hook" parent="CameraController/Camera3D" instance=ExtResource("10_tnoo1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.170769, -0.25861, -0.15212)
 
 [node name="Gun" parent="CameraController/Camera3D" instance=ExtResource("4_etkqj")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.170937, -0.200468, -0.208691)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://b1yleqbb8tc7x"]
+[gd_scene load_steps=7 format=3 uid="uid://b1yleqbb8tc7x"]
 
 [ext_resource type="PackedScene" uid="uid://btv0a42cgxt8g" path="res://Levels/WE_test.tscn" id="1_db21n"]
 [ext_resource type="Material" uid="uid://cn1gsy15bkaff" path="res://Assets/materials/grid.tres" id="2_x5xie"]
@@ -9,6 +9,11 @@ size = Vector3(200, 0.5, 200)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_255g8"]
 size = Vector3(200, 0.5, 200)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lmmeb"]
+material = ExtResource("2_x5xie")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dub36"]
 
 [node name="Level" type="Node3D"]
 
@@ -41,3 +46,30 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.42207, 0, 24.2944)
 
 [node name="Marker3D6" type="Marker3D" parent="Spawns"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.37396, 0, 24.9694)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.27235, 0)
+mesh = SubResource("BoxMesh_lmmeb")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("BoxShape3D_dub36")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.14413, 4.25471, -2.52313)
+mesh = SubResource("BoxMesh_lmmeb")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D2/StaticBody3D"]
+shape = SubResource("BoxShape3D_dub36")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.82415, 6.49338, 5.19026)
+mesh = SubResource("BoxMesh_lmmeb")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D3/StaticBody3D"]
+shape = SubResource("BoxShape3D_dub36")
