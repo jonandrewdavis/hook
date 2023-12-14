@@ -14,15 +14,15 @@ corner_radius_bottom_left = 12
 [node name="World" type="Node3D" parent="."]
 
 [node name="LevelSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://Levels/Lobby.tscn")
+_spawnable_scenes = PackedStringArray("res://Levels/level_001.tscn")
 spawn_path = NodePath("../World")
 
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://Player/Player.tscn")
+_spawnable_scenes = PackedStringArray("res://Player3D/fps_controller.tscn")
 spawn_path = NodePath("../World")
 
-[node name="EntitySpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://Projectiles/Fireball.tscn")
+[node name="EnvironmentSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://Projectiles/Shell.tscn")
 spawn_path = NodePath("../World")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]

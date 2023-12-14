@@ -5,8 +5,6 @@ var upnp_on = false
 var quick_quit_enabled = true
 
 @export var world_ref: Node3D
-@export var player_scene: PackedScene
-@export var level_one: PackedScene
 
 @onready var ip_ref = $Panel/MarginContainer/VBoxContainer/IP
 @onready var nickname = $Panel/MarginContainer/VBoxContainer/Nickname
@@ -21,7 +19,7 @@ func _ready():
 	multiplayer.server_disconnected.connect(_on_connected_fail)	
 
 func _unhandled_input(_event):
-	if (Input.is_action_just_pressed("esc") 
+	if (Input.is_action_just_pressed("exit") 
 	and OS.is_debug_build() == true 
 	and quick_quit_enabled == true):
 		get_tree().quit()		
@@ -50,7 +48,7 @@ func _on_host_pressed():
 	multiplayer.multiplayer_peer = peer
 	if upnp_on == true:
 		upnp_setup()
-	start_game()
+	start_game_host()
 
 func _on_join_pressed():
 	var ip = ip_ref.text
@@ -59,7 +57,7 @@ func _on_join_pressed():
 	if peer_client_status == OK:
 		multiplayer.allow_object_decoding  = true
 		multiplayer.multiplayer_peer = peer
-		start_game()
+		start_game_client()
 	else: 
 		_on_connected_fail()
 
@@ -68,7 +66,7 @@ func _on_connected_fail():
 	error_ref.show()
 	show()
 
-func start_game():
+func start_game_host():
 	# If we're a client, we just hide and send our join info.
 	hide()
 	Store.client_join_info = {
@@ -76,9 +74,16 @@ func start_game():
 		"nickname": nickname.text,
 		"color": color_button.color,
 	}
-	
-	if multiplayer.is_server():
-		change_level.call_deferred(level_one)
+	change_level(load("res://Levels/level_001.tscn"))
+
+func start_game_client():
+	# If we're a client, we just hide and send our join info.
+	hide()
+	Store.client_join_info = {
+		"id": multiplayer.get_unique_id(),
+		"nickname": nickname.text,
+		"color": color_button.color,
+	}
 
 func change_level(scene: PackedScene):
 	for c in world_ref.get_children():
@@ -133,10 +138,10 @@ func ready_server_world():
 			add_player_in_server(1)
 
 func add_player_in_server(id: int):
-	var character_scene = player_scene
+	var character_scene = preload("res://Player3D/fps_controller.tscn")
 	var character =  character_scene.instantiate()
 	character.name = str(id)
-	world_ref.add_child(character, true)	
+	world_ref.add_child(character, true)
 
 func delete_player_in_server(id: int):
 	var string_id = str(id)
