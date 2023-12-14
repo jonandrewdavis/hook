@@ -8,8 +8,6 @@ extends CenterContainer
 
 @export var root: Node
 
-func _enter_tree():
-	set_multiplayer_authority(str(root.player.name).to_int())
 
 func _process(_delta):
 	if not is_multiplayer_authority():

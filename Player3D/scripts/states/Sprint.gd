@@ -5,7 +5,8 @@ class_name Sprint extends State
 
 func enter():
 	player._speed = player.SPEED_SPRINTING
-
+	player.MODEL.animation_player.play("EnemyArmature|EnemyArmature|EnemyArmature|Run")
+	
 func update(_delta):
 	pass
 

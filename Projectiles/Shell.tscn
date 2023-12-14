@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bv568333xlnnh"]
+[gd_scene load_steps=8 format=3 uid="uid://bv568333xlnnh"]
 
 [ext_resource type="Script" path="res://Projectiles/Shell.gd" id="1_qcfj6"]
 
@@ -20,6 +20,21 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_e0rtm"]
+direction = Vector3(0, 0, 1)
+initial_velocity_min = 3.0
+initial_velocity_max = 5.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1hvr5"]
+albedo_color = Color(0.737255, 0.862745, 0, 1)
+emission_enabled = true
+emission = Color(0.627451, 0.988235, 0, 1)
+emission_energy_multiplier = 8.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_m846d"]
+material = SubResource("StandardMaterial3D_1hvr5")
+size = Vector3(0.04, 0.04, 0.04)
+
 [node name="Shell" type="Node3D"]
 script = ExtResource("1_qcfj6")
 
@@ -27,8 +42,22 @@ script = ExtResource("1_qcfj6")
 mesh = SubResource("BoxMesh_026lm")
 
 [node name="RayCast3D" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.312562)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0180112)
 target_position = Vector3(0, 0, -1)
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_kvipt")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.166392)
+emitting = false
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_e0rtm")
+draw_pass_1 = SubResource("BoxMesh_m846d")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+autostart = true

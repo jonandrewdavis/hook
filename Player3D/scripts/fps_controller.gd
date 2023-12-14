@@ -19,10 +19,10 @@ class_name Player
 @export var CROUCH_SHAPECAST: Node3D
 @export var TOGGLE_CROUCH: bool
 
+@onready var MODEL: Node3D = $Demon
+
 @export var UI_SCENE: PackedScene
 var UI = null
-
-signal damage
 
 var _speed: float
 var _rotation_input : float
@@ -53,7 +53,6 @@ func _ready():
 func ready_client_only_nodes():
 	#$Sample.modulate = 	Store.client_join_info.color.lightened(0.2)
 	#$Nickname.text = Store.client_join_info.nickname
-	damage.connect(take_damage)
 	_speed = SPEED_DEFAULT
 	
 	# add crouch check shapecast collision exception
@@ -65,7 +64,8 @@ func ready_client_only_nodes():
 	UI = newUI
 	add_child(newUI)
 	
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)	
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	MODEL.hide()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
