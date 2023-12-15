@@ -89,7 +89,7 @@ func get_input():
 	if Input.is_action_just_pressed('shoot'):
 		shoot()
 	
-	$CameraController/Camera3D/Hook.grapple()	
+	$CameraController/Camera3D/Hook.grapple()
 	
 	# Fires only if toggle mode is hold:
 	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == false and _is_crouching == false:
@@ -160,7 +160,10 @@ func toggle_crouch():
 		crouching(false)
 	elif _is_crouching == false:
 		crouching(true)
-
+		
+func jump():
+	velocity.y = JUMP_VELOCITY
+	
 func crouching(state: bool):
 	match state:
 		true: 

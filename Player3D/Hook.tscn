@@ -1,36 +1,49 @@
-[gd_scene load_steps=5 format=3 uid="uid://c5io863yqwynd"]
+[gd_scene load_steps=6 format=3 uid="uid://c5io863yqwynd"]
 
 [ext_resource type="Script" path="res://Player3D/Hook.gd" id="1_pc0vx"]
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_ldilg"]
-top_radius = 0.1
-bottom_radius = 0.1
-height = 0.3
+[sub_resource type="BoxMesh" id="BoxMesh_e6d2n"]
+size = Vector3(0.1, 0.1, 0.4)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nvakc"]
 albedo_color = Color(1, 0.0901961, 1, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_w62ud"]
 material = SubResource("StandardMaterial3D_nvakc")
-size = Vector3(0.05, 0.05, 50)
+size = Vector3(0.05, 0.05, 1)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_w3nmj"]
+properties/0/path = NodePath("HookMesh/Line:rotation")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("HookMesh/Line:scale")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("HookMesh/Line:visible")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("HookMesh/Line:position")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("HookMesh:rotation")
+properties/4/spawn = true
+properties/4/replication_mode = 1
 
 [node name="Hook" type="Node3D"]
 script = ExtResource("1_pc0vx")
 
 [node name="HookMesh" type="Node3D" parent="."]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="HookMesh"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
-mesh = SubResource("CylinderMesh_ldilg")
+[node name="Cylinder" type="MeshInstance3D" parent="HookMesh"]
+mesh = SubResource("BoxMesh_e6d2n")
 
 [node name="Line" type="MeshInstance3D" parent="HookMesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -25)
 visible = false
 mesh = SubResource("BoxMesh_w62ud")
 
 [node name="RayCast3D" type="RayCast3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-target_position = Vector3(0, -200, 0)
+target_position = Vector3(0, -60, 0)
 
 [node name="GrappleTimer" type="Timer" parent="."]
 wait_time = 5.0
@@ -38,5 +51,8 @@ one_shot = true
 
 [node name="Lookpoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16.0848)
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_w3nmj")
 
 [connection signal="timeout" from="GrappleTimer" to="." method="_on_grapple_timer_timeout"]
