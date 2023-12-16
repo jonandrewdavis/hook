@@ -9,6 +9,7 @@ var gpoint_distance = 0
 @onready var line = $HookMesh/Line
 @onready var cylinder = $HookMesh/Cylinder
 @onready var grappleMesh = $HookMesh
+@onready var hand = $"HookMesh/Claw/Skeletal Hand"
 
 @onready var claw = $HookMesh/Claw
 
@@ -18,6 +19,7 @@ var gpoint_distance = 0
 @onready var lookpoint = $Lookpoint
 
 var claw_init_position
+var line_point_distance
 
 func _ready() -> void:
 	claw_init_position = claw.position
@@ -34,15 +36,25 @@ func seek():
 			var body = grapplecast.get_collider()
 			find_point()
 			if seeking == false:
+				hand.set_scale(Vector3(1.25, 1.25, 1.25))
+				claw.look_at(grapple_point)
 				seeking = true
 		else:
 			cancel()
 
 	if seeking == true and seeking_complete == false:
+
 		claw.top_level = true
+		line.visible = true
 		gpoint_distance = grapple_point.distance_to(claw.global_position)
 		if gpoint_distance > 1.25:		
 			# this moves us
+			# LINE MOVE
+			grappleMesh.look_at(grapple_point)
+			line_point_distance = grappleMesh.global_position.distance_to(claw.global_position)
+			line.set_scale(Vector3(1, 1, line_point_distance))
+			line.transform.origin = Vector3(0, 0, - line_point_distance / 2)
+			# CLAW MOVE
 			claw.global_position = lerp(claw.global_position, grapple_point, 0.04)
 		else:
 			claw.global_position = grapple_point
@@ -66,13 +78,16 @@ func grapple():
 		# TODO: Edit a bit to prevent floating
 		player.gravity = -7.8
 		gpoint_distance = grapple_point.distance_to(player.transform.origin)
+		line_point_distance = grapple_point.distance_to(grappleMesh.global_position)
 		grappleMesh.look_at(grapple_point)
 		# cylinder.look_at(grapple_point)
-		line.set_scale(Vector3(1, 1, gpoint_distance))
+		# line.look_at(grapple_point)
+		line.set_scale(Vector3(1, 1, line_point_distance))
 		# line.translate(Vector3(0, 0, gpoint_distance / 2))
 		# line.transform.basis. = Vector3(0, 0, gpoint_distance) 
-		line.transform.origin = Vector3(0, 0, - gpoint_distance / 2)
-		if gpoint_distance > 1.25:
+		line.transform.origin = Vector3(0, 0, - line_point_distance / 2)
+		# ENDING CONDITION
+		if gpoint_distance > 2.5:
 			# this moves us
 			player.transform.origin = lerp(player.transform.origin, grapple_point, 0.005)
 			claw.global_position = grapple_point
@@ -99,6 +114,7 @@ func cancel():
 	claw.top_level = false
 	claw.global_position = player.transform.origin
 	claw.position = claw_init_position
+	hand.set_scale(Vector3(0.3, 0.3, 0.3))	
 	line.visible = false
 
 func find_point():
