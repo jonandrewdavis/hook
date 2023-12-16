@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://c5io863yqwynd"]
+[gd_scene load_steps=8 format=3 uid="uid://c5io863yqwynd"]
 
 [ext_resource type="Script" path="res://Player3D/Hook.gd" id="1_pc0vx"]
+[ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="2_t0rmb"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_e6d2n"]
 size = Vector3(0.1, 0.1, 0.4)
@@ -11,6 +12,9 @@ albedo_color = Color(1, 0.0901961, 1, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_w62ud"]
 material = SubResource("StandardMaterial3D_nvakc")
 size = Vector3(0.05, 0.05, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_oisl2"]
+material = ExtResource("2_t0rmb")
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_w3nmj"]
 properties/0/path = NodePath("HookMesh/Line:rotation")
@@ -41,12 +45,17 @@ mesh = SubResource("BoxMesh_e6d2n")
 visible = false
 mesh = SubResource("BoxMesh_w62ud")
 
+[node name="Claw" type="MeshInstance3D" parent="HookMesh"]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("SphereMesh_oisl2")
+
 [node name="RayCast3D" type="RayCast3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-target_position = Vector3(0, -60, 0)
+target_position = Vector3(0, -30, 0)
+hit_back_faces = false
 
 [node name="GrappleTimer" type="Timer" parent="."]
-wait_time = 5.0
+wait_time = 4.0
 one_shot = true
 
 [node name="Lookpoint" type="Marker3D" parent="."]

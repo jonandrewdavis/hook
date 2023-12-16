@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://c3ffql15mo0aj"]
+[gd_scene load_steps=19 format=3 uid="uid://c3ffql15mo0aj"]
 
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="2_gldw4"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Player3D/scripts/states/Sprint.gd" id="9_4fvia"]
 [ext_resource type="PackedScene" uid="uid://bf5fyb7ys0v8e" path="res://Assets/models/demon.tscn" id="9_ab58g"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Walking.gd" id="9_cybia"]
+[ext_resource type="Script" path="res://Player3D/scripts/states/Stunned.gd" id="10_gogm3"]
 [ext_resource type="PackedScene" uid="uid://c5io863yqwynd" path="res://Player3D/Hook.tscn" id="10_tnoo1"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u6tj1"]
@@ -143,6 +144,9 @@ script = ExtResource("9_cybia")
 
 [node name="Sprint" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("9_4fvia")
+
+[node name="Stunned" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("10_gogm3")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_1x53u")

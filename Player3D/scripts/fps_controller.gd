@@ -20,6 +20,9 @@ class_name Player
 @export var TOGGLE_CROUCH: bool
 
 @onready var MODEL: Node3D = $Demon
+@onready var HOOK: Node3D = $CameraController/Camera3D/Hook
+
+@onready var FSM: Node = $PlayerStateMachine
 
 @export var UI_SCENE: PackedScene
 var UI = null
@@ -78,19 +81,22 @@ func _process(_delta):
 	get_input()
 
 func get_input():
-	if is_multiplayer_authority() == false:
+	if FSM.CURRENT_STATE.name == 'Stunned': 
 		return
+		
+	HOOK.grapple()
+	HOOK.pull()
+	HOOK.seek()
 	
 	if Input.is_action_pressed("exit"):
 		get_tree().quit()
-	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == true:
-		toggle_crouch()
-
+		
 	if Input.is_action_just_pressed('shoot'):
 		shoot()
-	
-	$CameraController/Camera3D/Hook.grapple()
-	
+
+	# CROUCH logic
+	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == true:
+		toggle_crouch()
 	# Fires only if toggle mode is hold:
 	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == false and _is_crouching == false:
 		print(get_multiplayer_authority(), ', cronch')
@@ -100,7 +106,7 @@ func get_input():
 			crouching(false)
 		elif CROUCH_SHAPECAST.is_colliding() == true:
 			uncrouch_check()
-	
+
 func _update_camera(delta):
 	# Rotates camera using euler rotation
 	_mouse_rotation.x += _tilt_input * delta
@@ -118,23 +124,22 @@ func _update_camera(delta):
 	_rotation_input = 0.0
 	_tilt_input = 0.0
 
+var input_dir = Vector3.ZERO
+var direction = Vector3.ZERO
 func _physics_process(delta):	
-	# Update camera movement based on mouse movement
-	_update_camera(delta)
-	
+	if FSM.CURRENT_STATE.name != 'Stunned': 
+		# Update camera movement based on mouse movement
+		_update_camera(delta)
+		input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+		# Handle Jump.	
+		if Input.is_action_just_pressed("jump") and is_on_floor():
+			velocity.y = JUMP_VELOCITY
+			
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y -= gravity * delta
-
-	# Handle Jump.
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
-
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-	
-	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+		
+	direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
 	if is_on_floor() and _is_crouching == true and _speed > 2:
 		set_movement_speed('crouching')
@@ -160,9 +165,6 @@ func toggle_crouch():
 		crouching(false)
 	elif _is_crouching == false:
 		crouching(true)
-		
-func jump():
-	velocity.y = JUMP_VELOCITY
 	
 func crouching(state: bool):
 	match state:

@@ -13,7 +13,6 @@ transform = Transform3D(-0.7, 0, -6.11959e-08, 0, 0.7, 0, 6.11959e-08, 0, -0.7, 
 script = ExtResource("2_ew2go")
 
 [node name="Skeleton3D" parent="RootNode/EnemyArmature" index="0"]
-bones/1/rotation = Quaternion(1, -5.84256e-15, -7.54979e-08, -4.33126e-07)
 bones/11/rotation = Quaternion(1.15416e-07, -4.50339e-08, 0.99571, -0.0925312)
 bones/14/rotation = Quaternion(-1.15416e-07, -4.50339e-08, 0.99571, 0.0925312)
 

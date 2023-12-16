@@ -89,7 +89,7 @@ func get_input():
 		# we need to pass in the mouse position of the player who casted it.
 		cast_fireball.rpc(get_global_mouse_position())
 
-@rpc("call_local", "reliable")
+@rpc("call_local", "unreliable")
 func cast_fireball(player_mouse_position):
 	if multiplayer.is_server():
 		var fireball_scene = load("res://Projectiles/Fireball.tscn")

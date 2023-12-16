@@ -7,9 +7,6 @@ func enter():
 	player._speed = player.SPEED_SPRINTING
 	player.MODEL.animation_player.play("EnemyArmature|EnemyArmature|EnemyArmature|Run")
 	
-func update(_delta):
-	pass
-
 func _input(event):
 	if event.is_action_released('sprint'):
 		transition.emit('Walking')
