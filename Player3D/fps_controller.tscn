@@ -12,6 +12,20 @@
 [ext_resource type="PackedScene" uid="uid://c5io863yqwynd" path="res://Player3D/Hook.tscn" id="10_tnoo1"]
 [ext_resource type="PackedScene" uid="uid://blvg7sk4onp3u" path="res://Player3D/mage.tscn" id="11_elbq1"]
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1x53u"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("CameraController/Camera3D:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("AnimationPlayer:current_animation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u6tj1"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_6tv51"]
@@ -80,20 +94,6 @@ _data = {
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_m887i"]
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1x53u"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath("CameraController/Camera3D:rotation")
-properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath(".:rotation")
-properties/2/spawn = true
-properties/2/replication_mode = 1
-properties/3/path = NodePath("AnimationPlayer:current_animation")
-properties/3/spawn = true
-properties/3/replication_mode = 1
-
 [node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER", "CROUCH_SHAPECAST")]
 script = ExtResource("1_pgc1p")
 MOUSE_SENSITIVITY = 0.25
@@ -101,6 +101,9 @@ CAMERA_CONTROLLER = NodePath("CameraController/Camera3D")
 ANIMATIONPLAYER = NodePath("AnimationPlayer")
 CROUCH_SHAPECAST = NodePath("ShapeCast3D")
 UI_SCENE = ExtResource("2_vsmbj")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_1x53u")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -148,9 +151,6 @@ script = ExtResource("9_4fvia")
 
 [node name="Stunned" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("10_gogm3")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_1x53u")
 
 [node name="character_skeleton_mage" parent="." instance=ExtResource("11_elbq1")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)

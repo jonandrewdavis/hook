@@ -5,7 +5,7 @@ extends Node3D
 
 @onready var GRAPPLECAST: RayCast3D = $GrappleCast
 @onready var HOOKBODY = $HookMesh
-@onready var LINE = $HookMesh/Line
+@onready var LINE = $HookMesh/Arm
 @onready var CLAW = $HookMesh/Claw
 @onready var HAND_MODEL = $HookMesh/Claw/Open
 @onready var FIST_MODEL = $HookMesh/Claw/Fist
@@ -54,9 +54,9 @@ func seeking_ledge():
 	if gpoint_distance > 1.25:
 		line_point_distance = player.transform.origin.distance_to(CLAW.global_position)
 		LINE.set_scale(Vector3(1, 1, line_point_distance))
-		LINE.transform.origin = Vector3(0, 0, - line_point_distance / 2)
+		# LINE.transform.origin = Vector3(0, 0, - line_point_distance / 2)
 		# CLAW MOVE
-		CLAW.global_position = lerp(CLAW.global_position, grapple_point, 0.04)
+		CLAW.global_position = lerp(CLAW.global_position, grapple_point, 0.03)
 		HOOKBODY.look_at(CLAW.global_position)
 	else:
 		# CLAW SUCCESS
@@ -80,7 +80,7 @@ func pulling_self():
 	line_point_distance = grapple_point.distance_to(HOOKBODY.global_position)
 	HOOKBODY.look_at(grapple_point)
 	LINE.set_scale(Vector3(1, 1, line_point_distance))
-	LINE.transform.origin = Vector3(0, 0, - line_point_distance / 2)
+	# LINE.transform.origin = Vector3(0, 0, - line_point_distance / 2)
 
 	# ENDING CONDITION + Move the Player (self)
 	if gpoint_distance > 2:
@@ -112,7 +112,7 @@ func launch_hook():
 func seeking_player(delta):
 	line_point_distance = player.transform.origin.distance_to(CLAW.global_position)
 	LINE.set_scale(Vector3(1, 1, line_point_distance))
-	LINE.transform.origin = Vector3(0, 0, - line_point_distance / 2)
+	# LINE.transform.origin = Vector3(0, 0, - line_point_distance / 2)
 	
 	CLAW.global_position += transform.basis * Vector3(GRAPPLECAST.target_position) * delta
 	HOOKBODY.look_at(CLAW.global_position)

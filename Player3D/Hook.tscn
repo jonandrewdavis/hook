@@ -1,18 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://c5io863yqwynd"]
+[gd_scene load_steps=8 format=3 uid="uid://c5io863yqwynd"]
 
 [ext_resource type="Script" path="res://Player3D/Hook.gd" id="1_pc0vx"]
 [ext_resource type="ArrayMesh" uid="uid://bl60vtxt3ouch" path="res://Assets/models/R_hand_Balled.obj" id="2_0wwig"]
 [ext_resource type="ArrayMesh" uid="uid://cagmoa5wvd4ww" path="res://Assets/models/Bone_Arm.obj" id="2_uxj8n"]
 [ext_resource type="ArrayMesh" uid="uid://dpuawkybdw6n3" path="res://Assets/models/R_hand_Open.obj" id="4_xhkb3"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nvakc"]
-metallic_specular = 1.0
-emission_enabled = true
-emission = Color(1, 1, 0.619608, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_w62ud"]
-material = SubResource("StandardMaterial3D_nvakc")
-size = Vector3(0.05, 0.05, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y8v63"]
 transparency = 1
@@ -24,34 +15,34 @@ radius = 0.55
 height = 1.1
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_w3nmj"]
-properties/0/path = NodePath("HookMesh/Line:scale")
+properties/0/path = NodePath("HookMesh:rotation")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath("HookMesh/Line:visible")
+properties/1/path = NodePath("HookMesh/Claw:position")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath("HookMesh/Line:position")
-properties/2/spawn = false
+properties/2/path = NodePath("HookMesh/Claw:rotation")
+properties/2/spawn = true
 properties/2/replication_mode = 1
-properties/3/path = NodePath("HookMesh:rotation")
+properties/3/path = NodePath("HookMesh/Claw:top_level")
 properties/3/spawn = true
 properties/3/replication_mode = 1
-properties/4/path = NodePath("HookMesh/Claw:position")
+properties/4/path = NodePath("HookMesh/Claw/Fist:visible")
 properties/4/spawn = true
 properties/4/replication_mode = 1
-properties/5/path = NodePath("HookMesh/Claw:rotation")
+properties/5/path = NodePath("HookMesh/Claw/Open:visible")
 properties/5/spawn = true
 properties/5/replication_mode = 1
-properties/6/path = NodePath("HookMesh/Claw:top_level")
+properties/6/path = NodePath("HookMesh/Claw:visible")
 properties/6/spawn = true
 properties/6/replication_mode = 1
-properties/7/path = NodePath("HookMesh/Claw/Fist:visible")
+properties/7/path = NodePath("HookMesh/Arm:position")
 properties/7/spawn = true
 properties/7/replication_mode = 1
-properties/8/path = NodePath("HookMesh/Claw/Open:visible")
+properties/8/path = NodePath("HookMesh/Arm:scale")
 properties/8/spawn = true
 properties/8/replication_mode = 1
-properties/9/path = NodePath("HookMesh/Claw:visible")
+properties/9/path = NodePath("HookMesh/Arm:visible")
 properties/9/spawn = true
 properties/9/replication_mode = 1
 
@@ -60,18 +51,11 @@ script = ExtResource("1_pc0vx")
 
 [node name="HookMesh" type="Node3D" parent="."]
 
-[node name="Line" type="MeshInstance3D" parent="HookMesh"]
-mesh = SubResource("BoxMesh_w62ud")
-
-[node name="Line2" type="MeshInstance3D" parent="HookMesh"]
-transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
-visible = false
-mesh = ExtResource("2_uxj8n")
-
 [node name="Claw" type="MeshInstance3D" parent="HookMesh"]
 mesh = SubResource("SphereMesh_ikvow")
 
 [node name="Fist" type="MeshInstance3D" parent="HookMesh/Claw"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.236113)
 
 [node name="FistModel" type="MeshInstance3D" parent="HookMesh/Claw/Fist"]
 transform = Transform3D(-0.1, 0, 8.74228e-09, 0, 0.1, 0, -8.74228e-09, 0, -0.1, 0, 0, 0)
@@ -79,10 +63,15 @@ mesh = ExtResource("2_0wwig")
 skeleton = NodePath("../../..")
 
 [node name="Open" type="MeshInstance3D" parent="HookMesh/Claw"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0499669, 0.0780128, 0.294332)
 
 [node name="OpenModel" type="MeshInstance3D" parent="HookMesh/Claw/Open"]
 transform = Transform3D(-0.1, 0, 8.74228e-09, 0, 0.1, 0, -8.74228e-09, 0, -0.1, 0, 0, 0)
 mesh = ExtResource("4_xhkb3")
+
+[node name="Arm" type="MeshInstance3D" parent="HookMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0537492, 1.33749)
+mesh = ExtResource("2_uxj8n")
 
 [node name="GrappleCast" type="RayCast3D" parent="."]
 target_position = Vector3(0, 0, -30)

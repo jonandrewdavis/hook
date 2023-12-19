@@ -1,6 +1,58 @@
-[gd_scene load_steps=5 format=3 uid="uid://blvg7sk4onp3u"]
+[gd_scene load_steps=7 format=3 uid="uid://blvg7sk4onp3u"]
 
 [ext_resource type="PackedScene" uid="uid://b1tmdv5engi7u" path="res://Assets/models/character_skeleton_mage.gltf" id="1_81v58"]
+[ext_resource type="Script" path="res://Player3D/mage.gd" id="2_7v6x4"]
+
+[sub_resource type="Animation" id="Animation_ywxvb"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("character_skeleton_mage_body/character_skeleton_mage_head:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0.704536, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("character_skeleton_mage_body/character_skeleton_mage_head:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("character_skeleton_mage_body:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("character_skeleton_mage_body:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_a4rcx"]
 resource_name = "run"
@@ -55,64 +107,19 @@ tracks/3/keys = {
 "values": [Vector3(0, 0, 0)]
 }
 
-[sub_resource type="Animation" id="Animation_ywxvb"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("character_skeleton_mage_body/character_skeleton_mage_head:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0.704536, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("character_skeleton_mage_body/character_skeleton_mage_head:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("character_skeleton_mage_body:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("character_skeleton_mage_body:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_c12fj"]
 _data = {
 "RESET": SubResource("Animation_ywxvb"),
 "run": SubResource("Animation_a4rcx")
 }
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_i406k"]
+properties/0/path = NodePath("AnimationPlayer:current_animation")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
 [node name="character_skeleton_mage" instance=ExtResource("1_81v58")]
+script = ExtResource("2_7v6x4")
 
 [node name="character_skeleton_mage_armLeft" parent="character_skeleton_mage_body" index="0"]
 visible = false
@@ -123,10 +130,10 @@ visible = false
 [node name="character_skeleton_mage_head" parent="character_skeleton_mage_body" index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.704536, 0)
 
-[node name="character_skeleton_mage_cowl" parent="character_skeleton_mage_body/character_skeleton_mage_head" index="0"]
-visible = false
-
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="1"]
 libraries = {
 "": SubResource("AnimationLibrary_c12fj")
 }
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." index="2"]
+replication_config = SubResource("SceneReplicationConfig_i406k")
