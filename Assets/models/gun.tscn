@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://kb4ryrjtm3i7"]
 
-[ext_resource type="PackedScene" uid="uid://b46arvpvtgbay" path="res://Assets/models/Sci-Fi Shotgun.glb" id="1_35qdp"]
+[ext_resource type="PackedScene" uid="uid://dj8yjus8t3kbv" path="res://Assets/models/Skull.glb" id="1_35qdp"]
 [ext_resource type="Script" path="res://Assets/models/gun.gd" id="2_62036"]
 
 [sub_resource type="Animation" id="Animation_jeo0l"]
@@ -40,8 +40,11 @@ _data = {
 [node name="Gun" instance=ExtResource("1_35qdp")]
 script = ExtResource("2_62036")
 
-[node name="weapon_scifi_shotgun" parent="RootNode" index="0"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.23438, 0, -1.66465e-09)
+[node name="RootNode" parent="." index="0"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+
+[node name="Environment_Skulls" parent="RootNode" index="0"]
+mesh = null
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="1"]
 libraries = {
@@ -49,5 +52,5 @@ libraries = {
 }
 
 [node name="RayCast3D" type="RayCast3D" parent="." index="2"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.411998, 0.0725195, 0.0300057)
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0)
 target_position = Vector3(0, 0, -1)

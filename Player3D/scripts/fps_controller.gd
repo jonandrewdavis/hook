@@ -19,7 +19,7 @@ class_name Player
 @export var CROUCH_SHAPECAST: Node3D
 @export var TOGGLE_CROUCH: bool
 
-@onready var MODEL: Node3D = $Demon
+@onready var MODEL: Node3D = $character_skeleton_mage
 @onready var HOOK: Node3D = $CameraController/Camera3D/Hook
 
 @onready var FSM: Node = $PlayerStateMachine
@@ -81,16 +81,21 @@ func _process(_delta):
 	get_input()
 
 func get_input():
+	# TODO: Remove
+	if Input.is_action_pressed("exit"):
+		get_tree().quit()		
+
 	if FSM.CURRENT_STATE.name == 'Stunned': 
 		return
-		
-	HOOK.grapple()
-	HOOK.pull()
-	HOOK.seek()
 	
-	if Input.is_action_pressed("exit"):
-		get_tree().quit()
-		
+	if Input.is_action_just_pressed("grapple"):
+		HOOK.launch_grapple()
+
+	if Input.is_action_just_pressed("hook"):
+		FSM.set_state('Busy')
+		print(get_aim())
+		HOOK.launch_hook()
+
 	if Input.is_action_just_pressed('shoot'):
 		shoot()
 
@@ -203,7 +208,7 @@ func respawn():
 	# y is up and down, so don't change that.
 	position = Vector3(rndX, random_position.y, rndZ )
 
-@onready var gun = $CameraController/Camera3D/Gun
+@onready var gun = $CameraController/Camera3D/Shotgun
 func shoot():
 	if gun.animation_player.is_playing() == false:
 		gun.animation_player.play('shoot')
@@ -225,3 +230,8 @@ func spawn_bullet(pos, rot):
 		bullet.transform.basis = rot
 		# I learned the hard way only the server should add things the MultiplayerSpawner will handle the rest.
 		get_parent().add_child(bullet, true)
+
+
+func get_aim() -> Array[Vector3]:
+	print(typeof(gun.barrel.global_transform.basis))
+	return [gun.barrel.global_position, gun.barrel.global_transform.basis]

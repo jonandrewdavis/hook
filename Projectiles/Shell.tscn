@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://bv568333xlnnh"]
+[gd_scene load_steps=10 format=3 uid="uid://bv568333xlnnh"]
 
 [ext_resource type="Script" path="res://Projectiles/Shell.gd" id="1_qcfj6"]
+[ext_resource type="ArrayMesh" uid="uid://d2cpuvyvdny4f" path="res://Assets/models/R_Hand_Gun_Bullet.obj" id="2_122ht"]
+[ext_resource type="Material" uid="uid://dffr71ifgy3nc" path="res://Assets/models/bone.tres" id="3_rf655"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_23v8n"]
 albedo_color = Color(1, 1, 0.368627, 1)
@@ -49,7 +51,7 @@ target_position = Vector3(0, 0, -1)
 replication_config = SubResource("SceneReplicationConfig_kvipt")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.166392)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.956054)
 emitting = false
 lifetime = 0.5
 one_shot = true
@@ -61,3 +63,8 @@ draw_pass_1 = SubResource("BoxMesh_m846d")
 wait_time = 4.0
 one_shot = true
 autostart = true
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.15, 0, 0, 0, -0.15, -2.62268e-08, 0, 1.31134e-08, -0.3, 0.147543, 0.156771, 2.32595)
+mesh = ExtResource("2_122ht")
+surface_material_override/0 = ExtResource("3_rf655")

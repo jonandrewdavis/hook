@@ -2,12 +2,12 @@ extends State
 
 
 func enter():
-	pass
+	player.set_movement_speed("crouching")
 
 func update(_delta):
 	pass
 
-func _input(_event):
+func _input(event):
 	pass
 
 func exit():

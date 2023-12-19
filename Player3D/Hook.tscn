@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://c5io863yqwynd"]
+[gd_scene load_steps=10 format=3 uid="uid://c5io863yqwynd"]
 
 [ext_resource type="Script" path="res://Player3D/Hook.gd" id="1_pc0vx"]
-[ext_resource type="PackedScene" uid="uid://cj86gu5hebfmk" path="res://Assets/models/skeletal_hand.tscn" id="3_4i6r2"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_e6d2n"]
-size = Vector3(0.1, 0.1, 0.4)
+[ext_resource type="ArrayMesh" uid="uid://bl60vtxt3ouch" path="res://Assets/models/R_hand_Balled.obj" id="2_0wwig"]
+[ext_resource type="ArrayMesh" uid="uid://cagmoa5wvd4ww" path="res://Assets/models/Bone_Arm.obj" id="2_uxj8n"]
+[ext_resource type="ArrayMesh" uid="uid://dpuawkybdw6n3" path="res://Assets/models/R_hand_Open.obj" id="4_xhkb3"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nvakc"]
 metallic_specular = 1.0
@@ -15,12 +14,14 @@ emission = Color(1, 1, 0.619608, 1)
 material = SubResource("StandardMaterial3D_nvakc")
 size = Vector3(0.05, 0.05, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tui4m"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y8v63"]
 transparency = 1
-albedo_color = Color(1, 1, 1, 0)
+albedo_color = Color(1, 0, 1, 0.14902)
 
-[sub_resource type="SphereMesh" id="SphereMesh_gobr2"]
-material = SubResource("StandardMaterial3D_tui4m")
+[sub_resource type="SphereMesh" id="SphereMesh_ikvow"]
+material = SubResource("StandardMaterial3D_y8v63")
+radius = 0.55
+height = 1.1
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_w3nmj"]
 properties/0/path = NodePath("HookMesh/Line:scale")
@@ -44,37 +45,56 @@ properties/5/replication_mode = 1
 properties/6/path = NodePath("HookMesh/Claw:top_level")
 properties/6/spawn = true
 properties/6/replication_mode = 1
-properties/7/path = NodePath("HookMesh/Claw/Skeletal Hand:scale")
+properties/7/path = NodePath("HookMesh/Claw/Fist:visible")
 properties/7/spawn = true
 properties/7/replication_mode = 1
+properties/8/path = NodePath("HookMesh/Claw/Open:visible")
+properties/8/spawn = true
+properties/8/replication_mode = 1
+properties/9/path = NodePath("HookMesh/Claw:visible")
+properties/9/spawn = true
+properties/9/replication_mode = 1
 
 [node name="Hook" type="Node3D"]
 script = ExtResource("1_pc0vx")
 
 [node name="HookMesh" type="Node3D" parent="."]
 
-[node name="Cylinder" type="MeshInstance3D" parent="HookMesh"]
-visible = false
-mesh = SubResource("BoxMesh_e6d2n")
-
 [node name="Line" type="MeshInstance3D" parent="HookMesh"]
-visible = false
 mesh = SubResource("BoxMesh_w62ud")
 
+[node name="Line2" type="MeshInstance3D" parent="HookMesh"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+visible = false
+mesh = ExtResource("2_uxj8n")
+
 [node name="Claw" type="MeshInstance3D" parent="HookMesh"]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0.0737426)
-mesh = SubResource("SphereMesh_gobr2")
+mesh = SubResource("SphereMesh_ikvow")
 
-[node name="Skeletal Hand" parent="HookMesh/Claw" instance=ExtResource("3_4i6r2")]
-transform = Transform3D(-0.137765, 0.0168294, 0.265965, -0.0158203, 0.298357, -0.0270736, -0.266027, -0.0264582, -0.136123, 0, 0.297585, 0)
+[node name="Fist" type="MeshInstance3D" parent="HookMesh/Claw"]
 
-[node name="RayCast3D" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-target_position = Vector3(0, -30, 0)
+[node name="FistModel" type="MeshInstance3D" parent="HookMesh/Claw/Fist"]
+transform = Transform3D(-0.1, 0, 8.74228e-09, 0, 0.1, 0, -8.74228e-09, 0, -0.1, 0, 0, 0)
+mesh = ExtResource("2_0wwig")
+skeleton = NodePath("../../..")
+
+[node name="Open" type="MeshInstance3D" parent="HookMesh/Claw"]
+
+[node name="OpenModel" type="MeshInstance3D" parent="HookMesh/Claw/Open"]
+transform = Transform3D(-0.1, 0, 8.74228e-09, 0, 0.1, 0, -8.74228e-09, 0, -0.1, 0, 0, 0)
+mesh = ExtResource("4_xhkb3")
+
+[node name="GrappleCast" type="RayCast3D" parent="."]
+target_position = Vector3(0, 0, -30)
 hit_back_faces = false
+debug_shape_custom_color = Color(1, 0, 0, 1)
 
 [node name="GrappleTimer" type="Timer" parent="."]
-wait_time = 4.0
+wait_time = 4.2
+one_shot = true
+
+[node name="HookTimer" type="Timer" parent="."]
+wait_time = 1.2
 one_shot = true
 
 [node name="Lookpoint" type="Marker3D" parent="."]

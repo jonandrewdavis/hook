@@ -5,7 +5,7 @@ class_name Sprint extends State
 
 func enter():
 	player._speed = player.SPEED_SPRINTING
-	player.MODEL.animation_player.play("EnemyArmature|EnemyArmature|EnemyArmature|Run")
+	player.MODEL.get_node("AnimationPlayer").play("run")
 	
 func _input(event):
 	if event.is_action_released('sprint'):

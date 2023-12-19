@@ -38,3 +38,7 @@ func on_child_transition(new_state_name: StringName) -> void:
 				CURRENT_STATE = new_state
 			else:
 				push_warning('State does not exist')
+				
+func set_state(state):
+	# userlabel.text = state
+	on_child_transition(state)

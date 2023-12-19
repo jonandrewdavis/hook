@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bl60vtxt3ouch"
+path="res://.godot/imported/R_hand_Balled.obj-067d92c8741b577efd14805d83694328.mesh"
+
+[deps]
+
+files=["res://.godot/imported/R_hand_Balled.obj-067d92c8741b577efd14805d83694328.mesh"]
+
+source_file="res://Assets/models/R_hand_Balled.obj"
+dest_files=["res://.godot/imported/R_hand_Balled.obj-067d92c8741b577efd14805d83694328.mesh", "res://.godot/imported/R_hand_Balled.obj-067d92c8741b577efd14805d83694328.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

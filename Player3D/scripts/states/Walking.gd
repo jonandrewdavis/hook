@@ -2,7 +2,7 @@ extends State
 
 func enter():
 	player._speed = player.SPEED_DEFAULT
-	player.MODEL.animation_player.play("EnemyArmature|EnemyArmature|EnemyArmature|Walk")
+	player.MODEL.get_node("AnimationPlayer").play("run")
 
 func update(_delta):
 	if player.velocity.length() == 0.0:

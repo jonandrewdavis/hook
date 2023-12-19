@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dpuawkybdw6n3"
+path="res://.godot/imported/R_hand_Open.obj-9d3115176d7602d82570c6556c02f2e8.mesh"
+
+[deps]
+
+files=["res://.godot/imported/R_hand_Open.obj-9d3115176d7602d82570c6556c02f2e8.mesh"]
+
+source_file="res://Assets/models/R_hand_Open.obj"
+dest_files=["res://.godot/imported/R_hand_Open.obj-9d3115176d7602d82570c6556c02f2e8.mesh", "res://.godot/imported/R_hand_Open.obj-9d3115176d7602d82570c6556c02f2e8.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

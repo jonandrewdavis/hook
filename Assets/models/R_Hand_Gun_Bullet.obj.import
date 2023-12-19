@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://d2cpuvyvdny4f"
+path="res://.godot/imported/R_Hand_Gun_Bullet.obj-269502a3be9a99cb2b858e80e95599d6.mesh"
+
+[deps]
+
+files=["res://.godot/imported/R_Hand_Gun_Bullet.obj-269502a3be9a99cb2b858e80e95599d6.mesh"]
+
+source_file="res://Assets/models/R_Hand_Gun_Bullet.obj"
+dest_files=["res://.godot/imported/R_Hand_Gun_Bullet.obj-269502a3be9a99cb2b858e80e95599d6.mesh", "res://.godot/imported/R_Hand_Gun_Bullet.obj-269502a3be9a99cb2b858e80e95599d6.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

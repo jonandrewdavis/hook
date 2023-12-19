@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://4622f6m30lco"
+path="res://.godot/imported/R_Hand_Gun_Whole.obj-1bf3afb2f9702830e4e072c1b04b1b21.mesh"
+
+[deps]
+
+files=["res://.godot/imported/R_Hand_Gun_Whole.obj-1bf3afb2f9702830e4e072c1b04b1b21.mesh"]
+
+source_file="res://Assets/models/R_Hand_Gun_Whole.obj"
+dest_files=["res://.godot/imported/R_Hand_Gun_Whole.obj-1bf3afb2f9702830e4e072c1b04b1b21.mesh", "res://.godot/imported/R_Hand_Gun_Whole.obj-1bf3afb2f9702830e4e072c1b04b1b21.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

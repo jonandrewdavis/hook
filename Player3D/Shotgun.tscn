@@ -1,0 +1,167 @@
+[gd_scene load_steps=8 format=3 uid="uid://t4okhouvlxsg"]
+
+[ext_resource type="PackedScene" uid="uid://ewmtj4m1x4jv" path="res://Assets/models/Weapon Scifi Shotgun.glb" id="1_1dry5"]
+[ext_resource type="Script" path="res://Player3D/gun.gd" id="1_lv2k8"]
+[ext_resource type="ArrayMesh" uid="uid://4622f6m30lco" path="res://Assets/models/R_Hand_Gun_Whole.obj" id="3_508mc"]
+[ext_resource type="ArrayMesh" uid="uid://dcusxwnmgcxyl" path="res://Assets/models/R_Hand_Gun_Empty.obj" id="4_enmdg"]
+
+[sub_resource type="Animation" id="Animation_eq2fy"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ShotgunMesh/Root Scene:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1.01671e-08, 1.5708, 0.234747)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ShotgunMesh/Root Scene:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0.0531547)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("ShotgunMesh/HandGun:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0.165575, -0.27025)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("ShotgunMesh/HandGun:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 3.14159, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_fscjd"]
+resource_name = "shoot"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ShotgunMesh/Root Scene:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.000886038, 0.0396033, 0.101422, 0.291163),
+"transitions": PackedFloat32Array(1, 5.27803, 0.233258, 1),
+"update": 0,
+"values": [Vector3(0, 1.5708, 0), Vector3(-1.01671e-08, 1.5708, 0.234747), Vector3(-1.01671e-08, 1.5708, 0.234747), Vector3(0, 1.5708, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ShotgunMesh/Root Scene:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.000886038, 0.0396033, 0.099379, 0.291163),
+"transitions": PackedFloat32Array(1, 4.28709, 0.164939, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0.0531547), Vector3(0, 0, 0.0531547), Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("ShotgunMesh/HandGun:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.000886038, 0.0386771, 0.13338, 0.293914),
+"transitions": PackedFloat32Array(1, 1, 0.466517, 1),
+"update": 0,
+"values": [Vector3(0, 0.165575, -0.27025), Vector3(0, 0.165575, -0.182893), Vector3(0, 0.165575, -0.182893), Vector3(0, 0.165575, -0.27025)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("ShotgunMesh/HandGun:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.000886038, 0.0386771, 0.0999598, 0.292946),
+"transitions": PackedFloat32Array(1, 1, 0.378929, 1),
+"update": 0,
+"values": [Vector3(0, 3.14159, 0), Vector3(-0.785398, 3.14159, 0), Vector3(-0.508938, 3.14159, 8.42504e-08), Vector3(0, 3.14159, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("ShotgunMesh/HandGunEmpty:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.00330789, 0.0426573),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("ShotgunMesh/HandGun:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.00233915, 0.0387824, 0.293528),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f2bcl"]
+_data = {
+"RESET": SubResource("Animation_eq2fy"),
+"shoot": SubResource("Animation_fscjd")
+}
+
+[node name="Shotgun" type="Node3D"]
+script = ExtResource("1_lv2k8")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+target_position = Vector3(0, 0, -1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_f2bcl")
+}
+speed_scale = 0.33
+
+[node name="ShotgunMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0784973, 0)
+
+[node name="Root Scene" parent="ShotgunMesh" instance=ExtResource("1_1dry5")]
+transform = Transform3D(-3.52307e-06, 8.3211e-07, 1, 0.232597, 0.972573, 1.01671e-08, -0.972573, 0.232597, -3.61999e-06, 0, 0, 0.0531547)
+visible = false
+
+[node name="HandGun" type="MeshInstance3D" parent="ShotgunMesh"]
+transform = Transform3D(-0.04, 0, 1.01407e-07, 0, 0.0399999, 0, -1.01407e-07, 0, -0.0399999, 0, 0.165575, -0.27025)
+mesh = ExtResource("3_508mc")
+
+[node name="HandGunEmpty" type="MeshInstance3D" parent="ShotgunMesh"]
+transform = Transform3D(-0.04, 0, 6.03982e-09, 0, 0.0399999, 0, -6.03983e-09, 0, -0.0399999, 0, 0.165575, -0.27025)
+visible = false
+mesh = ExtResource("4_enmdg")

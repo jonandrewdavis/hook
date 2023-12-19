@@ -1,15 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://cj86gu5hebfmk"]
+[gd_scene load_steps=3 format=3 uid="uid://b82iseoo55mlv"]
 
 [ext_resource type="PackedScene" uid="uid://b3j220k0pdpm1" path="res://Assets/models/Skeletal Hand.glb" id="1_mjn8o"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0y30y"]
-emission_enabled = true
-emission = Color(1, 1, 0.67451, 1)
-emission_energy_multiplier = 0.5
+[ext_resource type="Material" uid="uid://dffr71ifgy3nc" path="res://Assets/models/bone.tres" id="2_ft2hv"]
 
 [node name="Skeletal Hand" instance=ExtResource("1_mjn8o")]
-transform = Transform3D(-0.137765, 0.0168294, 0.265965, -0.0158203, 0.298357, -0.0270736, -0.266027, -0.0264582, -0.136123, 0, 0.297585, 0)
+transform = Transform3D(-0.459217, 0.0560979, 0.886551, -0.0527344, 0.994522, -0.0902454, -0.886757, -0.088194, -0.453743, 0, 0.297585, 0)
 
 [node name="NLMVHM_R_Hand_Bones_001_NLMVHM_Hand_Bones_001" parent="." index="0"]
-transform = Transform3D(0.3, -1.49012e-08, -5.21541e-08, -6.70552e-08, -0.0360411, 0.297827, 0, -0.297827, -0.036041, 3.01485, -2.78221, 4.39276)
-surface_material_override/0 = SubResource("StandardMaterial3D_0y30y")
+transform = Transform3D(0.0798997, 0.00326611, 0.00231719, -0.000496913, -0.0378471, 0.0704797, 0.00397367, -0.0704055, -0.0377793, 1.08707, -0.108123, 1.49985)
+surface_material_override/0 = ExtResource("2_ft2hv")

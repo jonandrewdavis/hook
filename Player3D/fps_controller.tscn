@@ -3,14 +3,14 @@
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="2_gldw4"]
 [ext_resource type="PackedScene" uid="uid://b8njiqmewnmd7" path="res://UI/UI.tscn" id="2_vsmbj"]
-[ext_resource type="PackedScene" uid="uid://kb4ryrjtm3i7" path="res://Assets/models/gun.tscn" id="4_etkqj"]
+[ext_resource type="PackedScene" uid="uid://t4okhouvlxsg" path="res://Player3D/Shotgun.tscn" id="5_dti51"]
 [ext_resource type="Script" path="res://Player3D/scripts/state_machine.gd" id="6_40av4"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Idle.gd" id="7_sgjnc"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Sprint.gd" id="9_4fvia"]
-[ext_resource type="PackedScene" uid="uid://bf5fyb7ys0v8e" path="res://Assets/models/demon.tscn" id="9_ab58g"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Walking.gd" id="9_cybia"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Stunned.gd" id="10_gogm3"]
 [ext_resource type="PackedScene" uid="uid://c5io863yqwynd" path="res://Player3D/Hook.tscn" id="10_tnoo1"]
+[ext_resource type="PackedScene" uid="uid://blvg7sk4onp3u" path="res://Player3D/mage.tscn" id="11_elbq1"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u6tj1"]
 
@@ -114,12 +114,13 @@ mesh = SubResource("CapsuleMesh_6tv51")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraController"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.483511, 0)
 
 [node name="Hook" parent="CameraController/Camera3D" instance=ExtResource("10_tnoo1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.170769, -0.25861, -0.15212)
 
-[node name="Gun" parent="CameraController/Camera3D" instance=ExtResource("4_etkqj")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.170937, -0.200468, -0.208691)
+[node name="Shotgun" parent="CameraController/Camera3D" instance=ExtResource("5_dti51")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.299111, -0.271907, -0.191687)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -151,4 +152,5 @@ script = ExtResource("10_gogm3")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_1x53u")
 
-[node name="Demon" parent="." instance=ExtResource("9_ab58g")]
+[node name="character_skeleton_mage" parent="." instance=ExtResource("11_elbq1")]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
