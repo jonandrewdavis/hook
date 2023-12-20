@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://c5io863yqwynd"]
+[gd_scene load_steps=9 format=3 uid="uid://c5io863yqwynd"]
 
 [ext_resource type="Script" path="res://Player3D/Hook.gd" id="1_pc0vx"]
 [ext_resource type="ArrayMesh" uid="uid://bl60vtxt3ouch" path="res://Assets/models/R_hand_Balled.obj" id="2_0wwig"]
 [ext_resource type="ArrayMesh" uid="uid://cagmoa5wvd4ww" path="res://Assets/models/Bone_Arm.obj" id="2_uxj8n"]
+[ext_resource type="Material" uid="uid://c31rm62vcg58u" path="res://Assets/materials/bone.tres" id="4_ujwwm"]
 [ext_resource type="ArrayMesh" uid="uid://dpuawkybdw6n3" path="res://Assets/models/R_hand_Open.obj" id="4_xhkb3"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y8v63"]
@@ -61,6 +62,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.236113)
 transform = Transform3D(-0.1, 0, 8.74228e-09, 0, 0.1, 0, -8.74228e-09, 0, -0.1, 0, 0, 0)
 mesh = ExtResource("2_0wwig")
 skeleton = NodePath("../../..")
+surface_material_override/0 = ExtResource("4_ujwwm")
 
 [node name="Open" type="MeshInstance3D" parent="HookMesh/Claw"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0499669, 0.0780128, 0.294332)
@@ -68,9 +70,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0499669, 0.0780128, 0.29433
 [node name="OpenModel" type="MeshInstance3D" parent="HookMesh/Claw/Open"]
 transform = Transform3D(-0.1, 0, 8.74228e-09, 0, 0.1, 0, -8.74228e-09, 0, -0.1, 0, 0, 0)
 mesh = ExtResource("4_xhkb3")
+surface_material_override/0 = ExtResource("4_ujwwm")
 
 [node name="Arm" type="MeshInstance3D" parent="HookMesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0537492, 1.33749)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0537492, 1.25665)
+material_override = ExtResource("4_ujwwm")
 mesh = ExtResource("2_uxj8n")
 
 [node name="GrappleCast" type="RayCast3D" parent="."]

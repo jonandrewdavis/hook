@@ -19,6 +19,11 @@ config/icon="res://icon.svg"
 
 Store="*res://Store/Store.gd"
 
+[display]
+
+window/size/viewport_width=2304
+window/size/viewport_height=1296
+
 [input]
 
 ui_left={

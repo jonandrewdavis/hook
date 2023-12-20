@@ -1,32 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://b6k7s2ewcuk42"]
+[gd_scene load_steps=4 format=3 uid="uid://b6k7s2ewcuk42"]
 
 [ext_resource type="PackedScene" uid="uid://dj8yjus8t3kbv" path="res://Assets/models/Skull.glb" id="1_fldkj"]
-[ext_resource type="Material" uid="uid://fuphc8qf0trr" path="res://Assets/models/crown.tres" id="2_y80a3"]
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_dxus4"]
-frequency = 0.05
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_gmnxb"]
-noise = SubResource("FastNoiseLite_dxus4")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ptnwo"]
-albedo_color = Color(0.776471, 0.776471, 0.776471, 1)
-albedo_texture = SubResource("NoiseTexture2D_gmnxb")
-metallic_specular = 0.0
-emission_enabled = true
-emission = Color(1, 1, 1, 1)
-emission_energy_multiplier = 0.5
+[ext_resource type="Material" uid="uid://c31rm62vcg58u" path="res://Assets/materials/bone.tres" id="2_070x6"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4xw6j"]
 size = Vector3(1.1, 1.1, 1.1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_83gav"]
-material = ExtResource("2_y80a3")
-size = Vector3(1.1, 0.21, 1.1)
-
-[sub_resource type="PrismMesh" id="PrismMesh_ser6e"]
-material = ExtResource("2_y80a3")
-size = Vector3(0.15, 0.08, 0.12)
 
 [node name="Skull" instance=ExtResource("1_fldkj")]
 
@@ -34,7 +12,7 @@ size = Vector3(0.15, 0.08, 0.12)
 transform = Transform3D(0.3, 0, 0, 0, 0.229813, -0.192836, 0, 0.192836, 0.229813, 0, 0, 0)
 
 [node name="Environment_Skulls" parent="RootNode" index="0"]
-surface_material_override/0 = SubResource("StandardMaterial3D_ptnwo")
+surface_material_override/0 = ExtResource("2_070x6")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.484938, 0.198284)
@@ -42,81 +20,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.484938, 0.198284)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0853973, 0, 0.0609737)
 shape = SubResource("BoxShape3D_4xw6j")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." index="2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1.05049, 0.0036265, 0.782254, 0.280414)
-mesh = SubResource("BoxMesh_83gav")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.476723, 0.138409, -0.489177)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.475207, 0.138409, -0.483385)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="MeshInstance3D" index="2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4774, 0.138409, 0.496914)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D4" type="MeshInstance3D" parent="MeshInstance3D" index="3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.469701, 0.138409, 0.492394)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="." index="3"]
-transform = Transform3D(0.866025, 0, 0.525247, 0, 1, 0, -0.5, 0, 0.909754, 0.0036265, 0.81251, 0.280414)
-mesh = SubResource("BoxMesh_83gav")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D2" index="0"]
-transform = Transform3D(0.99939, 0, 0.0348994, 0, 1, 0, -0.0348996, 0, 0.99939, -0.472397, 0.14158, -0.48848)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D2" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.469506, 0.14158, -0.489397)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="MeshInstance3D2" index="2"]
-transform = Transform3D(0.999999, 0, -2.98023e-08, 0, 1, 0, 1.19209e-07, 0, 1, 0.470881, 0.14158, 0.495206)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D4" type="MeshInstance3D" parent="MeshInstance3D2" index="3"]
-transform = Transform3D(0.999999, 0, -2.98023e-08, 0, 1, 0, 1.78814e-07, 0, 1, -0.477365, 0.14158, 0.490992)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="." index="4"]
-transform = Transform3D(0.5, 0, 0.909754, 0, 1, 0, -0.866025, 0, 0.525247, 0.0036265, 0.796496, 0.280414)
-mesh = SubResource("BoxMesh_83gav")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D3" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.482665, 0.134753, -0.489758)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D3" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482629, 0.134753, -0.484796)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="MeshInstance3D3" index="2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.478117, 0.134753, 0.489195)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="MeshInstance3D4" type="MeshInstance3D" parent="MeshInstance3D3" index="3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.481578, 0.145365, 0.491323)
-mesh = SubResource("PrismMesh_ser6e")
-
-[node name="OmniLight3D" type="OmniLight3D" parent="." index="5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.300418, 0.245584, 0.508473)
-light_negative = true
-
-[node name="OmniLight3D2" type="OmniLight3D" parent="." index="6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25727, 0.245584, 0.508473)
-light_negative = true
-
-[node name="OmniLight3D3" type="OmniLight3D" parent="." index="7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0173263, -0.614697, 0.0703354)
-light_energy = 0.7
-light_negative = true
-
-[node name="OmniLight3D4" type="OmniLight3D" parent="." index="8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00415722, -0.0919109, 0.749702)
-light_energy = 0.2
-light_negative = true
