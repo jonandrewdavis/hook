@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://b6k7s2ewcuk42"]
+[gd_scene load_steps=3 format=3 uid="uid://b6k7s2ewcuk42"]
 
 [ext_resource type="PackedScene" uid="uid://dj8yjus8t3kbv" path="res://Assets/models/Skull.glb" id="1_fldkj"]
-[ext_resource type="Material" uid="uid://c31rm62vcg58u" path="res://Assets/materials/bone.tres" id="2_070x6"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4xw6j"]
 size = Vector3(1.1, 1.1, 1.1)
@@ -10,9 +9,6 @@ size = Vector3(1.1, 1.1, 1.1)
 
 [node name="RootNode" parent="." index="0"]
 transform = Transform3D(0.3, 0, 0, 0, 0.229813, -0.192836, 0, 0.192836, 0.229813, 0, 0, 0)
-
-[node name="Environment_Skulls" parent="RootNode" index="0"]
-surface_material_override/0 = ExtResource("2_070x6")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.484938, 0.198284)

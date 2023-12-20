@@ -1,12 +1,12 @@
 [gd_scene load_steps=9 format=3 uid="uid://b1yleqbb8tc7x"]
 
-[ext_resource type="Environment" uid="uid://fffgfrct4uva" path="res://Levels/WorldEnv1.tres" id="1_jn0ij"]
-[ext_resource type="Material" uid="uid://cn1gsy15bkaff" path="res://Assets/materials/grid.tres" id="1_puvop"]
+[ext_resource type="Environment" uid="uid://fffgfrct4uva" path="res://Levels/WorldEnv1.tres" id="1_k70i5"]
+[ext_resource type="Material" uid="uid://dkyq31w10b4dv" path="res://Assets/materials/lava.tres" id="2_atlrt"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="3_y40gl"]
 [ext_resource type="PackedScene" uid="uid://b6k7s2ewcuk42" path="res://Levels/skull.tscn" id="11_olckj"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_ifd66"]
-material = ExtResource("1_puvop")
+material = ExtResource("2_atlrt")
 size = Vector3(40, 0.5, 15)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_255g8"]
@@ -20,11 +20,14 @@ material = ExtResource("3_y40gl")
 [node name="Level" type="Node3D"]
 
 [node name="NewWorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("1_jn0ij")
+environment = ExtResource("1_k70i5")
 
 [node name="DirectionalLightSun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 22, 21)
-light_energy = 0.1
+visible = false
+light_color = Color(0.945098, 0.219608, 0.0784314, 1)
+light_energy = 2.0
+light_indirect_energy = 3.872
 
 [node name="DirectionalLightLava" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -8.87097, 0)

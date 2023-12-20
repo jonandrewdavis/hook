@@ -104,13 +104,16 @@ speed_scale = 0.33
 
 [node name="ShotgunMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0784973, 0)
+cast_shadow = 0
 
 [node name="HandGun" type="MeshInstance3D" parent="ShotgunMesh"]
 transform = Transform3D(-0.04, 0, 1.01407e-07, 0, 0.0399999, 0, -1.01407e-07, 0, -0.0399999, 0, 0.165575, -0.27025)
+material_override = ExtResource("3_qtn0i")
+cast_shadow = 0
 mesh = ExtResource("3_508mc")
-surface_material_override/0 = ExtResource("3_qtn0i")
 
 [node name="HandGunEmpty" type="MeshInstance3D" parent="ShotgunMesh"]
 transform = Transform3D(-0.04, 0, 6.03982e-09, 0, 0.0399999, 0, -6.03983e-09, 0, -0.0399999, 0, 0.165575, -0.27025)
+material_override = ExtResource("3_qtn0i")
+cast_shadow = 0
 mesh = ExtResource("4_enmdg")
-surface_material_override/0 = ExtResource("3_qtn0i")

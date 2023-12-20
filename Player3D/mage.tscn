@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://blvg7sk4onp3u"]
+[gd_scene load_steps=8 format=3 uid="uid://blvg7sk4onp3u"]
 
 [ext_resource type="PackedScene" uid="uid://b1tmdv5engi7u" path="res://Assets/models/character_skeleton_mage.gltf" id="1_81v58"]
 [ext_resource type="Script" path="res://Player3D/mage.gd" id="2_7v6x4"]
+[ext_resource type="Material" uid="uid://c31rm62vcg58u" path="res://Assets/materials/bone.tres" id="3_k50gf"]
 
 [sub_resource type="Animation" id="Animation_ywxvb"]
 length = 0.001
@@ -129,6 +130,7 @@ visible = false
 
 [node name="character_skeleton_mage_head" parent="character_skeleton_mage_body" index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.704536, 0)
+surface_material_override/0 = ExtResource("3_k50gf")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="1"]
 libraries = {

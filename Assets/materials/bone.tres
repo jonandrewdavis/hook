@@ -1,21 +1,38 @@
-[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://c31rm62vcg58u"]
+[gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://c31rm62vcg58u"]
 
-[ext_resource type="Texture2D" uid="uid://db4r132yug05p" path="res://Assets/textures/worn_rock_natural_01_diff_4k.png" id="1_d2qo6"]
+[ext_resource type="Texture2D" uid="uid://dwayvejisylhv" path="res://Assets/textures/worn_rock_natural_01_diff_WHITE.png" id="1_h0cco"]
 [ext_resource type="Texture2D" uid="uid://bfnm8g0037md1" path="res://Assets/textures/worn_rock_natural_01_nor_gl_4k.png" id="2_a521o"]
+[ext_resource type="Shader" path="res://Assets/materials/outlineV2SMALL.gdshader" id="2_wtkxw"]
 [ext_resource type="Texture2D" uid="uid://v6trsbpsq5fa" path="res://Assets/textures/worn_rock_natural_01_rough_4k.png" id="3_spsu6"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nawv5"]
+render_priority = 0
+shader = ExtResource("2_wtkxw")
+shader_parameter/outline_color = null
+shader_parameter/scissor_value = 0.5
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/outline_size = 0.1
+shader_parameter/offset_fres = 0.3
+shader_parameter/fps = 5.0
+
 [resource]
-albedo_texture = ExtResource("1_d2qo6")
+next_pass = SubResource("ShaderMaterial_nawv5")
+albedo_texture = ExtResource("1_h0cco")
 metallic_specular = 0.0
 roughness_texture = ExtResource("3_spsu6")
+emission_enabled = true
+emission_energy_multiplier = 0.3
+emission_texture = ExtResource("1_h0cco")
 normal_enabled = true
 normal_scale = 1.5
 normal_texture = ExtResource("2_a521o")
-rim_tint = 0.0
+rim_enabled = true
+rim = 0.2
 clearcoat_roughness = 0.0
-subsurf_scatter_strength = 0.2
-refraction_enabled = true
-uv1_scale = Vector3(0.3, 0.3, 0.3)
+subsurf_scatter_strength = 1.0
+subsurf_scatter_skin_mode = true
+subsurf_scatter_texture = ExtResource("1_h0cco")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
 uv1_triplanar_sharpness = 2.5
 grow_amount = 3.43

@@ -72,8 +72,13 @@ func ready_client_only_nodes():
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		_rotation_input = -event.relative.x * MOUSE_SENSITIVITY
-		_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
+		if FSM.CURRENT_STATE.name == 'Busy':
+			_rotation_input = -event.relative.x * MOUSE_SENSITIVITY / 5
+			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY / 5
+		else:
+			_rotation_input = -event.relative.x * MOUSE_SENSITIVITY
+			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
+
 	elif event.is_action_pressed('debug'):
 		UI.toggle_debug()
 
@@ -93,8 +98,8 @@ func get_input():
 
 	if Input.is_action_just_pressed("hook"):
 		FSM.set_state('Busy')
-		print(get_aim())
-		HOOK.launch_hook()
+		var aim = get_aim()
+		HOOK.launch_hook(aim)
 
 	if Input.is_action_just_pressed('shoot'):
 		shoot()
@@ -231,7 +236,14 @@ func spawn_bullet(pos, rot):
 		# I learned the hard way only the server should add things the MultiplayerSpawner will handle the rest.
 		get_parent().add_child(bullet, true)
 
-
-func get_aim() -> Array[Vector3]:
-	print(typeof(gun.barrel.global_transform.basis))
+func get_aim():
 	return [gun.barrel.global_position, gun.barrel.global_transform.basis]
+
+
+func get_hooked(pos):
+	FSM.set_state('Stunned')
+	await get_tree().create_timer(0.2).timeout
+	self.look_at(pos)
+	await get_tree().create_timer(0.5).timeout
+	input_dir = (transform.basis * Vector3(pos)).normalized()
+	

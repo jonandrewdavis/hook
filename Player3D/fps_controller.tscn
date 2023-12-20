@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c3ffql15mo0aj"]
+[gd_scene load_steps=20 format=3 uid="uid://c3ffql15mo0aj"]
 
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="2_gldw4"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://Player3D/scripts/states/Walking.gd" id="9_cybia"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Stunned.gd" id="10_gogm3"]
 [ext_resource type="PackedScene" uid="uid://c5io863yqwynd" path="res://Player3D/Hook.tscn" id="10_tnoo1"]
+[ext_resource type="Script" path="res://Player3D/scripts/states/Busy.gd" id="11_b5bcb"]
 [ext_resource type="PackedScene" uid="uid://blvg7sk4onp3u" path="res://Player3D/mage.tscn" id="11_elbq1"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1x53u"]
@@ -151,6 +152,9 @@ script = ExtResource("9_4fvia")
 
 [node name="Stunned" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("10_gogm3")
+
+[node name="Busy" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("11_b5bcb")
 
 [node name="character_skeleton_mage" parent="." instance=ExtResource("11_elbq1")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
