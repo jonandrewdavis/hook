@@ -7,6 +7,7 @@ extends Node3D
 @onready var GRAPPLECAST: RayCast3D = $GrappleCast
 @onready var HOOKBODY = $HookMesh
 @onready var LINE = $HookMesh/Arm
+@onready var LINE_REMOTE = $HookMesh/ArmRemote
 @onready var CLAW = $HookMesh/Claw
 @onready var HAND_MODEL = $HookMesh/Claw/Open
 @onready var FIST_MODEL = $HookMesh/Claw/Fist
@@ -14,200 +15,184 @@ extends Node3D
 @onready var CLAW_AREA = $HookMesh/Claw/ClawArea
 @onready var CLAW_COLLISION = $HookMesh/Claw/ClawArea/ClawCollision
 
-enum STATE {IDLE, SEEKING_LEDGE, PULLING_SELF, SEEKING_PLAYER, PULLING_ENEMY}
+var HOOK_SPEED = 30
+var HOOK_TIME = 1
+
+enum STATE {IDLE, SEEKING, PULLING_SELF, PULLING_ENEMY}
 var curr: STATE = STATE.IDLE
 
-var grapple_point = null
-var gpoint_distance = 0
-var claw_init_position
-var line_point_distance
-
-func _ready() -> void:
-	claw_init_position = CLAW.position
-	cancel()
-	pass
+func _ready():
+	reset()
 
 func _process(_delta):
 	match curr:
-		STATE.IDLE:
-			pass
-		STATE.SEEKING_LEDGE:
-			seeking_ledge()
+		STATE.SEEKING:
+			seeking(_delta)
 		STATE.PULLING_SELF:
 			pulling_self()
-		STATE.SEEKING_PLAYER:
-			seeking_player(_delta)
 		STATE.PULLING_ENEMY:
-			pulling_player(_delta)
+			pulling_enemy()
+		_:
 			pass
 
-# For Grapple
-# If you've targeted a point that can be grappled, set that point, send seeker.
-# If you have no collision, send it out, but reset it about 0.3 sec later
-func launch_grapple():
-	if idle() and grapple_point == null:
-		if GRAPPLECAST.is_colliding() and not GRAPPLECAST.get_collider().is_in_group("player"):
-			grapple_point = GRAPPLECAST.get_collision_point()
-			curr = STATE.SEEKING_LEDGE
-			prepare_hand()
-	else:
-		cancel()
+# NOTE: It is possible to seek and aim at the same time using:
+# CLAW.top_level = false
+# CLAW.global_position += GRAPPLECAST.global_transform.basis * Vector3(0, 0, -20) * delta
+# NOTE: This is the current paradigm.
 
-func seeking_ledge():
-	gpoint_distance = grapple_point.distance_to(CLAW.global_position)
-	if gpoint_distance > 1.25:
-		line_point_distance = player.transform.origin.distance_to(CLAW.global_position)
-		LINE.set_scale(Vector3(1, 1, line_point_distance))
-		# LINE.transform.origin = Vector3(0, 0, - line_point_distance / 2)
-		# CLAW MOVE
-		CLAW.global_position = lerp(CLAW.global_position, grapple_point, 0.03)
-		HOOKBODY.look_at(CLAW.global_position)
-	else:
-		# CLAW SUCCESS
-		HOOKBODY.look_at(grapple_point)
-		CLAW.global_position = grapple_point
-		FIST_MODEL.show()
-		HAND_MODEL.hide()
-		curr = STATE.PULLING_SELF
-		grapple_timer.start()
+# CONS: at long distances, the aim is strong and if you're falling the grapple falls with you
+# PROS: Better control of the hook via strafing, and when falling you can predict it based on gravity
 
+# TODO: Determine if top level is better, this is like launching a bullet, it goes to where pointed.
+# Might be better balanced.
+
+func seeking(delta):
+	CLAW.global_position += GRAPPLECAST.global_transform.basis * Vector3(0, 0, -HOOK_SPEED) * delta
+	line_trace()
+	pass
+	
 func pulling_self():
-	## TODO: add time spent grappling to lerp, to counter for overchared negative gravity
-	if player.global_position.y > grapple_point.y + 0.5:
+	if Input.is_action_just_pressed("jump"):
+		cancel_hook()
+		await get_tree().create_timer(0.2).timeout
+		player.air_jump += 1
+
+	if player.global_position.y > CLAW.global_position.y + 0.5:
 		player.gravity = 9.8
 	else:
 		player.gravity = -9.8
 	if player.is_on_floor():
 		player.velocity.y = 0.05
-
-	gpoint_distance = grapple_point.distance_to(player.transform.origin)
-	line_point_distance = grapple_point.distance_to(HOOKBODY.global_position)
-	HOOKBODY.look_at(grapple_point)
-	LINE.set_scale(Vector3(1, 1, line_point_distance))
-	# LINE.transform.origin = Vector3(0, 0, - line_point_distance / 2)
-
-	# ENDING CONDITION + Move the Player (self)
-	if gpoint_distance > 2:
-		player.transform.origin = lerp(player.transform.origin, grapple_point, 0.005)
-	else:
-		cancel()
-
-	if Input.is_action_just_pressed("jump"):
-		player.gravity = 9.8
-		if player.velocity.y < player.JUMP_VELOCITY * 2: 
-			player.velocity.y = player.velocity.y + player.JUMP_VELOCITY
-		else: 
-			player.velocity.y = player.JUMP_VELOCITY * 2
-		cancel()
-
-var grapple_dir
-var lookpoint_saved 
-
-# For Pull
-# Send out a shape along the raycast, if it encounters a body.is_in_group("player"):
-func launch_hook(aim):
-	grapple_point  = aim[0]
-	grapple_dir =  aim[1]
-	curr = STATE.SEEKING_PLAYER
-	CLAW.top_level = true
-	lookpoint_saved = LOOKPOINT.global_position
-	prepare_hand()
 	
-	# Cancel, will do a miss
-	#$HookTimer.start()
-	#await $HookTimer.timeout
-	#cancel()
-
-# moving out!
-func seeking_player(delta):
-	line_point_distance = player.transform.origin.distance_to(CLAW.global_position)
-	LINE.set_scale(Vector3(1, 1, line_point_distance))
-
-	# HAND
-	CLAW.look_at(LOOKPOINT.global_position)
-	if HOOKBODY.global_position != CLAW.global_position: HOOKBODY.look_at(CLAW.global_position)
-	CLAW.global_position = lerp(CLAW.global_position, LOOKPOINT.global_position, 0.02)
-	
-	# TODO: Add a little bit of input here and there, or CAMERA.
-	# direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()	
-	if CLAW.global_position.distance_to(LOOKPOINT.global_position) < 0.8:
-		_on_claw_area_body_entered(null)
-
-
-# FOUND PLAYER
-func _on_claw_area_body_entered(body):
-	print("CAPTUARED", body)
-	if body == null:
-		# TODO: "Explode" the collision area, briefly, and close teh fist.
-		# curr = STATE.PULLING_ENEMY
-		cancel()
-		return
-	
-	if body.is_in_group("players") and body.get_multiplayer_authority() != get_multiplayer_authority():
-		lookpoint_saved = body.global_position
-		curr = STATE.PULLING_ENEMY
-		print("CAPTUARED")
-		# body.get_hooked(player.transform.origin)
-		await get_tree().create_timer(2).timeout
-		cancel()
+	line_trace()
 		
+	# ENDING CONDITION + Move the Player (self)	
+	if CLAW.global_position.distance_to(player.transform.origin) > 2:
+		player.transform.origin = lerp(player.transform.origin, CLAW.global_position, 0.005)
+	else:
+		cancel_hook()
 
-func pulling_player(_delta):
-	line_point_distance = player.transform.origin.distance_to(CLAW.global_position)
-	LINE.set_scale(Vector3(1, 1, line_point_distance))
+var pulled_enemy
 
-	# HAND
-	CLAW.look_at(lookpoint_saved)
-	if HOOKBODY.global_position != CLAW.global_position: HOOKBODY.look_at(CLAW.global_position)
-	CLAW.global_position = lerp(CLAW.global_position, player.transform.origin, 0.03)
 
-func cancel():
-	curr = STATE.IDLE
-	if player.FSM:
+func pulling_enemy():
+	line_trace()
+	if Input.is_action_just_pressed("jump"):
+		# TODO: if you cancel, you should let them go, issue a 
+		# RPC to stop, where they are, and drop.
+		cancel_hook()
+	if pulled_enemy == null:
+		return
+	CLAW.global_position = Vector3(pulled_enemy.transform.origin.x, pulled_enemy.transform.origin.y + 1, pulled_enemy.transform.origin.z)
+	if pulled_enemy.transform.origin.distance_to(player.transform.origin) < 3:
+		cancel_hook()
+
+
+# NOTE:
+
+var aim_pos
+var aim_rot
+
+func launch_hook():
+	player.gravity = 9.8
+	# TODO: Only allow hook in idle state
+	# if curr == STATE.IDLE: 
+	$HookTimer.wait_time = HOOK_TIME
+	$HookTimer.paused = false
+	$HookTimer.start()
+	CLAW.hide()
+	
+	aim_pos = GRAPPLECAST.global_position
+	aim_rot = GRAPPLECAST.global_transform.basis
+
+	CLAW.global_position = aim_pos
+	CLAW.transform.basis = aim_rot
+	CLAW.look_at(LOOKPOINT.global_position)
+	curr = STATE.SEEKING
+	
+	await get_tree().create_timer(0.02).timeout
+	CLAW.show()
+	LINE.show()
+	CLAW.set_scale(Vector3(1.3, 1.3, 1.3))
+	CLAW_COLLISION.disabled = false
+	hand()
+
+func init():
+	pass
+
+func reset():
+	pulled_enemy = null
+	player.gravity = 9.8
+	CLAW.top_level = false
+	CLAW.position = Vector3.ZERO
+	CLAW.look_at(LOOKPOINT.global_position)
+	CLAW.set_scale(Vector3(0.2, 0.2, 0.2))
+	LINE.visible = false
+	if is_multiplayer_authority():
+		LINE_REMOTE.visible = false
+		LINE_REMOTE.set_scale(Vector3(0, 0, 0))
+	CLAW_COLLISION.disabled = true
+	HOOKBODY.look_at(LOOKPOINT.global_position)
+	fist()
+	if player.FSM != null:
 		player.FSM.set_state("Idle")
-	grapple_point = null
-	reset_hand()
+	
+var line_point_distance
 
-func idle():
-	return curr == STATE.IDLE
-			
-func prepare_hand():
-	HOOKBODY.look_at(grapple_point)
-	CLAW.look_at(grapple_point)	
-	CLAW.top_level = true
-	LINE.visible = true
+func line_trace():
+	if CLAW.global_position != HOOKBODY.global_position:
+		HOOKBODY.look_at(CLAW.global_position)
+	line_point_distance = player.transform.origin.distance_to(CLAW.global_position)
+	LINE.set_scale(Vector3(1.15, 1.15, line_point_distance / 1.25))
+	LINE_REMOTE.set_scale(Vector3(1.9, 1.9, line_point_distance * 1.25))
+	# LINE.position = Vector3(0, 0, line_point_distance)
+	
+func cancel_hook():
+	curr = STATE.IDLE
+	reset()
+
+func _on_hook_timer_timeout():
+	# TODO: Explode, then cancel
+	cancel_hook()
+	pass # Replace with function body.
+
+func fist():
+	FIST_MODEL.show()
+	HAND_MODEL.hide()
+
+func hand():
 	FIST_MODEL.hide()
 	HAND_MODEL.show()
-	# Small delay on scale to ease in. (TODO: Could be animation!)
-	await get_tree().create_timer(0.08).timeout
-	CLAW_COLLISION.disabled = false	
-	HAND_MODEL.set_scale(Vector3(1.3,1.3,1.3))
-	$GrappleTimer.stop()
+
+func _on_claw_area_body_entered(body):
+	print('body ', body)
 	
-func reset_hand():
+	if body == null:
+		return
+		
+	if body.is_in_group("players") and body.get_multiplayer_authority() != get_multiplayer_authority():
+		$HookTimer.paused = true
+		call_deferred('disable_collision')
+		curr = STATE.PULLING_ENEMY
+		pulled_enemy = body
+		body.get_hooked.rpc()
+		fist()
+		return
+	
+	# prevent self collisions
+	if body.is_in_group("players"):
+		return
+		
+	# TODO: Only allow collisions with a type of surface or layer, remove above check
+	if body != null:
+		curr = STATE.PULLING_SELF
+		$HookTimer.paused = true
+		call_deferred('disable_collision')
+		CLAW.top_level = true
+		CLAW.global_position = CLAW.position
+		fist()
+		player.FSM.set_state("Idle")
+		return
+
+func disable_collision():
 	CLAW_COLLISION.disabled = true
-	HOOKBODY.look_at(GRAPPLECAST.target_position)
-	CLAW.look_at(GRAPPLECAST.target_position)
-	CLAW.top_level = false
-	CLAW.position = claw_init_position
-	LINE.visible = false
-	LINE.set_scale(Vector3.ONE)
-	HAND_MODEL.set_scale(Vector3.ONE)
-	FIST_MODEL.hide()
-	HAND_MODEL.hide()
-	player.gravity = 9.8
-	$GrappleTimer.stop()
-
-# TODO: Call a recursive func to play the timer x times instead of this ... 
-func _on_grapple_timer_timeout():
-	LINE.visible = false
-	await get_tree().create_timer(0.1).timeout
-	LINE.visible = true
-	await get_tree().create_timer(0.1).timeout
-	LINE.visible = false
-	await get_tree().create_timer(0.1).timeout
-	LINE.visible = true
-	await get_tree().create_timer(0.1).timeout
-	cancel()
-
-

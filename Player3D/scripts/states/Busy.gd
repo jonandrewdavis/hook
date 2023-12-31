@@ -7,7 +7,7 @@ func enter():
 func update(_delta):
 	pass
 
-func _input(event):
+func _input(_event):
 	pass
 
 func exit():

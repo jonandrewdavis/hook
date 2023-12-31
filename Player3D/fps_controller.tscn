@@ -1,7 +1,6 @@
-[gd_scene load_steps=20 format=3 uid="uid://c3ffql15mo0aj"]
+[gd_scene load_steps=18 format=3 uid="uid://c3ffql15mo0aj"]
 
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
-[ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="2_gldw4"]
 [ext_resource type="PackedScene" uid="uid://b8njiqmewnmd7" path="res://UI/UI.tscn" id="2_vsmbj"]
 [ext_resource type="PackedScene" uid="uid://t4okhouvlxsg" path="res://Player3D/Shotgun.tscn" id="5_dti51"]
 [ext_resource type="Script" path="res://Player3D/scripts/state_machine.gd" id="6_40av4"]
@@ -28,10 +27,8 @@ properties/3/spawn = true
 properties/3/replication_mode = 1
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u6tj1"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_6tv51"]
-material = ExtResource("2_gldw4")
-radius = 0.35
+radius = 0.4
+height = 1.5
 
 [sub_resource type="Animation" id="Animation_1ul0x"]
 length = 0.001
@@ -110,10 +107,6 @@ replication_config = SubResource("SceneReplicationConfig_1x53u")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_u6tj1")
 
-[node name="PlaceholderMesh" type="MeshInstance3D" parent="CollisionShape3D"]
-visible = false
-mesh = SubResource("CapsuleMesh_6tv51")
-
 [node name="CameraController" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
@@ -121,7 +114,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.483511, 0)
 
 [node name="Hook" parent="CameraController/Camera3D" instance=ExtResource("10_tnoo1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.170769, -0.25861, -0.15212)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.289769, -0.25861, -0.15212)
 
 [node name="Shotgun" parent="CameraController/Camera3D" instance=ExtResource("5_dti51")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.299111, -0.271907, -0.191687)
@@ -158,3 +151,7 @@ script = ExtResource("11_b5bcb")
 
 [node name="character_skeleton_mage" parent="." instance=ExtResource("11_elbq1")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="HookInputTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true

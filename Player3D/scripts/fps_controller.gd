@@ -1,19 +1,18 @@
 extends CharacterBody3D
 class_name Player
 
-@export var SPEED_DEFAULT: float = 4.5
-@export var SPEED_SPRINTING: float = 6.5
-@export var SPEED_CROUCH: float = 2.0
+@export var SPEED_DEFAULT: float = 4.0
+@export var SPEED_SPRINTING: float = 5.5
+@export var SPEED_CROUCH: float = 1.5
 
 @export var ACCELERATION : float = 0.08
 @export var DECELERATION : float = 0.25
 
-@export var SPEED : float = 5.0
-@export var JUMP_VELOCITY : float = 4.5
+@export var JUMP_VELOCITY : float = 5.5
 @export_range(5, 10) var CROUCH_SPEED: float = 7
 @export var MOUSE_SENSITIVITY : float = 0.5
-@export var TILT_LOWER_LIMIT := deg_to_rad(-90.0)
-@export var TILT_UPPER_LIMIT := deg_to_rad(90.0)
+@export var TILT_LOWER_LIMIT := deg_to_rad(-89.0)
+@export var TILT_UPPER_LIMIT := deg_to_rad(89.0)
 @export var CAMERA_CONTROLLER : Camera3D
 @export var ANIMATIONPLAYER : AnimationPlayer
 @export var CROUCH_SHAPECAST: Node3D
@@ -73,8 +72,12 @@ func ready_client_only_nodes():
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		if FSM.CURRENT_STATE.name == 'Busy':
-			_rotation_input = -event.relative.x * MOUSE_SENSITIVITY / 5
-			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY / 5
+			if $HookInputTimer.time_left > 0:
+				_rotation_input = -event.relative.x * MOUSE_SENSITIVITY /15
+				_tilt_input = -event.relative.y * MOUSE_SENSITIVITY / 15
+			else: 
+				_rotation_input = -event.relative.x * MOUSE_SENSITIVITY / 30
+				_tilt_input = -event.relative.y * MOUSE_SENSITIVITY / 30
 		else:
 			_rotation_input = -event.relative.x * MOUSE_SENSITIVITY
 			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
@@ -90,19 +93,23 @@ func get_input():
 	if Input.is_action_pressed("exit"):
 		get_tree().quit()		
 
-	if FSM.CURRENT_STATE.name == 'Stunned': 
+	# TODO: We could move all actions/inputs to the FSM, but this works for now
+	if FSM.CURRENT_STATE.name == 'Stunned' or FSM.CURRENT_STATE.name == 'Busy': 
 		return
-	
-	if Input.is_action_just_pressed("grapple"):
-		HOOK.launch_grapple()
 
 	if Input.is_action_just_pressed("hook"):
 		FSM.set_state('Busy')
-		var aim = get_aim()
-		HOOK.launch_hook(aim)
+		$HookInputTimer.start()
+		HOOK.launch_hook()
 
 	if Input.is_action_just_pressed('shoot'):
 		shoot()
+
+	if Input.is_action_just_pressed('sprint'):
+		FSM.set_state('Sprint')
+
+	if Input.is_action_just_released('sprint'):
+		FSM.set_state('Walking')
 
 	# CROUCH logic
 	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == true:
@@ -134,17 +141,33 @@ func _update_camera(delta):
 	_rotation_input = 0.0
 	_tilt_input = 0.0
 
+
+var air_jump: int = 1
 var input_dir = Vector3.ZERO
 var direction = Vector3.ZERO
+
+var cap: Vector3
 func _physics_process(delta):	
-	if FSM.CURRENT_STATE.name != 'Stunned': 
-		# Update camera movement based on mouse movement
-		_update_camera(delta)
-		input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-		# Handle Jump.	
-		if Input.is_action_just_pressed("jump") and is_on_floor():
-			velocity.y = JUMP_VELOCITY
-			
+	_update_camera(delta)
+	if FSM.CURRENT_STATE.name == 'Stunned' and global_position.distance_to(cap) > 3:
+		direction = global_position.direction_to(cap)
+		velocity = direction * 20
+		move_and_slide()
+	elif FSM.CURRENT_STATE.name == 'Stunned':
+		arrive_at_hook()
+	
+	# Update camera movement based on mouse movement
+	input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	# Handle Jump.	
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+	elif Input.is_action_just_pressed("jump") and air_jump > 0:
+		air_jump -= 1
+		velocity.y = JUMP_VELOCITY
+		
+	if is_on_floor() and air_jump == 0:
+		air_jump = 1
+				
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y -= gravity * delta
@@ -153,7 +176,7 @@ func _physics_process(delta):
 	
 	if is_on_floor() and _is_crouching == true and _speed > 2:
 		set_movement_speed('crouching')
-	
+
 	if direction:
 		velocity.x = lerp(velocity.x, direction.x * _speed, ACCELERATION)
 		velocity.z = lerp(velocity.z, direction.z * _speed, ACCELERATION)
@@ -236,14 +259,25 @@ func spawn_bullet(pos, rot):
 		# I learned the hard way only the server should add things the MultiplayerSpawner will handle the rest.
 		get_parent().add_child(bullet, true)
 
-func get_aim():
-	return [gun.barrel.global_position, gun.barrel.global_transform.basis]
-
-
-func get_hooked(pos):
+@rpc('any_peer')
+func get_hooked():
 	FSM.set_state('Stunned')
-	await get_tree().create_timer(0.2).timeout
-	self.look_at(pos)
-	await get_tree().create_timer(0.5).timeout
-	input_dir = (transform.basis * Vector3(pos)).normalized()
+	var playerId = multiplayer.get_remote_sender_id()
+	var capturedby = get_parent().get_node(str(playerId))
+	print(Store.store.players[playerId])	
+	print(capturedby.global_position)
 	
+	# I DUNNO HOW TO LOCK THE CAMERA ON
+	_player_rotation = Vector3(0.0,_mouse_rotation.y,0.0)
+	_camera_rotation = Vector3(_mouse_rotation.x,0.0,0.0)
+	# some_vector.direction_to(some_other_vector) 
+	cap = capturedby.global_position
+	CAMERA_CONTROLLER.transform.basis = Basis.from_euler(cap)
+	global_transform.basis = Basis.from_euler(cap)
+	look_at(cap)	
+	
+func arrive_at_hook():
+	print('arrived')
+	FSM.set_state("Busy")
+	await get_tree().create_timer(0.5).timeout
+	FSM.set_state("Idle")

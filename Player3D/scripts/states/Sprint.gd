@@ -8,5 +8,4 @@ func enter():
 	player.MODEL.get_node("AnimationPlayer").play("run")
 	
 func _input(event):
-	if event.is_action_released('sprint'):
-		transition.emit('Walking')
+	pass

@@ -9,5 +9,4 @@ func update(_delta):
 		transition.emit("Idle")
 
 func _input(event):
-	if event.is_action_pressed('sprint'):
-		transition.emit('Sprint')
+	pass

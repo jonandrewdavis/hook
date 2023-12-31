@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://if58fn2h6o5u"]
+
+[ext_resource type="Texture2D" uid="uid://cl2t62qsxe7sm" path="res://Assets/textures/coast_land_rocks_01_diff_4k.png" id="1_uv8pq"]
+[ext_resource type="Texture2D" uid="uid://bypi86etsg7hi" path="res://Assets/textures/coast_land_rocks_01_nor_gl_4k.png" id="2_aqidg"]
+[ext_resource type="Texture2D" uid="uid://doeqqwcsje0f1" path="res://Assets/textures/coast_land_rocks_01_rough_4k.png" id="3_huu8n"]
+
+[resource]
+albedo_texture = ExtResource("1_uv8pq")
+metallic_specular = 0.0
+roughness_texture = ExtResource("3_huu8n")
+normal_enabled = true
+normal_texture = ExtResource("2_aqidg")
+uv1_scale = Vector3(0.1, 0.1, 0.1)
+uv1_triplanar = true
