@@ -39,6 +39,8 @@ class_name Player
 @export var UI_SCENE: PackedScene
 var UI = null
 
+var id = null
+
 var _speed: float
 var _rotation_input : float
 var _tilt_input : float
@@ -47,10 +49,13 @@ var _player_rotation : Vector3
 var _camera_rotation : Vector3
 var _is_crouching = false
 
+var air_jump: int = 1
+var input_dir = Vector3.ZERO
+var direction = Vector3.ZERO
+
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-var id = null
 func _enter_tree():
 	set_multiplayer_authority(str(name).to_int())
 	id = str(name).to_int()
@@ -96,7 +101,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_rotation_input = -event.relative.x * MOUSE_SENSITIVITY
 			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
-
+	
+	# this is a menu in the top left corner
 	elif event.is_action_pressed('debug'):
 		UI.toggle_debug()
 
@@ -183,11 +189,6 @@ func _update_camera(delta):
 
 	_rotation_input = 0.0
 	_tilt_input = 0.0
-
-
-var air_jump: int = 1
-var input_dir = Vector3.ZERO
-var direction = Vector3.ZERO
 
 
 # what if, you could shanlnge 'em, shlinge 'em?
