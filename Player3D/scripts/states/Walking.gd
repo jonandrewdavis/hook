@@ -1,3 +1,5 @@
+class_name Walking
+
 extends State
 
 func enter():
@@ -8,5 +10,5 @@ func update(_delta):
 	if player.velocity.length() == 0.0:
 		transition.emit("Idle")
 
-func _input(event):
+func _input(_event):
 	pass

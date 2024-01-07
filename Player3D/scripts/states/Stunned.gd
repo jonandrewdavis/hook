@@ -1,3 +1,5 @@
+class_name Stunned
+
 extends State
 
 

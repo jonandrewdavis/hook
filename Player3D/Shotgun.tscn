@@ -129,7 +129,7 @@ gravity = Vector3(0, 0, 0)
 script = ExtResource("1_tkppc")
 
 [node name="RayCast3D" type="RayCast3D" parent="."]
-target_position = Vector3(0, 0, -1)
+target_position = Vector3(0, 0, -10)
 
 [node name="ShotgunMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.864433, -0.502748, 0, 0.502748, 0.864433, 0, -0.0784973, 0.0514089)

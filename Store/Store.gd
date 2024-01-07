@@ -15,6 +15,11 @@ var upnp_host_ip = ''
 # NOTE: players[id] for access, where `id` is an int
 # NOTE: Could name the store "state", but I think we'll keep this name for now, 
 # even if a little redundant. 
+
+# 		"id": multiplayer.get_unique_id(),
+#		"nickname": nickname.text,
+#		"color": color_button.color,
+
 var store = {
 	"players" : {},
 	"score": 0
@@ -39,6 +44,15 @@ func set_state(key, value):
 			store.players.erase(value)
 		else:
 			store[key] = value
+		set_store.rpc(store)
+		
+@rpc("any_peer", "call_local", "reliable")
+func set_player(id, key, _value):
+	if multiplayer.is_server():
+		if key == 'kills' or key == 'deaths':
+			store.players[id][key] += 1
+		else:
+			store.players[id][key] = _value
 		set_store.rpc(store)
 
 # Only the server can propagate updates, as it always has the latest. 

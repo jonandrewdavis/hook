@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://c5io863yqwynd"]
+[gd_scene load_steps=14 format=3 uid="uid://c5io863yqwynd"]
 
 [ext_resource type="Script" path="res://Player3D/Hook.gd" id="1_pc0vx"]
 [ext_resource type="ArrayMesh" uid="uid://bl60vtxt3ouch" path="res://Assets/models/R_hand_Balled.obj" id="2_0wwig"]
@@ -10,9 +10,8 @@
 [ext_resource type="Shader" path="res://Assets/materials/outlineV2.gdshader" id="6_y2x25"]
 [ext_resource type="Texture2D" uid="uid://v6trsbpsq5fa" path="res://Assets/textures/worn_rock_natural_01_rough_4k.png" id="7_rqmbb"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_6o1t3"]
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_2g88p"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_6r2nm"]
+radius = 0.4
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_skrpr"]
 render_priority = 0
@@ -49,28 +48,28 @@ uv1_triplanar_sharpness = 2.5
 grow_amount = 3.43
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_w3nmj"]
-properties/0/path = NodePath("HookMesh:rotation")
+properties/0/path = NodePath("HookMesh/Claw:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath("HookMesh/Claw:position")
+properties/1/path = NodePath("HookMesh/Claw:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath("HookMesh/Claw:rotation")
+properties/2/path = NodePath("HookMesh/Claw:top_level")
 properties/2/spawn = true
-properties/2/replication_mode = 1
-properties/3/path = NodePath("HookMesh/Claw:top_level")
+properties/2/replication_mode = 2
+properties/3/path = NodePath("HookMesh/Claw/Fist:visible")
 properties/3/spawn = true
-properties/3/replication_mode = 2
-properties/4/path = NodePath("HookMesh/Claw/Fist:visible")
+properties/3/replication_mode = 1
+properties/4/path = NodePath("HookMesh/Claw/Open:visible")
 properties/4/spawn = true
 properties/4/replication_mode = 1
-properties/5/path = NodePath("HookMesh/Claw/Open:visible")
+properties/5/path = NodePath("HookMesh/Claw:visible")
 properties/5/spawn = true
 properties/5/replication_mode = 1
-properties/6/path = NodePath("HookMesh/Claw:visible")
+properties/6/path = NodePath("HookMesh/Claw:scale")
 properties/6/spawn = true
 properties/6/replication_mode = 1
-properties/7/path = NodePath("HookMesh/Claw:scale")
+properties/7/path = NodePath("HookMesh:rotation")
 properties/7/spawn = true
 properties/7/replication_mode = 1
 properties/8/path = NodePath("HookMesh/ArmRemote:scale")
@@ -92,7 +91,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.236113)
 
 [node name="FistModel" type="MeshInstance3D" parent="HookMesh/Claw/Fist"]
-transform = Transform3D(-0.1, 0, 8.74228e-09, 0, 0.1, 0, -8.74228e-09, 0, -0.1, 0, 0, 0)
+transform = Transform3D(-0.1, 0, 1.50996e-08, 0, 0.1, 0, -1.50996e-08, 0, -0.1, 0, 0, 0)
 material_override = ExtResource("4_ujwwm")
 cast_shadow = 0
 mesh = ExtResource("2_0wwig")
@@ -108,13 +107,10 @@ cast_shadow = 0
 mesh = ExtResource("4_xhkb3")
 
 [node name="ClawArea" type="Area3D" parent="HookMesh/Claw"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.176656, -0.15521)
 
 [node name="ClawCollision" type="CollisionShape3D" parent="HookMesh/Claw/ClawArea"]
-shape = SubResource("SphereShape3D_6o1t3")
-
-[node name="COLL_DISABLED" type="CollisionShape3D" parent="HookMesh/Claw"]
-shape = SubResource("SphereShape3D_2g88p")
-disabled = true
+shape = SubResource("SphereShape3D_6r2nm")
 
 [node name="Arm" type="MeshInstance3D" parent="HookMesh"]
 visible = false
@@ -143,13 +139,19 @@ one_shot = true
 [node name="Lookpoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -50)
 
+[node name="BlinkTimer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="Cooldown" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_w3nmj")
-
-[node name="SeekingTimer" type="Timer" parent="."]
-wait_time = 0.25
 
 [connection signal="body_entered" from="HookMesh/Claw/ClawArea" to="." method="_on_claw_area_body_entered"]
 [connection signal="timeout" from="GrappleTimer" to="." method="_on_grapple_timer_timeout"]
 [connection signal="timeout" from="HookTimer" to="." method="_on_hook_timer_timeout"]
-[connection signal="timeout" from="SeekingTimer" to="." method="_on_seeking_timer_timeout"]
+[connection signal="timeout" from="BlinkTimer" to="." method="_on_blink_timer_timeout"]
+[connection signal="timeout" from="Cooldown" to="." method="_on_cooldown_timeout"]

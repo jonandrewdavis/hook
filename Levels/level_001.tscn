@@ -129,26 +129,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28473, 19.1307, 24.5266)
 [node name="Skull4" parent="." instance=ExtResource("11_olckj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6189, 20.6784, 19.6588)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
+[node name="SHELF1" type="StaticBody3D" parent="."]
 transform = Transform3D(-5, 0, -7.54979e-07, 0, 6, 0, 7.54979e-07, 0, -5, 0, 0, 52.1248)
 
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="StaticBody3D"]
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="SHELF1"]
 material_override = ExtResource("2_2e565")
 mesh = ExtResource("5_saod2")
 skeleton = NodePath("../..")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SHELF1"]
 shape = SubResource("ConcavePolygonShape3D_o7kpr")
 
-[node name="StaticBody3D2" type="StaticBody3D" parent="."]
+[node name="SHELF2" type="StaticBody3D" parent="."]
 transform = Transform3D(5, 0, 0, 0, 6, 0, 0, 0, 5, 0, 0, -4.03532)
+collision_layer = 9
+collision_mask = 9
 
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="StaticBody3D2"]
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="SHELF2"]
 material_override = ExtResource("2_2e565")
 mesh = ExtResource("5_saod2")
 skeleton = NodePath("../..")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SHELF2"]
 shape = SubResource("ConcavePolygonShape3D_o7kpr")
 
 [node name="LavaMesh" type="MeshInstance3D" parent="."]

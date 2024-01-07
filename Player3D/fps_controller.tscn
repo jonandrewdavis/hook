@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://c3ffql15mo0aj"]
+[gd_scene load_steps=21 format=3 uid="uid://c3ffql15mo0aj"]
 
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
 [ext_resource type="PackedScene" uid="uid://b8njiqmewnmd7" path="res://UI/UI.tscn" id="2_vsmbj"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://c5io863yqwynd" path="res://Player3D/Hook.tscn" id="10_tnoo1"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Busy.gd" id="11_b5bcb"]
 [ext_resource type="PackedScene" uid="uid://blvg7sk4onp3u" path="res://Player3D/mage.tscn" id="11_elbq1"]
+[ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="12_ojq38"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1x53u"]
 properties/0/path = NodePath(".:position")
@@ -26,31 +27,19 @@ properties/3/path = NodePath("AnimationPlayer:current_animation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u6tj1"]
-radius = 0.4
-height = 1.5
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ynut6"]
+radius = 0.2
+height = 1.4
 
 [sub_resource type="Animation" id="Animation_1ul0x"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("CollisionShape3D:position")
+tracks/0/path = NodePath("CameraController:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 1, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("CameraController:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
@@ -62,22 +51,10 @@ resource_name = "crouch"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("CollisionShape3D:position")
+tracks/0/path = NodePath("CameraController:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(0, 1, 0), Vector3(0, 0.75, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("CameraController:position")
-tracks/1/interp = 2
-tracks/1/loop_wrap = true
-tracks/1/keys = {
 "times": PackedFloat32Array(0, 1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
@@ -90,28 +67,38 @@ _data = {
 "crouch": SubResource("Animation_cgbks")
 }
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_m887i"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_41g6y"]
+size = Vector3(0.5, 0.6, 0.5)
 
-[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER", "CROUCH_SHAPECAST")]
+[sub_resource type="SphereShape3D" id="SphereShape3D_h0tgl"]
+radius = 0.35
+
+[sub_resource type="SphereMesh" id="SphereMesh_hlhaw"]
+material = ExtResource("12_ojq38")
+radius = 0.3
+height = 0.6
+
+[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER")]
 script = ExtResource("1_pgc1p")
 MOUSE_SENSITIVITY = 0.25
 CAMERA_CONTROLLER = NodePath("CameraController/Camera3D")
 ANIMATIONPLAYER = NodePath("AnimationPlayer")
-CROUCH_SHAPECAST = NodePath("ShapeCast3D")
 UI_SCENE = ExtResource("2_vsmbj")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_1x53u")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_u6tj1")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.668644, 0)
+visible = false
+shape = SubResource("CapsuleShape3D_ynut6")
 
 [node name="CameraController" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraController"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.483511, 0)
+visible = false
 
 [node name="Hook" parent="CameraController/Camera3D" instance=ExtResource("10_tnoo1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.289769, -0.25861, -0.15212)
@@ -123,12 +110,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.299111, -0.271907, -0.19168
 libraries = {
 "": SubResource("AnimationLibrary_nef7h")
 }
-
-[node name="ShapeCast3D" type="ShapeCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0.125)
-shape = SubResource("SphereShape3D_m887i")
-target_position = Vector3(0, 0, 0)
-debug_shape_custom_color = Color(0.603922, 0, 1, 1)
 
 [node name="PlayerStateMachine" type="Node" parent="." node_paths=PackedStringArray("CURRENT_STATE")]
 script = ExtResource("6_40av4")
@@ -155,3 +136,40 @@ transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 
 [node name="HookInputTimer" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="HookStunnedTimer" type="Timer" parent="."]
+wait_time = 0.15
+one_shot = true
+
+[node name="HookRecharge" type="Timer" parent="."]
+wait_time = 4.5
+autostart = true
+
+[node name="HurtboxBody" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.409879, 0)
+collision_layer = 2
+collision_mask = 0
+input_ray_pickable = false
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0185985, 0)
+shape = SubResource("BoxShape3D_41g6y")
+
+[node name="HurtboxHead" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+collision_layer = 2
+collision_mask = 2
+input_ray_pickable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0126297, 0)
+shape = SubResource("SphereShape3D_h0tgl")
+
+[node name="Debug Mesh" type="MeshInstance3D" parent="HurtboxHead"]
+visible = false
+mesh = SubResource("SphereMesh_hlhaw")
+
+[connection signal="timeout" from="HookRecharge" to="." method="_on_hook_recharge_timeout"]
+[connection signal="area_entered" from="HurtboxBody" to="." method="_on_hurtbox_body_area_entered"]
+[connection signal="area_entered" from="HurtboxHead" to="." method="_on_hurtbox_head_area_entered"]

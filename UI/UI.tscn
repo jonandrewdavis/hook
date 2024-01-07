@@ -1,7 +1,59 @@
-[gd_scene load_steps=3 format=3 uid="uid://b8njiqmewnmd7"]
+[gd_scene load_steps=11 format=3 uid="uid://b8njiqmewnmd7"]
 
 [ext_resource type="Script" path="res://UI/UI.gd" id="1_eg6yc"]
 [ext_resource type="Script" path="res://UI/reticle.gd" id="2_twk2u"]
+[ext_resource type="Texture2D" uid="uid://bidq6qyrhxbld" path="res://Assets/Skeleton-Hand-PNG-Transparent.png" id="3_kxe1s"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ibchv"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4jvxo"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="Gradient" id="Gradient_ap35m"]
+offsets = PackedFloat32Array(0.636784, 0.642329)
+colors = PackedColorArray(1, 0.741176, 0, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_dpjap"]
+gradient = SubResource("Gradient_ap35m")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prv0v"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y5mg5"]
+bg_color = Color(0.890196, 0.890196, 0.890196, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0, 0, 0, 1)
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2xrpu"]
+bg_color = Color(1, 0, 0, 1)
 
 [node name="UIRoot" type="Node"]
 script = ExtResource("1_eg6yc")
@@ -37,7 +89,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Settings Menu"
 
-[node name="Label2" type="Label" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer"]
+[node name="PlayersLabel" type="Label" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Players List:"
 
@@ -52,6 +104,11 @@ text = "Fireball count (\"score\"):"
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "0"
+
+[node name="Hooks" type="Label" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Hooks
+"
 
 [node name="HostIPContainer" type="HBoxContainer" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer"]
 visible = false
@@ -108,5 +165,82 @@ width = 2.0
 [node name="Left" type="Line2D" parent="CanvasLayer/HUD/Reticle"]
 points = PackedVector2Array(-8, 0, -15, 0)
 width = 2.0
+
+[node name="BottomLeft" type="PanelContainer" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -66.0
+offset_right = 123.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ibchv")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HUD/BottomLeft"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HUD/BottomLeft/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="PanelCircle" type="Panel" parent="CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(140, 140)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_4jvxo")
+
+[node name="HookRechargeProgress" type="TextureProgressBar" parent="CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle"]
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 140.0
+fill_mode = 4
+nine_patch_stretch = true
+texture_progress = SubResource("GradientTexture2D_dpjap")
+
+[node name="HookSprite" type="Sprite2D" parent="CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle"]
+position = Vector2(65, 70)
+scale = Vector2(0.12, 0.12)
+texture = ExtResource("3_kxe1s")
+
+[node name="Panel" type="Panel" parent="CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle"]
+custom_minimum_size = Vector2(70, 70)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -59.0
+offset_right = 20.0
+offset_bottom = 11.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_prv0v")
+
+[node name="HookCount" type="Label" parent="CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle/Panel"]
+layout_mode = 2
+offset_left = 25.0
+offset_top = 8.0
+offset_right = 68.0
+offset_bottom = 61.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 38
+text = "0"
+
+[node name="HealthBar" type="ProgressBar" parent="CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_y5mg5")
+theme_override_styles/fill = SubResource("StyleBoxFlat_2xrpu")
+value = 30.0
+show_percentage = false
 
 [connection signal="toggled" from="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer/HostIPButton" to="." method="_on_host_ip_button_toggled"]

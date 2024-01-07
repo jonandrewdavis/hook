@@ -1,5 +1,6 @@
-extends State
+class_name Busy
 
+extends State
 
 func enter():
 	player.set_movement_speed("crouching")

@@ -18,7 +18,6 @@ func _ready():
 				child.player = player
 			else:
 				push_warning('state machine not compatible w/ child node')	
-			
 			CURRENT_STATE.enter()
 	
 func _process(delta):
@@ -37,8 +36,7 @@ func on_child_transition(new_state_name: StringName) -> void:
 				new_state.enter()
 				CURRENT_STATE = new_state
 			else:
-				print(new_state)
-				push_warning('State does not exist')
+				push_warning('State does not exist: ', new_state)
 				
 func set_state(state):
 	# userlabel.text = state

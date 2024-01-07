@@ -73,6 +73,9 @@ func start_game_host():
 		"id": multiplayer.get_unique_id(),
 		"nickname": nickname.text,
 		"color": color_button.color,
+		"kills": 0,
+		"deaths": 0, 
+		"team": 0
 	}
 	change_level(load("res://Levels/level_001.tscn"))
 
@@ -83,6 +86,9 @@ func start_game_client():
 		"id": multiplayer.get_unique_id(),
 		"nickname": nickname.text,
 		"color": color_button.color,
+		"kills": 0,
+		"deaths": 0,
+		"team": 0
 	}
 
 func change_level(scene: PackedScene):

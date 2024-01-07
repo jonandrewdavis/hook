@@ -99,3 +99,5 @@ func cast_fireball(player_mouse_position):
 		fireball.direction = (player_mouse_position - global_position).normalized()
 		# I learned the hard way only the server should add things the MultiplayerSpawner will handle the rest.
 		get_parent().add_child(fireball, true)
+
+# Dont work here, it's 2d	

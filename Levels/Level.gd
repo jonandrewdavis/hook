@@ -3,6 +3,8 @@ extends Node3D
 
 @onready var LAVA_AREA = $LavaMesh/LavaArea
 
+func _ready():
+	pass
 
 
 func _on_lava_area_body_entered(body):
