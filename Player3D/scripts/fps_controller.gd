@@ -39,6 +39,8 @@ class_name Player
 @export var UI_SCENE: PackedScene
 var UI = null
 
+var id = null
+
 var _speed: float
 var _rotation_input : float
 var _tilt_input : float
@@ -47,10 +49,13 @@ var _player_rotation : Vector3
 var _camera_rotation : Vector3
 var _is_crouching = false
 
+var air_jump: int = 1
+var input_dir = Vector3.ZERO
+var direction = Vector3.ZERO
+
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-var id = null
 func _enter_tree():
 	set_multiplayer_authority(str(name).to_int())
 	id = str(name).to_int()
@@ -96,7 +101,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_rotation_input = -event.relative.x * MOUSE_SENSITIVITY
 			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
-
+	
+	# this is a menu in the top left corner
 	elif event.is_action_pressed('debug'):
 		UI.toggle_debug()
 
@@ -136,10 +142,10 @@ func get_input():
 		UI.refresh()
 
 	if Input.is_action_just_pressed('primary'):
-		shoot()
+		print('shoot1')
 
 	if Input.is_action_just_pressed('secondary'):
-		shoot_burst()
+		print('shoot2')
 
 	if Input.is_action_just_pressed('sprint'):
 		FSM.set_state('Sprint')
@@ -183,11 +189,6 @@ func _update_camera(delta):
 
 	_rotation_input = 0.0
 	_tilt_input = 0.0
-
-
-var air_jump: int = 1
-var input_dir = Vector3.ZERO
-var direction = Vector3.ZERO
 
 
 # what if, you could shanlnge 'em, shlinge 'em?
@@ -313,15 +314,15 @@ func respawn():
 	var new_spawn = Vector3(rndX, random_position.y, rndZ)
 	position = new_spawn
 
-@onready var gun = $CameraController/Camera3D/Shotgun
-func shoot():
+
+func shoot_old():
 	# if gun.animation_player.is_playing() == false:
-	gun.animation_player.play('shoot')
+	# gun.animation_player.play('shoot')
 	var newVal = Store.store.score + 1
 	Store.set_state.rpc('score', newVal)
 	# Because player input isn't synced and spawn happens on the server
 	# we need to pass in the mouse position of the player who casted it.
-	spawn_bullet.rpc(gun.barrel.global_position, gun.barrel.global_transform.basis, false)
+	# spawn_bullet.rpc(gun.barrel.global_position, gun.barrel.global_transform.basis, false)
 
 # TODO: Bullet "pool"
 var bullet_scene = load("res://Projectiles/Shell.tscn")
@@ -343,24 +344,23 @@ func spawn_bullet(pos, rot, is_burst):
 var spread_min = 0.008
 var spread = 0.09
 func shoot_burst():
-	if gun.animation_player.is_playing() == false:
-		gun.animation_player.play('shoot')
-		var newVal = Store.store.score + 1
-		Store.set_state.rpc('score', newVal)
-		# Because player input isn't synced and spawn happens on the server
-		# we need to pass in the mouse position of the player who casted it.
-		randomize()
-		for n in SHOTGUN_SHELL_COUNT:
-			var random_negative = []
-			# randomize rotation in  3 directions
-			for n2 in 3:
-				if randi()%2 == 1:
-					random_negative.append(1)
-				else:
-					random_negative.append(-1)
-					
-			var random_rotation = Basis.from_euler(Vector3(randf_range(spread_min, spread) * random_negative[0], randf_range(spread_min, spread) * random_negative[1], randf_range(spread_min, spread) * random_negative[2]))
-			spawn_bullet.rpc(gun.barrel.global_position, gun.barrel.global_transform.basis * random_rotation, true)
+	pass
+	#var newVal = Store.store.score + 1
+	#Store.set_state.rpc('score', newVal)
+	## Because player input isn't synced and spawn happens on the server
+	## we need to pass in the mouse position of the player who casted it.
+	#randomize()
+	#for n in SHOTGUN_SHELL_COUNT:
+		#var random_negative = []
+		## randomize rotation in  3 directions
+		#for n2 in 3:
+			#if randi()%2 == 1:
+				#random_negative.append(1)
+			#else:
+				#random_negative.append(-1)
+				#
+		#var random_rotation = Basis.from_euler(Vector3(randf_range(spread_min, spread) * random_negative[0], randf_range(spread_min, spread) * random_negative[1], randf_range(spread_min, spread) * random_negative[2]))
+		#spawn_bullet.rpc(gun.barrel.global_position, gun.barrel.global_transform.basis * random_rotation, true)
 
 # Trying to make the hooked target look at the player
 # I don't understand basis / Eulers and shit, so this is brain breaking, but, I figured out since y is always 1, that this 
@@ -394,9 +394,3 @@ func _on_hook_recharge_timeout():
 		UI.refresh()
 	else:
 		$HookRecharge.stop()
-
-var noth = 0
-func _on_hurtbox_head_area_entered(area):
-	noth += 1
-	print('area: ', noth)
-	pass # Replace with function body.
