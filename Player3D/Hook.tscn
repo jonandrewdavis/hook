@@ -4,7 +4,7 @@
 [ext_resource type="ArrayMesh" uid="uid://bl60vtxt3ouch" path="res://Assets/models/R_hand_Balled.obj" id="2_0wwig"]
 [ext_resource type="ArrayMesh" uid="uid://cagmoa5wvd4ww" path="res://Assets/models/Bone_Arm.obj" id="2_uxj8n"]
 [ext_resource type="Material" uid="uid://c31rm62vcg58u" path="res://Assets/materials/bone.tres" id="4_ujwwm"]
-[ext_resource type="ArrayMesh" uid="uid://dpuawkybdw6n3" path="res://Assets/models/R_hand_Open.obj" id="4_xhkb3"]
+[ext_resource type="ArrayMesh" uid="uid://dj8yjus8t3kbv" path="res://Assets/models/R_hand_Open.obj" id="4_xhkb3"]
 [ext_resource type="Texture2D" uid="uid://dwayvejisylhv" path="res://Assets/textures/worn_rock_natural_01_diff_WHITE.png" id="5_t5brc"]
 [ext_resource type="Texture2D" uid="uid://bfnm8g0037md1" path="res://Assets/textures/worn_rock_natural_01_nor_gl_4k.png" id="6_a106h"]
 [ext_resource type="Shader" path="res://Assets/materials/outlineV2.gdshader" id="6_y2x25"]

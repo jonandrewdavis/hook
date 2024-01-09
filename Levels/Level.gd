@@ -7,7 +7,6 @@ func _ready():
 	pass
 
 func _on_lava_area_body_entered(body):
-	if body.is_in_group("players"):
+	if body.is_in_group("Players"):
 		body.respawn()
-		body.gun.speed_up()
 		pass # Replace with function body.

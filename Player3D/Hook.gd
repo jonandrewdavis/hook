@@ -143,9 +143,10 @@ func pulling_enemy():
 	if pulled_enemy.transform.origin.distance_to(player.transform.origin) < 3:
 		cancel_hook()
 
-func move_in_fly(delta):
-	var direction = update_direction()
-	var player_camera_dir = Vector3(-player.global_transform.basis.z.normalized().x, -player.CAMERA_CONTROLLER.transform.basis.z.normalized().y, -player.global_transform.basis.z.normalized().z) 
+func move_in_fly(_delta):
+	pass
+	#var direction = update_direction()
+	#var player_camera_dir = Vector3(-player.global_transform.basis.z.normalized().x, -player.CAMERA_CONTROLLER.transform.basis.z.normalized().y, -player.global_transform.basis.z.normalized().z) 
 	# player.velocity = player_camera_dir * player._speed * 1.2
 	# player.move_and_slide()
 
@@ -232,7 +233,7 @@ func reset():
 	CLAW.top_level = false
 	CLAW.position = Vector3.ZERO
 	CLAW.look_at(LOOKPOINT.global_position)
-	CLAW.set_scale(Vector3(0.3, 0.3, 0.3))
+	CLAW.set_scale(Vector3(0.33, 0.33, 0.33))
 	if player.HOOK_CHARGES != null and player.HOOK_CHARGES > 0: unhide_hook()
 	else: hide_hook()
 	
@@ -284,16 +285,16 @@ func _on_claw_area_body_entered(body):
 	if body == null:
 		return
 		
-	if body.is_in_group("players") and body.get_multiplayer_authority() != get_multiplayer_authority():
+	if body.is_in_group("Players") and body.get_multiplayer_authority() != get_multiplayer_authority():
 		hook_player(body)
 		return
 	
 	# prevent self collisions
-	if body.is_in_group("players"):
+	if body.is_in_group("Players"):
 		return
 		
 	# TODO: Only allow collisions with a type of surface or layer, remove above check
-	if body != null and not body.is_in_group("terrain"):
+	if body != null and not body.is_in_group("Terrain"):
 		hook_terrain(body)
 		return
 
