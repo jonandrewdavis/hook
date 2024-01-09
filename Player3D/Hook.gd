@@ -265,6 +265,10 @@ func cancel_hook():
 	reset()
 	is_on_cooldown = true
 	$Cooldown.start()
+	
+func interrupt_hook():
+	curr = STATE.IDLE
+	hide()
 
 func _on_hook_timer_timeout():
 	# TODO: Explode, then cancel

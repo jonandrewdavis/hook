@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dxlkgbr1p580"]
 
-[ext_resource type="Script" path="res://Player_Controller/scripts/Weapon_State_Machine/bullet.gd" id="1_l4wtt"]
+[ext_resource type="Script" path="res://Weapons/bullet.gd" id="1_egd1t"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bix2d"]
 radius = 0.099605
@@ -64,7 +64,7 @@ gravity_scale = 0.1
 continuous_cd = true
 max_contacts_reported = 5
 contact_monitor = true
-script = ExtResource("1_l4wtt")
+script = ExtResource("1_egd1t")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
@@ -76,7 +76,7 @@ mesh = SubResource("ArrayMesh_sqgwv")
 skeleton = NodePath("")
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 10.0
+wait_time = 5.0
 one_shot = true
 autostart = true
 

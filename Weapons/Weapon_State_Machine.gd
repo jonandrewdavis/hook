@@ -1,5 +1,7 @@
 extends Node3D
 
+class_name WeaponsManager
+
 signal Weapon_Changed
 signal Update_Ammo
 signal Update_WeaponStack
@@ -13,6 +15,8 @@ signal Connect_Weapon_To_HUD
 @onready var Debug_Bullet = preload("res://Weapons/Spawnable_Objects/hit_debug.tscn")
 @onready var WORLD = get_tree().get_root().get_node('Main').get_node('World')
 @onready var PLAYER: Player = get_parent().get_parent().get_parent() 
+
+# TODO: Refactor to use no proper case...
 
 var Melee_Shake:= Vector3(0,0,2.5)
 var Melee_Shake_Magnetude:= Vector4(1,1,1,1)
@@ -46,6 +50,9 @@ func _ready():
 func _input(event):
 	if not is_multiplayer_authority():
 		return
+	if ['Dead', 'Stunned', 'Busy'].has(PLAYER.FSM.CURRENT_STATE.name):
+		return
+
 	if event.is_action_pressed("Weapon_Up"):
 		var GetRef = WeaponStack.find(Current_Weapon.Weapon_Name)
 		GetRef = min(GetRef+1,WeaponStack.size()-1)
@@ -92,7 +99,7 @@ func Initialize(_Start_Weapons: Array):
 	enter()
 
 func enter():
-	Animation_Player.queue(Current_Weapon.Pick_Up_Anim)
+	# Animation_Player.queue(Current_Weapon.Pick_Up_Anim)
 	Current_Weapon.Spray_Count_Update()
 	Weapon_Changed.emit(Current_Weapon.Weapon_Name)
 	Update_Ammo.emit([Current_Weapon.Current_Ammo, Current_Weapon.Reserve_Ammo])
@@ -244,7 +251,7 @@ func HitScanCollision(Collision: Array):
 
 func HitScanDamage(Collider, Direction, Position, Damage):
 	if Collider.is_in_group("Target") and Collider.has_method("Hit_Successful"):
-		Collider.Hit_Successful(Damage, Direction, Position)
+		Collider.Hit_Successful.rpc(Damage, Direction, Position, PLAYER.id)
 
 var bullet_scene = preload("res://Weapons/Spawnable_Objects/bullet.tscn")
 
@@ -272,6 +279,7 @@ func spawn_bullet(Direction, Damage, Position, Rotation):
 		Projectile.transform.basis = Rotation
 		Projectile.set_linear_velocity(Direction * Current_Weapon.Projectile_Velocity)
 		Projectile.Damage = Current_Weapon.Damage
+		Projectile.Source = multiplayer.get_remote_sender_id()
 		# I learned the hard way only the server should add things the MultiplayerSpawner will handle the rest.
 		WORLD.add_child(Projectile, true)
 

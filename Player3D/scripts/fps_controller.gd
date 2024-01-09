@@ -3,9 +3,8 @@ class_name Player
 
 @onready var HEALTH_DEFAULT = 100
 @onready var max_health = HEALTH_DEFAULT
-@onready var health = HEALTH_DEFAULT
+@export var health = 100
 @onready var last_damage_source = null
-
 
 @export var ACCELERATION_DEFAULT: float = 0.08
 @export var SPEED_DEFAULT: float = 4.0
@@ -24,11 +23,15 @@ class_name Player
 @export var ANIMATIONPLAYER : AnimationPlayer
 #@export var CROUCH_SHAPECAST: Node3D
 @export var TOGGLE_CROUCH: bool
+@export var DEATH_CAM: Camera3D
+
 
 @export var CAPTURE_SPEED = 21
 
+@onready var COLLISION: CollisionShape3D = $CollisionShape3D
 @onready var MODEL: Node3D = $character_skeleton_mage
 @onready var HOOK: Node3D = $CameraControllerHolder/PlayerCamera/Hook
+@onready var WEAPONS: WeaponsManager = $CameraControllerHolder/PlayerCamera/Weapons_Manager
 
 @onready var HOOK_STARTING_CHARGES = 2
 @onready var HOOK_CHARGES = HOOK_STARTING_CHARGES
@@ -53,6 +56,7 @@ var air_jump: int = 1
 var input_dir = Vector3.ZERO
 var direction = Vector3.ZERO
 var captured_by: Player
+
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -107,16 +111,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		UI.toggle_debug()
 
 func _process(_delta):
-	get_input()
+	if not ['Dead', 'Stunned', 'Busy'].has(FSM.CURRENT_STATE.name):
+		get_input()
 
 func get_input():
-	# TODO: Remove
 	if Input.is_action_pressed("exit"):
 		get_tree().quit()
-
-	# TODO: We could move all actions/inputs to the FSM, but this works for now
-	if FSM.CURRENT_STATE.name == 'Stunned' or FSM.CURRENT_STATE.name == 'Busy':
-		return
 
 	if Input.is_action_just_pressed("hook") and HOOK.is_on_cooldown == false and HOOK_CHARGES > 0:
 		HOOK_CHARGES -= 1
@@ -161,6 +161,7 @@ func get_input():
 			#uncrouch_check()
 
 func _update_camera(delta):
+
 	if FSM.CURRENT_STATE.name == 'Stunned':
 		look_at(captured_by.global_position)
 		CAMERA_CONTROLLER.transform.basis = Basis.from_euler(Vector3(transform.origin.direction_to(captured_by.global_position).y,0.0,0.0))
@@ -174,10 +175,13 @@ func _update_camera(delta):
 	
 	_player_rotation = Vector3(0.0,_mouse_rotation.y,0.0)
 	_camera_rotation = Vector3(_mouse_rotation.x,0.0,0.0)
-	
-	
-	CAMERA_CONTROLLER.transform.basis = Basis.from_euler(_camera_rotation)
-	global_transform.basis = Basis.from_euler(_player_rotation)
+
+	if FSM.CURRENT_STATE.name == 'Dead':
+		_mouse_rotation.x = clamp(_mouse_rotation.x, TILT_LOWER_LIMIT /3 , TILT_UPPER_LIMIT /3)
+		DEATH_CAM.transform.basis = Basis.from_euler(Vector3(_mouse_rotation.x, 0.0, 0.0))
+	else:
+		CAMERA_CONTROLLER.transform.basis = Basis.from_euler(_camera_rotation)
+		global_transform.basis = Basis.from_euler(_player_rotation)
 	
 	CAMERA_CONTROLLER.rotation.z = 0.0
 
@@ -188,8 +192,12 @@ func _update_camera(delta):
 # what if, you could shanlnge 'em, shlinge 'em?
 # TODO: Essentially "Record input from mouse rotation, input from the time of connection?
 func _physics_process(delta):
-	# TODO: Camera updates in _process might help jitter
 	_update_camera(delta)
+	if FSM.CURRENT_STATE.name == 'Dead':
+		velocity.x = move_toward(velocity.x, 0, DECELERATION)
+		velocity.z = move_toward(velocity.z, 0, DECELERATION)
+		move_and_slide()
+		return
 	# Stun the player, locking them in place briefly
 	if FSM.CURRENT_STATE.name == 'Stunned' and not $HookStunnedTimer.is_stopped():
 		velocity.x = 0
@@ -270,29 +278,38 @@ func set_movement_speed(state: String):
 		"crouching":
 			_speed = SPEED_CROUCH
 
-func take_damage(damage: int, source):
-	health -= damage
-	print('id, health', id, health)
+func take_damage(damage: int, _last_damage_source):
+	if FSM.CURRENT_STATE.name != 'Dead':
+		if health - damage <= 0:
+			die()
+		else:
+			health -= damage
 
-	if source:
-		last_damage_source = source
-	if health <= 0:
-		die()
-
+		if _last_damage_source:
+			last_damage_source = _last_damage_source
+		
+# TODO: Would be fun to replace with a ragdoll when you die
 func die():
-	# TODO: update logs / score
-	if multiplayer.is_server():
+	HOOK.cancel_hook()
+	ProjectSettings.get_setting("physics/3d/default_gravity")
+	FSM.set_state('Dead')
+	report_death()
+
+func report_death():
+	# Death occured, but no source to credit, we're done here
+	if last_damage_source == null:
+		Store.set_player.rpc(id, 'deaths', null)
+	else:
+		# We have a source, so credit the kill and report the death.
 		Store.set_player.rpc(last_damage_source, 'kills', null)
 		Store.set_player.rpc(id, 'deaths', null)
-	respawn()
-	
+
 func respawn():
 	health = HEALTH_DEFAULT
 	max_health = HEALTH_DEFAULT
 	last_damage_source = null
-	
 	HOOK.show()
-	HOOK.cancel_hook()
+	WEAPONS.Initialize(WEAPONS.Start_Weapons)
 	var level = get_parent().get_node('Level')
 	var spawns = []
 	for spawn_position in level.get_node('Spawns').get_children():
@@ -302,10 +319,10 @@ func respawn():
 	var random_position =  spawns[rng.randi_range(0, int(spawns.size() - 1))].global_position
 	var rndX = int(rng.randi_range(int(random_position.x) - 5, int(random_position.x) + 5))
 	var rndZ = int(rng.randi_range(int(random_position.z) - 5, int(random_position.z) + 5))
-	# y is up and down, so don't change that.
 
 	var new_spawn = Vector3(rndX, random_position.y, rndZ)
 	position = new_spawn
+	print(id, ', spawned')
 
 # Trying to make the hooked target look at the player
 # I don't understand basis / Eulers and shit, so this is brain breaking, but, I figured out since y is always 1, that this 
@@ -338,5 +355,17 @@ func _on_hook_recharge_timeout():
 	else:
 		$HookRecharge.stop()
 
-func Hit_Successful(Damage):
-	print('Hit Successful Called on Player:', get_multiplayer_authority(), Damage)
+@rpc("any_peer", "call_local")
+func Hit_Successful(Damage, _Direction, _Position, Source):
+	# print('Hit Successful Called on Player:', get_multiplayer_authority(), ': ', Damage, 'from: ', Source)
+	take_damage(Damage, Source) # source
+
+
+@rpc()
+func spawn_death_head(pos, rot):
+	if multiplayer.is_server():
+		var new_head = null
+		new_head.position = pos
+		new_head.transform.basis = rot
+		get_parent().add_child(new_head, true)
+		

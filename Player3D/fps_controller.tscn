@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://Player3D/scripts/states/Busy.gd" id="11_b5bcb"]
 [ext_resource type="PackedScene" uid="uid://blvg7sk4onp3u" path="res://Player3D/mage.tscn" id="11_elbq1"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="12_ojq38"]
+[ext_resource type="Script" path="res://Player3D/scripts/states/Dead.gd" id="15_ktyft"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ynut6"]
 radius = 0.2
@@ -33,6 +34,18 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath("CameraControllerHolder/PlayerCamera:rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+properties/4/path = NodePath(".:health")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath("CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models/AnimationPlayer:current_animation")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+properties/6/path = NodePath("CameraControllerHolder/PlayerCamera/Weapons_Manager:visible")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath(".:collision_layer")
+properties/7/spawn = true
+properties/7/replication_mode = 2
 
 [sub_resource type="Animation" id="Animation_1ul0x"]
 length = 0.001
@@ -70,11 +83,6 @@ _data = {
 "crouch": SubResource("Animation_cgbks")
 }
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pocta"]
-properties/0/path = NodePath("Weapons_Models/AnimationPlayer:current_animation")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_41g6y"]
 size = Vector3(0.5, 0.6, 0.5)
 
@@ -86,11 +94,12 @@ material = ExtResource("12_ojq38")
 radius = 0.3
 height = 0.6
 
-[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER") groups=["Players", "Target"]]
+[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER", "DEATH_CAM") groups=["Players", "Target"]]
 script = ExtResource("1_pgc1p")
 MOUSE_SENSITIVITY = 0.25
 CAMERA_CONTROLLER = NodePath("CameraControllerHolder/PlayerCamera")
 ANIMATIONPLAYER = NodePath("PlayerAnimationPlayer")
+DEATH_CAM = NodePath("DeathCam")
 UI_SCENE = ExtResource("2_vsmbj")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -128,9 +137,17 @@ Start_Weapons = Array[String](["blasterL"])
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.118642, -1.53014, -0.159279)
 
 [node name="blasterL" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
-transform = Transform3D(-1, 0, -2.53518e-06, 0, 1, 0, 2.53518e-06, 0, -1, 0.113247, 1.40658, -0.449017)
+transform = Transform3D(-1, 0, -2.53518e-06, 0, 1, 0, 2.53518e-06, 0, -1, 0.117, 1.16, -0.512)
 
 [node name="blasterA" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models/blasterL" instance=ExtResource("7_heg3t")]
+
+[node name="blasterN" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.193, 1.255, -0.643)
+
+[node name="blasterI" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+transform = Transform3D(-1, 0, -2.53518e-06, 0, 1, 0, 2.53518e-06, 0, -1, 0, 0, 0)
+
+[node name="blasterF" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
 libraries = {
@@ -139,21 +156,19 @@ libraries = {
 
 [node name="BulletPoint" type="Marker3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.413174, 0, -1.06053)
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager"]
-replication_config = SubResource("SceneReplicationConfig_pocta")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.386642, -0.255066, -0.436505)
 
 [node name="WeaponCast" type="RayCast3D" parent="CameraControllerHolder/PlayerCamera"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.373626, 0.0181916, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.390779, -0.265524, -0.368523)
+visible = false
 target_position = Vector3(0, 0, -10)
+
+[node name="DeathCam" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.958775, 0.284166, 0, -0.284166, 0.958775, 0, 2.05147, 1.8403)
 
 [node name="PlayerStateMachine" type="Node" parent="." node_paths=PackedStringArray("CURRENT_STATE")]
 script = ExtResource("6_40av4")
 CURRENT_STATE = NodePath("Idle")
-
-[node name="Idle" type="Node" parent="PlayerStateMachine"]
-script = ExtResource("7_sgjnc")
 
 [node name="Walking" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("9_cybia")
@@ -166,6 +181,12 @@ script = ExtResource("10_gogm3")
 
 [node name="Busy" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("11_b5bcb")
+
+[node name="Dead" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("15_ktyft")
+
+[node name="Idle" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("7_sgjnc")
 
 [node name="HookInputTimer" type="Timer" parent="."]
 wait_time = 0.5
@@ -190,6 +211,7 @@ monitoring = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxBody"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0185985, 0)
 shape = SubResource("BoxShape3D_41g6y")
+disabled = true
 
 [node name="HurtboxHead" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
@@ -201,6 +223,7 @@ input_ray_pickable = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxHead"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0126297, 0)
 shape = SubResource("SphereShape3D_h0tgl")
+disabled = true
 
 [node name="Debug Mesh" type="MeshInstance3D" parent="HurtboxHead"]
 visible = false

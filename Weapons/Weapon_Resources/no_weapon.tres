@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="Weapon_Resource" load_steps=2 format=3 uid="uid://djbglwygcm0be"]
+
+[ext_resource type="Script" path="res://Player_Controller/scripts/Weapon_State_Machine/weapon_resource.gd" id="1_wp7yw"]
+
+[resource]
+script = ExtResource("1_wp7yw")
+Weapon_Name = "weapon_animation/Empty"
+Pick_Up_Anim = "weapon_animation/Empty"
+Shoot_Anim = "weapon_animation/Empty"
+Reload_Anim = "weapon_animation/Empty"
+Change_Anim = "weapon_animation/Empty"
+Drop_Anim = "weapon_animation/Empty"
+Out_Of_Ammo_Anim = "weapon_animation/Empty"
+Melee_Anim = "weapon_animation/Empty"
+Current_Ammo = 0
+Reserve_Ammo = 0
+Magazine = 0
+Max_Ammo = 0
+Damage = 0
+Melee_Damage = 0.0
+AutoFire = false
+Fire_Range = 0
+Can_Be_Dropped = false
+Type = 0
+Projectile_Velocity = 0
+Spray_Type = "Spray_Random"
+Base_Magnetude = 0.1
+x_Magnetude = 0.3
+y_Magnetude = 0.3
+z_Magnetude = 0.3
