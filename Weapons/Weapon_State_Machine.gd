@@ -16,6 +16,8 @@ signal Connect_Weapon_To_HUD
 @onready var WORLD = get_tree().get_root().get_node('Main').get_node('World')
 @onready var PLAYER: Player = get_parent().get_parent().get_parent() 
 
+var BULLET_SCENE = preload("res://Weapons/Spawnable_Objects/bullet.tscn")
+
 # TODO: Refactor to use no proper case...
 
 var Melee_Shake:= Vector3(0,0,2.5)
@@ -250,11 +252,13 @@ func HitScanCollision(Collision: Array):
 				HitScanDamage(Bullet_Collision.collider, Bullet_Direction,Bullet_Collision.position,Current_Weapon.Damage)
 
 func HitScanDamage(Collider, Direction, Position, Damage):
-	if Collider.is_in_group("Target") and Collider.has_method("Hit_Successful"):
-		Collider.Hit_Successful.rpc(Damage, Direction, Position, PLAYER.id)
+	if Collider.is_in_group("Players") and Collider.has_method("Hit_Successful"):
+		print('melee:', Collider.id, PLAYER.id, Damage, Direction, Position)
+		Collider.Hit_Successful.rpc_id(Collider.id, PLAYER.id, Damage, Direction, Position)
 
-var bullet_scene = preload("res://Weapons/Spawnable_Objects/bullet.tscn")
-
+	# TODO: Hitscan for objects.
+	# if Collider.is_in_group("Target") and Collider.has_method("Hit_Successful"):
+		
 func LaunchProjectile(Point: Vector3):
 	var Direction = (Point - Bullet_Point.global_transform.origin).normalized()
 	#var Projectile = Current_Weapon.Projectile_To_Load.instantiate()
@@ -274,7 +278,7 @@ func LaunchProjectile(Point: Vector3):
 @rpc('any_peer', 'call_local')
 func spawn_bullet(Direction, Damage, Position, Rotation):
 	if multiplayer.is_server():
-		var Projectile = bullet_scene.instantiate()
+		var Projectile = BULLET_SCENE.instantiate()
 		Projectile.position = Position
 		Projectile.transform.basis = Rotation
 		Projectile.set_linear_velocity(Direction * Current_Weapon.Projectile_Velocity)

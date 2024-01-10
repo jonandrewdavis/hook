@@ -25,9 +25,9 @@ class_name Player
 @export var TOGGLE_CROUCH: bool
 @export var DEATH_CAM: Camera3D
 
-
 @export var CAPTURE_SPEED = 21
 
+@onready var LOOKPOINT = $LOOKPOINT 
 @onready var COLLISION: CollisionShape3D = $CollisionShape3D
 @onready var MODEL: Node3D = $character_skeleton_mage
 @onready var HOOK: Node3D = $CameraControllerHolder/PlayerCamera/Hook
@@ -57,6 +57,7 @@ var input_dir = Vector3.ZERO
 var direction = Vector3.ZERO
 var captured_by: Player
 
+var HEAD_SCENE = preload("res://Environment/Head.tscn")
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -161,7 +162,6 @@ func get_input():
 			#uncrouch_check()
 
 func _update_camera(delta):
-
 	if FSM.CURRENT_STATE.name == 'Stunned':
 		look_at(captured_by.global_position)
 		CAMERA_CONTROLLER.transform.basis = Basis.from_euler(Vector3(transform.origin.direction_to(captured_by.global_position).y,0.0,0.0))
@@ -258,7 +258,7 @@ func toggle_crouch():
 		crouching(false)
 	elif _is_crouching == false:
 		crouching(true)
-	
+
 func crouching(state: bool):
 	match state:
 		true:
@@ -278,7 +278,7 @@ func set_movement_speed(state: String):
 		"crouching":
 			_speed = SPEED_CROUCH
 
-func take_damage(damage: int, _last_damage_source):
+func take_damage(_last_damage_source, damage: int):
 	if FSM.CURRENT_STATE.name != 'Dead':
 		if health - damage <= 0:
 			die()
@@ -289,9 +289,10 @@ func take_damage(damage: int, _last_damage_source):
 			last_damage_source = _last_damage_source
 		
 # TODO: Would be fun to replace with a ragdoll when you die
-func die():
+func die():	
+	spawn_death_head.rpc(MODEL.HEAD.global_position, global_position.direction_to(LOOKPOINT.global_position))
 	HOOK.cancel_hook()
-	ProjectSettings.get_setting("physics/3d/default_gravity")
+	gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 	FSM.set_state('Dead')
 	report_death()
 
@@ -356,16 +357,15 @@ func _on_hook_recharge_timeout():
 		$HookRecharge.stop()
 
 @rpc("any_peer", "call_local")
-func Hit_Successful(Damage, _Direction, _Position, Source):
-	# print('Hit Successful Called on Player:', get_multiplayer_authority(), ': ', Damage, 'from: ', Source)
-	take_damage(Damage, Source) # source
+func Hit_Successful(Source, Damage, _Direction, _Position):
+	print('Hit Successful Called on Player:', get_multiplayer_authority(), ': ', Damage, 'from: ', Source)
+	take_damage(Source, Damage)
 
-
-@rpc()
+@rpc("call_local")
 func spawn_death_head(pos, rot):
 	if multiplayer.is_server():
-		var new_head = null
+		print('death head', pos, rot)
+		var new_head = HEAD_SCENE.instantiate()
 		new_head.position = pos
-		new_head.transform.basis = rot
+		new_head.set_linear_velocity(rot * 3.0)
 		get_parent().add_child(new_head, true)
-		

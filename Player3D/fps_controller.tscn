@@ -114,6 +114,9 @@ libraries = {
 "": SubResource("AnimationLibrary_nef7h")
 }
 
+[node name="LOOKPOINT" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.960845, -13.7791)
+
 [node name="character_skeleton_mage" parent="." instance=ExtResource("11_elbq1")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
 

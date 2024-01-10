@@ -9,4 +9,9 @@ func _ready():
 func _on_lava_area_body_entered(body):
 	if body.is_in_group("Players"):
 		body.respawn()
-		pass # Replace with function body.
+		return
+	
+	# todo: do skulls float in lava?
+	if body.is_in_group('Target'):
+		body.destroy()
+		return

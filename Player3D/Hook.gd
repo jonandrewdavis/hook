@@ -288,17 +288,22 @@ func hand():
 func _on_claw_area_body_entered(body):
 	if body == null:
 		return
-		
-	if body.is_in_group("Players") and body.get_multiplayer_authority() != get_multiplayer_authority():
-		hook_player(body)
+	
+	# All targets can be grabbed.
+	if body.is_in_group("Target"):
+		if body.is_in_group("Players") and body.get_multiplayer_authority() != get_multiplayer_authority():
+			hook_player(body)
+		else:
+			if get_multiplayer_authority() == 1 and body.is_in_group("Players"):
+				return
+			else:
+				hook_player(body)
 		return
 	
-	# prevent self collisions
-	if body.is_in_group("Players"):
-		return
-		
-	# TODO: Only allow collisions with a type of surface or layer, remove above check
-	if body != null and not body.is_in_group("Terrain"):
+	# TODO: Should move along/move & slide along the floor.
+	
+	# Slightly counterintuitively, Terrain "group" disallows terrain hooking.
+	if not body.is_in_group("Terrain"):
 		hook_terrain(body)
 		return
 

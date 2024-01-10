@@ -1,8 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://b1yleqbb8tc7x"]
+[gd_scene load_steps=15 format=3 uid="uid://b1yleqbb8tc7x"]
 
 [ext_resource type="Environment" uid="uid://fffgfrct4uva" path="res://Levels/WorldEnv1.tres" id="1_k70i5"]
 [ext_resource type="Script" path="res://Levels/Level.gd" id="1_olixi"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="3_y40gl"]
+[ext_resource type="Texture2D" uid="uid://d1t8o3lfiydbi" path="res://Assets/environment/Lava 03 FULL.png" id="5_8odel"]
+[ext_resource type="PackedScene" uid="uid://dmetymy4mdif6" path="res://Environment/Head.tscn" id="6_a17w5"]
 [ext_resource type="Material" uid="uid://dkyq31w10b4dv" path="res://Assets/materials/lava.tres" id="7_4xne7"]
 [ext_resource type="PackedScene" uid="uid://b6k7s2ewcuk42" path="res://Levels/skull.tscn" id="11_olckj"]
 
@@ -10,6 +12,15 @@
 material = ExtResource("3_y40gl")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dub36"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_haccd"]
+albedo_texture = ExtResource("5_8odel")
+uv1_scale = Vector3(0.08, 0.08, 0.08)
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_cngiy"]
+material = SubResource("StandardMaterial3D_haccd")
+size = Vector3(100, 2, 100)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_83pc0"]
 size = Vector3(100, 2, 100)
@@ -29,9 +40,9 @@ environment = ExtResource("1_k70i5")
 
 [node name="DirectionalLightSun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 22, 21)
-light_color = Color(0.945098, 0.219608, 0.0784314, 1)
-light_energy = 2.0
-light_indirect_energy = 3.872
+light_color = Color(1, 0.905882, 0.882353, 1)
+light_energy = 1.247
+light_indirect_energy = 2.327
 
 [node name="DirectionalLightLava" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -8.87097, 0)
@@ -133,14 +144,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28473, 19.1307, 24.5266)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6189, 20.6784, 19.6588)
 
 [node name="LavaMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -51.5116, 0)
+mesh = SubResource("BoxMesh_cngiy")
 
 [node name="LavaArea" type="Area3D" parent="LavaMesh"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LavaMesh/LavaArea"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -87.4551, 23.9365)
 shape = SubResource("BoxShape3D_83pc0")
 
-[node name="Platform" type="StaticBody3D" parent="."]
+[node name="Platform" type="StaticBody3D" parent="." groups=["Terrain"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.589872, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Platform"]
@@ -149,7 +161,7 @@ mesh = SubResource("BoxMesh_idjk1")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Platform"]
 shape = SubResource("BoxShape3D_1shxj")
 
-[node name="Platform2" type="StaticBody3D" parent="."]
+[node name="Platform2" type="StaticBody3D" parent="." groups=["Terrain"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.589872, 27.2037)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2"]
@@ -157,5 +169,8 @@ mesh = SubResource("BoxMesh_idjk1")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2"]
 shape = SubResource("BoxShape3D_1shxj")
+
+[node name="Head" parent="." instance=ExtResource("6_a17w5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1, 0)
 
 [connection signal="body_entered" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_entered"]
