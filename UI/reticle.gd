@@ -8,16 +8,14 @@ extends CenterContainer
 
 @export var root: Node
 
+func _enter_tree():
+	set_multiplayer_authority(str(name).to_int())
 
 func _process(_delta):
-	if not is_multiplayer_authority():
-		return
 	if root.player != null:
 		adjust_reticle_lines()
 
 func _draw():
-	if not is_multiplayer_authority():
-		return
 	draw_circle(Vector2(0,0), DOT_RADIUS,  DOT_COLOR)
 
 func adjust_reticle_lines():

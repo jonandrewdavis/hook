@@ -1,19 +1,20 @@
 extends CharacterBody3D
 class_name Player
 
+signal health_changed(new_value)
+
 @onready var HEALTH_DEFAULT = 100
 @onready var max_health = HEALTH_DEFAULT
-@onready var health = HEALTH_DEFAULT
+@export var health = 100
 @onready var last_damage_source = null
-
 
 @export var ACCELERATION_DEFAULT: float = 0.08
 @export var SPEED_DEFAULT: float = 4.0
 @export var SPEED_SPRINTING: float = 5.5
 @export var SPEED_CROUCH: float = 1.5
 
-@export var ACCELERATION : float = 0.08
-@export var DECELERATION : float = 0.25
+@export var ACCELERATION: float = 0.08
+@export var DECELERATION: float = 0.25
 
 @export var JUMP_VELOCITY : float = 5.5
 @export_range(5, 10) var CROUCH_SPEED: float = 7
@@ -24,20 +25,27 @@ class_name Player
 @export var ANIMATIONPLAYER : AnimationPlayer
 #@export var CROUCH_SHAPECAST: Node3D
 @export var TOGGLE_CROUCH: bool
+@export var DEATH_CAM: Camera3D
 
 @export var CAPTURE_SPEED = 21
 
+@onready var LOOKPOINT = $CameraControllerHolder/PlayerCamera/LOOKPOINT 
+@onready var COLLISION: CollisionShape3D = $CollisionShape3D
 @onready var MODEL: Node3D = $character_skeleton_mage
-@onready var HOOK: Node3D = $CameraController/Camera3D/Hook
+@onready var HOOK: Node3D = $CameraControllerHolder/PlayerCamera/Hook
+@onready var WEAPONS: WeaponsManager = $CameraControllerHolder/PlayerCamera/Weapons_Manager
 
 @onready var HOOK_STARTING_CHARGES = 2
 @onready var HOOK_CHARGES = HOOK_STARTING_CHARGES
 @onready var HOOK_RECHARGE_TIMER: Timer = $HookRecharge
 
 @onready var FSM: Node = $PlayerStateMachine
+@onready var WEAPON_CAST: RayCast3D = $CameraControllerHolder/PlayerCamera/WeaponCast
+@onready var PICK_MARKER: Marker3D = $CameraControllerHolder/PlayerCamera/PickMarker
 
 @export var UI_SCENE: PackedScene
 var UI = null
+var id = null
 
 var _speed: float
 var _rotation_input : float
@@ -47,34 +55,40 @@ var _player_rotation : Vector3
 var _camera_rotation : Vector3
 var _is_crouching = false
 
+var air_jump: int = 1
+var input_dir = Vector3.ZERO
+var direction = Vector3.ZERO
+var captured_by: Player
+
+var HEAD_SCENE = preload("res://Environment/Head.tscn")
+
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-var id = null
 func _enter_tree():
 	set_multiplayer_authority(str(name).to_int())
 	id = str(name).to_int()
 
 func _ready():
-	add_to_group("players") # lowercase or upper? I like lower for now.
 	set_process(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_physics_process(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_unhandled_input(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_input(get_multiplayer_authority() == multiplayer.get_unique_id())
-	
-	if is_multiplayer_authority():
+
+	respawn()
+
+	if (is_multiplayer_authority()):
 		ready_client_only_nodes()
-		respawn()
 	
 # TODO: Clean all thes up, it's really a mashup of responsibilities. 
 func ready_client_only_nodes():
-	#$Sample.modulate = 	Store.client_join_info.color.lightened(0.2)
+	#$Sample.modulate = Store.client_join_info.color.lightened(0.2)
 	#$Nickname.text = Store.client_join_info.nickname
 	_speed = SPEED_DEFAULT
 	
 	# add crouch check shapecast collision exception
 	#CROUCH_SHAPECAST.add_exception($".")
-	CAMERA_CONTROLLER.current = true	
+	CAMERA_CONTROLLER.current = true
 	# add some ui
 	var newUI = UI_SCENE.instantiate()
 	newUI.player = self
@@ -90,27 +104,24 @@ func _unhandled_input(event: InputEvent) -> void:
 			if $HookInputTimer.time_left > 0:
 				_rotation_input = -event.relative.x * MOUSE_SENSITIVITY /15
 				_tilt_input = -event.relative.y * MOUSE_SENSITIVITY / 15
-			else: 
+			else:
 				_rotation_input = -event.relative.x * MOUSE_SENSITIVITY / 30
 				_tilt_input = -event.relative.y * MOUSE_SENSITIVITY / 30
 		else:
 			_rotation_input = -event.relative.x * MOUSE_SENSITIVITY
 			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
-
+	
+	# this is a menu in the top left corner
 	elif event.is_action_pressed('debug'):
 		UI.toggle_debug()
 
 func _process(_delta):
-	get_input()
+	if not ['Dead', 'Stunned', 'Busy'].has(FSM.CURRENT_STATE.name):
+		get_input()
 
 func get_input():
-	# TODO: Remove
 	if Input.is_action_pressed("exit"):
-		get_tree().quit()		
-
-	# TODO: We could move all actions/inputs to the FSM, but this works for now
-	if FSM.CURRENT_STATE.name == 'Stunned' or FSM.CURRENT_STATE.name == 'Busy': 
-		return
+		get_tree().quit()
 
 	if Input.is_action_just_pressed("hook") and HOOK.is_on_cooldown == false and HOOK_CHARGES > 0:
 		HOOK_CHARGES -= 1
@@ -135,17 +146,22 @@ func get_input():
 		HOOK.cancel_hook()
 		UI.refresh()
 
-	if Input.is_action_just_pressed('primary'):
-		shoot()
-
-	if Input.is_action_just_pressed('secondary'):
-		shoot_burst()
-
 	if Input.is_action_just_pressed('sprint'):
 		FSM.set_state('Sprint')
 
 	if Input.is_action_just_released('sprint'):
 		FSM.set_state('Walking')
+		
+	if Input.is_action_just_pressed('interact'):
+		if picked_object == null:
+			pick_object()
+		elif picked_object != null:
+			drop_object()
+
+	if Input.is_action_just_pressed('Primary_Fire') and picked_object != null:
+		picked_object.launch.rpc()
+		picked_object = null
+
 
 	# CROUCH logic
 	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == true:
@@ -174,10 +190,13 @@ func _update_camera(delta):
 	
 	_player_rotation = Vector3(0.0,_mouse_rotation.y,0.0)
 	_camera_rotation = Vector3(_mouse_rotation.x,0.0,0.0)
-	
-	
-	CAMERA_CONTROLLER.transform.basis = Basis.from_euler(_camera_rotation)
-	global_transform.basis = Basis.from_euler(_player_rotation)
+
+	if FSM.CURRENT_STATE.name == 'Dead':
+		_mouse_rotation.x = clamp(_mouse_rotation.x, TILT_LOWER_LIMIT /3 , TILT_UPPER_LIMIT /3)
+		DEATH_CAM.transform.basis = Basis.from_euler(Vector3(_mouse_rotation.x, 0.0, 0.0))
+	else:
+		CAMERA_CONTROLLER.transform.basis = Basis.from_euler(_camera_rotation)
+		global_transform.basis = Basis.from_euler(_player_rotation)
 	
 	CAMERA_CONTROLLER.rotation.z = 0.0
 
@@ -185,16 +204,15 @@ func _update_camera(delta):
 	_tilt_input = 0.0
 
 
-var air_jump: int = 1
-var input_dir = Vector3.ZERO
-var direction = Vector3.ZERO
-
-
 # what if, you could shanlnge 'em, shlinge 'em?
 # TODO: Essentially "Record input from mouse rotation, input from the time of connection?
-func _physics_process(delta):	
-	# TODO: Camera updates in _process might help jitter
+func _physics_process(delta):
 	_update_camera(delta)
+	if FSM.CURRENT_STATE.name == 'Dead':
+		velocity.x = move_toward(velocity.x, 0, DECELERATION)
+		velocity.z = move_toward(velocity.z, 0, DECELERATION)
+		move_and_slide()
+		return
 	# Stun the player, locking them in place briefly
 	if FSM.CURRENT_STATE.name == 'Stunned' and not $HookStunnedTimer.is_stopped():
 		velocity.x = 0
@@ -255,10 +273,10 @@ func toggle_crouch():
 		crouching(false)
 	elif _is_crouching == false:
 		crouching(true)
-	
+
 func crouching(state: bool):
 	match state:
-		true: 
+		true:
 			ANIMATIONPLAYER.play("crouch", -1, CROUCH_SPEED)
 			_is_crouching = !_is_crouching
 			if is_on_floor():
@@ -275,30 +293,43 @@ func set_movement_speed(state: String):
 		"crouching":
 			_speed = SPEED_CROUCH
 
-func take_damage(damage: int, source):
-	health -= damage
-	print('id, health', id, health)
+func take_damage(_last_damage_source, damage: int):
+	if FSM.CURRENT_STATE.name != 'Dead':
+		if _last_damage_source:
+			last_damage_source = _last_damage_source
 
-	if source:
-		last_damage_source = source
-	if health <= 0:
-		die()
+		if health - damage <= 0:
+			die()
+			health_changed.emit(0)
+		else:
+			health -= damage
+			health_changed.emit(health)
 
-		
-func die():
-	# TODO: update logs / score
-	if multiplayer.is_server():
+func die():	
+	spawn_death_head.rpc(MODEL.HEAD.global_position, global_position.direction_to(LOOKPOINT.global_position))
+	HOOK.cancel_hook()
+	gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
+	FSM.set_state('Dead')
+	report_death()
+
+func report_death():
+	# Death occured, but no source to credit, we're done here
+	if last_damage_source == null:
+		Store.set_player.rpc(id, 'deaths', null)
+	else:
+		# We have a source, so credit the kill and report the death.
 		Store.set_player.rpc(last_damage_source, 'kills', null)
 		Store.set_player.rpc(id, 'deaths', null)
-	respawn()
-	
+
 func respawn():
 	health = HEALTH_DEFAULT
+	health_changed.emit(HEALTH_DEFAULT)
 	max_health = HEALTH_DEFAULT
 	last_damage_source = null
-	
+	HOOK.ready_hook()
 	HOOK.show()
-	HOOK.cancel_hook()
+	# does double reload first time, but necessary for respawning to reset.
+	# WEAPONS.Initialize(WEAPONS.Start_Weapons)
 	var level = get_parent().get_node('Level')
 	var spawns = []
 	for spawn_position in level.get_node('Spawns').get_children():
@@ -308,59 +339,10 @@ func respawn():
 	var random_position =  spawns[rng.randi_range(0, int(spawns.size() - 1))].global_position
 	var rndX = int(rng.randi_range(int(random_position.x) - 5, int(random_position.x) + 5))
 	var rndZ = int(rng.randi_range(int(random_position.z) - 5, int(random_position.z) + 5))
-	# y is up and down, so don't change that.
 
 	var new_spawn = Vector3(rndX, random_position.y, rndZ)
 	position = new_spawn
-
-@onready var gun = $CameraController/Camera3D/Shotgun
-func shoot():
-	# if gun.animation_player.is_playing() == false:
-	gun.animation_player.play('shoot')
-	var newVal = Store.store.score + 1
-	Store.set_state.rpc('score', newVal)
-	# Because player input isn't synced and spawn happens on the server
-	# we need to pass in the mouse position of the player who casted it.
-	spawn_bullet.rpc(gun.barrel.global_position, gun.barrel.global_transform.basis, false)
-
-# TODO: Bullet "pool"
-var bullet_scene = load("res://Projectiles/Shell.tscn")
-var bullet
-
-@rpc()
-func spawn_bullet(pos, rot, is_burst):
-	if multiplayer.is_server():
-		bullet = bullet_scene.instantiate()
-		bullet.position = pos
-		bullet.transform.basis = rot
-		bullet.is_burst = is_burst
-		bullet.source = multiplayer.get_remote_sender_id()
-		# I learned the hard way only the server should add things the MultiplayerSpawner will handle the rest.
-		get_parent().add_child(bullet, true)
-
-@onready var SHOTGUN_SHELL_COUNT = 5
-
-var spread_min = 0.008
-var spread = 0.09
-func shoot_burst():
-	if gun.animation_player.is_playing() == false:
-		gun.animation_player.play('shoot')
-		var newVal = Store.store.score + 1
-		Store.set_state.rpc('score', newVal)
-		# Because player input isn't synced and spawn happens on the server
-		# we need to pass in the mouse position of the player who casted it.
-		randomize()
-		for n in SHOTGUN_SHELL_COUNT:
-			var random_negative = []
-			# randomize rotation in  3 directions
-			for n2 in 3:
-				if randi()%2 == 1:
-					random_negative.append(1)
-				else:
-					random_negative.append(-1)
-					
-			var random_rotation = Basis.from_euler(Vector3(randf_range(spread_min, spread) * random_negative[0], randf_range(spread_min, spread) * random_negative[1], randf_range(spread_min, spread) * random_negative[2]))
-			spawn_bullet.rpc(gun.barrel.global_position, gun.barrel.global_transform.basis * random_rotation, true)
+	print(id, ', spawned')
 
 # Trying to make the hooked target look at the player
 # I don't understand basis / Eulers and shit, so this is brain breaking, but, I figured out since y is always 1, that this 
@@ -368,24 +350,23 @@ func shoot_burst():
 # X is left and right
 # Z is up and down looking
 # Ended up just doing look_at and capturing that transform.basis and mapping it back to mouse somehow (in stunned) behavior.
-var captured_by: Player
-
 @rpc('any_peer')
 func get_hooked():
+	HOOK.cancel_hook()
 	FSM.set_state('Stunned')
 	# STUN TIMER
 	$HookStunnedTimer.start(0.45)
 	var playerId = multiplayer.get_remote_sender_id()
 	captured_by = get_parent().get_node(str(playerId))
 	last_damage_source = playerId
-	captured_by.HOOK.hide_hook()
+	# captured_by.HOOK.hide_hook()
 
 func arrive_at_hook():
 	FSM.set_state("Busy")
 	await get_tree().create_timer(0.5).timeout
 	captured_by = null
 	FSM.set_state("Idle")
-	if last_damage_source != null: get_parent().get_node(str(last_damage_source)).HOOK.unhide_hook()
+	# if last_damage_source != null: get_parent().get_node(str(last_damage_source)).HOOK.unhide_hook()
 
 func _on_hook_recharge_timeout():
 	if HOOK_CHARGES < HOOK_STARTING_CHARGES:
@@ -395,8 +376,33 @@ func _on_hook_recharge_timeout():
 	else:
 		$HookRecharge.stop()
 
-var noth = 0
-func _on_hurtbox_head_area_entered(area):
-	noth += 1
-	print('area: ', noth)
-	pass # Replace with function body.
+@rpc("any_peer", "call_local")
+func Hit_Successful(Source, Damage, _Direction, _Position):
+	# print('Hit Successful Called on Player:', get_multiplayer_authority(), ': ', Damage, 'from: ', Source)
+	# This check effectively prevents self damage.
+	if Source != get_multiplayer_authority():  
+		take_damage(Source, Damage)
+
+@rpc("call_local")
+func spawn_death_head(pos, rot):
+	if multiplayer.is_server():
+		print('death head', pos, rot)
+		var new_head = HEAD_SCENE.instantiate()
+		new_head.position = pos
+		new_head.set_linear_velocity(rot * 3.0)
+		get_parent().add_child(new_head, true)
+
+var picked_object;
+
+func pick_object():
+	var collider = WEAPON_CAST.get_collider()
+	if collider != null and collider.is_in_group('Head'): 
+		picked_object = collider
+		picked_object.reserve.rpc()
+		
+				
+func drop_object():
+	if picked_object != null:
+		picked_object.reserve.rpc()
+		picked_object = null
+

@@ -22,7 +22,7 @@ _spawnable_scenes = PackedStringArray("res://Player3D/fps_controller.tscn")
 spawn_path = NodePath("../World")
 
 [node name="EnvironmentSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://Projectiles/Shell.tscn")
+_spawnable_scenes = PackedStringArray("res://Weapons/Spawnable_Objects/bullet.tscn", "res://Environment/Head.tscn")
 spawn_path = NodePath("../World")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]

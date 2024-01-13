@@ -17,13 +17,15 @@ extends Node
 @onready var HOOK_RECHARGE_PROGRESS = $CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle/HookRechargeProgress
 @onready var HOOK_SPRITE = $CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle/HookSprite
 
+@onready var HEALTH_BAR: ProgressBar = $CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/HealthBar
+
 var player: Player
+
 
 func _process(_delta):
 	if player.HOOK_CHARGES < player.HOOK_STARTING_CHARGES:
 		HOOK_RECHARGE_PROGRESS.value = player.HOOK_RECHARGE_TIMER.time_left * 100
 		
-
 		
 func _ready():
 	menu_ref.hide()
@@ -33,6 +35,13 @@ func _ready():
 		host_ip_container.visible = true
 		hidden_ip.text = Store.upnp_host_ip
 	refresh()
+	player.health_changed.connect(update_health)
+	HEALTH_BAR.max_value = player.HEALTH_DEFAULT
+	HEALTH_BAR.value = player.HEALTH_DEFAULT
+
+
+func update_health(new_value):
+	HEALTH_BAR.value = new_value
 
 func refresh():
 	score_label.text = str(Store.store.score)

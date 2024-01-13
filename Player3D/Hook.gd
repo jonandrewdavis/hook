@@ -1,6 +1,9 @@
 extends Node3D
 
-@onready var player: CharacterBody3D = get_parent().get_parent().get_parent()
+var DEFAULT_HOOK_HEALTH: int = 25
+var hook_health = DEFAULT_HOOK_HEALTH
+
+@onready var player: Player = get_parent().get_parent().get_parent()
 @onready var GRAPPLE_TIMER = $GrappleTimer
 
 @onready var LOOKPOINT = $Lookpoint
@@ -139,13 +142,14 @@ func pulling_enemy():
 		cancel_hook()
 	if pulled_enemy == null:
 		return
-	CLAW.global_position = Vector3(pulled_enemy.transform.origin.x, pulled_enemy.transform.origin.y + 1, pulled_enemy.transform.origin.z)
+	CLAW.global_position = Vector3(pulled_enemy.transform.origin.x, pulled_enemy.transform.origin.y + 0.5, pulled_enemy.transform.origin.z)
 	if pulled_enemy.transform.origin.distance_to(player.transform.origin) < 3:
 		cancel_hook()
 
-func move_in_fly(delta):
-	var direction = update_direction()
-	var player_camera_dir = Vector3(-player.global_transform.basis.z.normalized().x, -player.CAMERA_CONTROLLER.transform.basis.z.normalized().y, -player.global_transform.basis.z.normalized().z) 
+func move_in_fly(_delta):
+	pass
+	#var direction = update_direction()
+	#var player_camera_dir = Vector3(-player.global_transform.basis.z.normalized().x, -player.CAMERA_CONTROLLER.transform.basis.z.normalized().y, -player.global_transform.basis.z.normalized().z) 
 	# player.velocity = player_camera_dir * player._speed * 1.2
 	# player.move_and_slide()
 
@@ -214,25 +218,31 @@ func launch_hook():
 	curr = STATE.SEEKING
 	
 
-	await get_tree().create_timer(0.02).timeout
+	await get_tree().create_timer(0.03).timeout
 	# Only "Expand" the hook if we're in motion (unpaused), otherwise the scale blacks out the playerview
 	if $HookTimer.paused == false:
 		CLAW.show()
 		LINE.show()
 		CLAW.set_scale(Vector3(1.3, 1.3, 1.3))
-		CLAW_COLLISION.disabled = false
 		hand()
+
+	await get_tree().create_timer(0.05).timeout
+	# Only "Expand" the hook if we're in motion (unpaused), otherwise the scale blacks out the playerview
+	if $HookTimer.paused == false:
+		CLAW_COLLISION.disabled = false
 
 func init():
 	pass
 
 func reset():
+	call_deferred('disable_collision')
+	hook_health = DEFAULT_HOOK_HEALTH
 	pulled_enemy = null
 	player.gravity = 9.8
 	CLAW.top_level = false
 	CLAW.position = Vector3.ZERO
 	CLAW.look_at(LOOKPOINT.global_position)
-	CLAW.set_scale(Vector3(0.3, 0.3, 0.3))
+	CLAW.set_scale(Vector3(0.33, 0.33, 0.33))
 	if player.HOOK_CHARGES != null and player.HOOK_CHARGES > 0: unhide_hook()
 	else: hide_hook()
 	
@@ -243,12 +253,29 @@ func reset():
 	if is_multiplayer_authority():
 		LINE_REMOTE.visible = false
 		LINE_REMOTE.set_scale(Vector3(0, 0, 0))
-	CLAW_COLLISION.disabled = true
 	HOOKBODY.look_at(LOOKPOINT.global_position)
 	fist()
 	if player.FSM != null:
 		player.FSM.set_state("Idle")
-	
+
+func ready_hook():
+	pulled_enemy = null
+	CLAW.top_level = false
+	CLAW.position = Vector3.ZERO
+	CLAW.look_at(LOOKPOINT.global_position)
+	CLAW.set_scale(Vector3(0.33, 0.33, 0.33))
+	unhide_hook()
+	LINE.visible = false
+	HOOK_SPEED = HOOK_SPEED_DEFAULT
+	FIST_MODEL.visible = true
+	FIST_MODEL.transform.basis = Basis.from_euler(Vector3.ZERO)
+	if is_multiplayer_authority():
+		LINE_REMOTE.visible = false
+		LINE_REMOTE.set_scale(Vector3(0, 0, 0))
+	CLAW_COLLISION.disabled = true
+	HOOKBODY.look_at(LOOKPOINT.global_position)
+	fist()
+
 var line_point_distance
 
 func line_trace():
@@ -264,7 +291,7 @@ func cancel_hook():
 	reset()
 	is_on_cooldown = true
 	$Cooldown.start()
-
+	
 func _on_hook_timer_timeout():
 	# TODO: Explode, then cancel
 	CLAW_COLLISION.set_scale(CLAW_COLLISION_EXPANDED)
@@ -283,17 +310,25 @@ func hand():
 func _on_claw_area_body_entered(body):
 	if body == null:
 		return
-		
-	if body.is_in_group("players") and body.get_multiplayer_authority() != get_multiplayer_authority():
-		hook_player(body)
+	
+	if body.is_in_group("Bullet"):
+		take_hook_damage(body.Source, body.Damage)
+	
+	# All targets can be grabbed.
+	if body.is_in_group("Target"):
+		if body.is_in_group("Players") and body.get_multiplayer_authority() != get_multiplayer_authority():
+			hook_player(body)
+		else:
+			if get_multiplayer_authority() == 1 and body.is_in_group("Players"):
+				return
+			else:
+				hook_player(body)
 		return
 	
-	# prevent self collisions
-	if body.is_in_group("players"):
-		return
-		
-	# TODO: Only allow collisions with a type of surface or layer, remove above check
-	if body != null and not body.is_in_group("terrain"):
+	# TODO: Should move along/move & slide along the floor.
+	
+	# Slightly counterintuitively, Terrain "group" disallows terrain hooking.
+	if not body.is_in_group("Terrain"):
 		hook_terrain(body)
 		return
 
@@ -311,7 +346,8 @@ var max_hook_distance
 func hook_terrain(_body):
 	curr = STATE.PULLING_SELF
 	$HookTimer.paused = true
-	call_deferred('disable_collision')
+	# THIS ALLOWS DEATH OF HOOK
+	# call_deferred('disable_collision')
 	CLAW.top_level = true
 	CLAW.global_position = CLAW.position
 	max_hook_distance = player.transform.origin.distance_to(CLAW.global_position) 
@@ -353,4 +389,19 @@ func _on_blink_timer_timeout():
 		$BlinkTimer.start()
 	if curr == STATE.PULLING_SELF and blink == 0: 
 		cancel_hook()
-		
+
+
+func take_hook_damage(Source, Damage):
+	if Source != null:
+		player.last_damage_source = Source
+	if hook_health - Damage <= 0:
+		cancel_hook()
+	else:
+		hook_health -= Damage
+	
+#@rpc("any_peer", "call_local")
+#func Hit_Successful(Source, Damage, _Direction, _Position):
+	## print('Hit Successful Called on Player:', get_multiplayer_authority(), ': ', Damage, 'from: ', Source)
+	## This check effectively prevents self damage.
+	#if Source != get_multiplayer_authority():  
+		#take_hook_damage(Source, Damage)

@@ -1,42 +1,57 @@
-[gd_scene load_steps=21 format=3 uid="uid://c3ffql15mo0aj"]
+[gd_scene load_steps=29 format=3 uid="uid://c3ffql15mo0aj"]
 
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
 [ext_resource type="PackedScene" uid="uid://b8njiqmewnmd7" path="res://UI/UI.tscn" id="2_vsmbj"]
-[ext_resource type="PackedScene" uid="uid://t4okhouvlxsg" path="res://Player3D/Shotgun.tscn" id="5_dti51"]
+[ext_resource type="Script" path="res://Weapons/Weapon_State_Machine.gd" id="5_a6g0p"]
+[ext_resource type="Resource" uid="uid://2os2xoq5i5dj" path="res://Weapons/Weapon_Resources/blasterL.tres" id="6_2tdxl"]
 [ext_resource type="Script" path="res://Player3D/scripts/state_machine.gd" id="6_40av4"]
+[ext_resource type="AnimationLibrary" uid="uid://uybino34n0sj" path="res://Weapons/weapon_animation.res" id="7_fywwy"]
+[ext_resource type="PackedScene" uid="uid://nhffnkmnjehm" path="res://Weapons/Weapon_Models/blaster_a.tscn" id="7_heg3t"]
+[ext_resource type="Resource" uid="uid://cgr1r00inv1h8" path="res://Weapons/Weapon_Resources/blasterLShotGun.tres" id="7_ou6ul"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Idle.gd" id="7_sgjnc"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Sprint.gd" id="9_4fvia"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Walking.gd" id="9_cybia"]
+[ext_resource type="PackedScene" uid="uid://ddheglsbnaes" path="res://Weapons/Weapon_Models/BlasterGModelScene.tscn" id="9_vv4nr"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Stunned.gd" id="10_gogm3"]
 [ext_resource type="PackedScene" uid="uid://c5io863yqwynd" path="res://Player3D/Hook.tscn" id="10_tnoo1"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Busy.gd" id="11_b5bcb"]
 [ext_resource type="PackedScene" uid="uid://blvg7sk4onp3u" path="res://Player3D/mage.tscn" id="11_elbq1"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="12_ojq38"]
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1x53u"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath("CameraController/Camera3D:rotation")
-properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath(".:rotation")
-properties/2/spawn = true
-properties/2/replication_mode = 1
-properties/3/path = NodePath("AnimationPlayer:current_animation")
-properties/3/spawn = true
-properties/3/replication_mode = 1
+[ext_resource type="Script" path="res://Player3D/scripts/states/Dead.gd" id="15_ktyft"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ynut6"]
-radius = 0.2
+radius = 0.28
 height = 1.4
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1x53u"]
+properties/0/path = NodePath(".:rotation")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("PlayerAnimationPlayer:current_animation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("CameraControllerHolder/PlayerCamera:rotation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:health")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:collision_layer")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath("CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models/AnimationPlayer:current_animation")
+properties/6/spawn = true
+properties/6/replication_mode = 1
 
 [sub_resource type="Animation" id="Animation_1ul0x"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("CameraController:position")
+tracks/0/path = NodePath("CameraControllerHolder:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -51,7 +66,7 @@ resource_name = "crouch"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("CameraController:position")
+tracks/0/path = NodePath("CameraControllerHolder:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -67,6 +82,26 @@ _data = {
 "crouch": SubResource("Animation_cgbks")
 }
 
+[sub_resource type="Animation" id="Animation_st2v7"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("%BulletPoint:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.386642, -0.239748, -0.567892)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_huosj"]
+_data = {
+"RESET": SubResource("Animation_st2v7")
+}
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_41g6y"]
 size = Vector3(0.5, 0.6, 0.5)
 
@@ -78,45 +113,93 @@ material = ExtResource("12_ojq38")
 radius = 0.3
 height = 0.6
 
-[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER")]
+[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER", "DEATH_CAM") groups=["Players", "Target"]]
 script = ExtResource("1_pgc1p")
 MOUSE_SENSITIVITY = 0.25
-CAMERA_CONTROLLER = NodePath("CameraController/Camera3D")
-ANIMATIONPLAYER = NodePath("AnimationPlayer")
+CAMERA_CONTROLLER = NodePath("CameraControllerHolder/PlayerCamera")
+ANIMATIONPLAYER = NodePath("PlayerAnimationPlayer")
+DEATH_CAM = NodePath("DeathCam")
 UI_SCENE = ExtResource("2_vsmbj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.668644, 0)
+shape = SubResource("CapsuleShape3D_ynut6")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_1x53u")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.668644, 0)
-visible = false
-shape = SubResource("CapsuleShape3D_ynut6")
-
-[node name="CameraController" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
-
-[node name="Camera3D" type="Camera3D" parent="CameraController"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.483511, 0)
-visible = false
-
-[node name="Hook" parent="CameraController/Camera3D" instance=ExtResource("10_tnoo1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.289769, -0.25861, -0.15212)
-
-[node name="Shotgun" parent="CameraController/Camera3D" instance=ExtResource("5_dti51")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.299111, -0.271907, -0.191687)
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+[node name="PlayerAnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 "": SubResource("AnimationLibrary_nef7h")
 }
 
+[node name="character_skeleton_mage" parent="." instance=ExtResource("11_elbq1")]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="CameraControllerHolder" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="PlayerCamera" type="Camera3D" parent="CameraControllerHolder"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.483511, 0)
+
+[node name="Hook" parent="CameraControllerHolder/PlayerCamera" instance=ExtResource("10_tnoo1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.289769, -0.25861, -0.15212)
+
+[node name="Weapons_Manager" type="Node3D" parent="CameraControllerHolder/PlayerCamera" node_paths=PackedStringArray("Animation_Player")]
+script = ExtResource("5_a6g0p")
+Animation_Player = NodePath("Weapons_Models/AnimationPlayer")
+_weapon_resources = Array[Resource("res://Player_Controller/scripts/Weapon_State_Machine/weapon_resource.gd")]([ExtResource("6_2tdxl"), ExtResource("7_ou6ul")])
+Start_Weapons = Array[String](["blasterL", "blasterI"])
+
+[node name="Weapons_Models" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.118642, -1.53014, -0.159279)
+
+[node name="blasterL" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+visible = false
+
+[node name="blasterA" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models/blasterL" instance=ExtResource("7_heg3t")]
+
+[node name="blasterN" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+transform = Transform3D(-1, 0, 2.53518e-06, 0, 1, 0, -2.53518e-06, 0, -1, 0.193, 1.255, -0.643)
+
+[node name="blasterI" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+transform = Transform3D(-1, 0, -2.53518e-06, 0, 1, 0, 2.53518e-06, 0, -1, 0, 0, 0)
+visible = false
+
+[node name="blasterG" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models/blasterI" instance=ExtResource("9_vv4nr")]
+
+[node name="blasterF" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+transform = Transform3D(-1, 0, -2.53518e-06, 0, 1, 0, 2.53518e-06, 0, -1, 0, 0, 0)
+
+[node name="blasterG" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+libraries = {
+"": SubResource("AnimationLibrary_huosj"),
+"weapon_animation": ExtResource("7_fywwy")
+}
+
+[node name="BulletPoint" type="Marker3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.386642, -0.239748, -0.567892)
+
+[node name="WeaponCast" type="RayCast3D" parent="CameraControllerHolder/PlayerCamera"]
+transform = Transform3D(0.986528, -0.00632548, 0.163471, 0.0246582, 0.993586, -0.110362, -0.161724, 0.112907, 0.980356, 0.380924, -0.258799, -0.368523)
+target_position = Vector3(0, 0, -2.5)
+
+[node name="PickMarker" type="Marker3D" parent="CameraControllerHolder/PlayerCamera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.439323, -0.240847, -1.63399)
+
+[node name="LOOKPOINT" type="Marker3D" parent="CameraControllerHolder/PlayerCamera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.055644, -13.7791)
+
+[node name="DeathCam" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.958775, 0.284166, 0, -0.284166, 0.958775, 0, 2.05147, 1.8403)
+
 [node name="PlayerStateMachine" type="Node" parent="." node_paths=PackedStringArray("CURRENT_STATE")]
 script = ExtResource("6_40av4")
 CURRENT_STATE = NodePath("Idle")
-
-[node name="Idle" type="Node" parent="PlayerStateMachine"]
-script = ExtResource("7_sgjnc")
 
 [node name="Walking" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("9_cybia")
@@ -130,8 +213,11 @@ script = ExtResource("10_gogm3")
 [node name="Busy" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("11_b5bcb")
 
-[node name="character_skeleton_mage" parent="." instance=ExtResource("11_elbq1")]
-transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
+[node name="Dead" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("15_ktyft")
+
+[node name="Idle" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("7_sgjnc")
 
 [node name="HookInputTimer" type="Timer" parent="."]
 wait_time = 0.5
@@ -147,6 +233,7 @@ autostart = true
 
 [node name="HurtboxBody" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.409879, 0)
+visible = false
 collision_layer = 2
 collision_mask = 0
 input_ray_pickable = false
@@ -155,9 +242,11 @@ monitoring = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxBody"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0185985, 0)
 shape = SubResource("BoxShape3D_41g6y")
+disabled = true
 
 [node name="HurtboxHead" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+visible = false
 collision_layer = 2
 collision_mask = 2
 input_ray_pickable = false
@@ -165,11 +254,10 @@ input_ray_pickable = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxHead"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0126297, 0)
 shape = SubResource("SphereShape3D_h0tgl")
+disabled = true
 
 [node name="Debug Mesh" type="MeshInstance3D" parent="HurtboxHead"]
 visible = false
 mesh = SubResource("SphereMesh_hlhaw")
 
 [connection signal="timeout" from="HookRecharge" to="." method="_on_hook_recharge_timeout"]
-[connection signal="area_entered" from="HurtboxBody" to="." method="_on_hurtbox_body_area_entered"]
-[connection signal="area_entered" from="HurtboxHead" to="." method="_on_hurtbox_head_area_entered"]

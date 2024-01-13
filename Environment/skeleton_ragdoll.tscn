@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://bnaqttdcg154k"]
+
+[ext_resource type="PackedScene" uid="uid://b1tmdv5engi7u" path="res://Assets/models/character_skeleton_mage.gltf" id="1_pebc8"]
+[ext_resource type="ArrayMesh" uid="uid://dbujncuc0djd" path="res://Environment/Skeleton_Head.tres" id="2_u8d0l"]
+
+[node name="character_skeleton_mage" instance=ExtResource("1_pebc8")]
+
+[node name="character_skeleton_mage_armLeft" parent="character_skeleton_mage_body" index="0"]
+visible = false
+
+[node name="character_skeleton_mage_armRight" parent="character_skeleton_mage_body" index="1"]
+visible = false
+
+[node name="character_skeleton_mage_cloak" parent="character_skeleton_mage_body" index="2"]
+visible = false
+
+[node name="character_skeleton_mage_head" parent="character_skeleton_mage_body" index="3"]
+mesh = ExtResource("2_u8d0l")
+
+[node name="character_skeleton_mage_cowl" parent="character_skeleton_mage_body/character_skeleton_mage_head" index="0"]
+visible = false
+
+[node name="character_skeleton_mage_eyes" parent="character_skeleton_mage_body/character_skeleton_mage_head" index="1"]
+visible = false
