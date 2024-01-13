@@ -1,6 +1,8 @@
 extends CharacterBody3D
 class_name Player
 
+signal health_changed(new_value)
+
 @onready var HEALTH_DEFAULT = 100
 @onready var max_health = HEALTH_DEFAULT
 @export var health = 100
@@ -27,7 +29,7 @@ class_name Player
 
 @export var CAPTURE_SPEED = 21
 
-@onready var LOOKPOINT = $LOOKPOINT 
+@onready var LOOKPOINT = $CameraControllerHolder/PlayerCamera/LOOKPOINT 
 @onready var COLLISION: CollisionShape3D = $CollisionShape3D
 @onready var MODEL: Node3D = $character_skeleton_mage
 @onready var HOOK: Node3D = $CameraControllerHolder/PlayerCamera/Hook
@@ -39,6 +41,7 @@ class_name Player
 
 @onready var FSM: Node = $PlayerStateMachine
 @onready var WEAPON_CAST: RayCast3D = $CameraControllerHolder/PlayerCamera/WeaponCast
+@onready var PICK_MARKER: Marker3D = $CameraControllerHolder/PlayerCamera/PickMarker
 
 @export var UI_SCENE: PackedScene
 var UI = null
@@ -71,10 +74,11 @@ func _ready():
 	set_physics_process(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_unhandled_input(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_input(get_multiplayer_authority() == multiplayer.get_unique_id())
-	
+
+	respawn()
+
 	if (is_multiplayer_authority()):
 		ready_client_only_nodes()
-		respawn()
 	
 # TODO: Clean all thes up, it's really a mashup of responsibilities. 
 func ready_client_only_nodes():
@@ -147,6 +151,17 @@ func get_input():
 
 	if Input.is_action_just_released('sprint'):
 		FSM.set_state('Walking')
+		
+	if Input.is_action_just_pressed('interact'):
+		if picked_object == null:
+			pick_object()
+		elif picked_object != null:
+			drop_object()
+
+	if Input.is_action_just_pressed('Primary_Fire') and picked_object != null:
+		picked_object.launch.rpc()
+		picked_object = null
+
 
 	# CROUCH logic
 	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == true:
@@ -280,15 +295,16 @@ func set_movement_speed(state: String):
 
 func take_damage(_last_damage_source, damage: int):
 	if FSM.CURRENT_STATE.name != 'Dead':
-		if health - damage <= 0:
-			die()
-		else:
-			health -= damage
-
 		if _last_damage_source:
 			last_damage_source = _last_damage_source
-		
-# TODO: Would be fun to replace with a ragdoll when you die
+
+		if health - damage <= 0:
+			die()
+			health_changed.emit(0)
+		else:
+			health -= damage
+			health_changed.emit(health)
+
 func die():	
 	spawn_death_head.rpc(MODEL.HEAD.global_position, global_position.direction_to(LOOKPOINT.global_position))
 	HOOK.cancel_hook()
@@ -307,10 +323,13 @@ func report_death():
 
 func respawn():
 	health = HEALTH_DEFAULT
+	health_changed.emit(HEALTH_DEFAULT)
 	max_health = HEALTH_DEFAULT
 	last_damage_source = null
+	HOOK.ready_hook()
 	HOOK.show()
-	WEAPONS.Initialize(WEAPONS.Start_Weapons)
+	# does double reload first time, but necessary for respawning to reset.
+	# WEAPONS.Initialize(WEAPONS.Start_Weapons)
 	var level = get_parent().get_node('Level')
 	var spawns = []
 	for spawn_position in level.get_node('Spawns').get_children():
@@ -333,20 +352,21 @@ func respawn():
 # Ended up just doing look_at and capturing that transform.basis and mapping it back to mouse somehow (in stunned) behavior.
 @rpc('any_peer')
 func get_hooked():
+	HOOK.cancel_hook()
 	FSM.set_state('Stunned')
 	# STUN TIMER
 	$HookStunnedTimer.start(0.45)
 	var playerId = multiplayer.get_remote_sender_id()
 	captured_by = get_parent().get_node(str(playerId))
 	last_damage_source = playerId
-	captured_by.HOOK.hide_hook()
+	# captured_by.HOOK.hide_hook()
 
 func arrive_at_hook():
 	FSM.set_state("Busy")
 	await get_tree().create_timer(0.5).timeout
 	captured_by = null
 	FSM.set_state("Idle")
-	if last_damage_source != null: get_parent().get_node(str(last_damage_source)).HOOK.unhide_hook()
+	# if last_damage_source != null: get_parent().get_node(str(last_damage_source)).HOOK.unhide_hook()
 
 func _on_hook_recharge_timeout():
 	if HOOK_CHARGES < HOOK_STARTING_CHARGES:
@@ -358,8 +378,10 @@ func _on_hook_recharge_timeout():
 
 @rpc("any_peer", "call_local")
 func Hit_Successful(Source, Damage, _Direction, _Position):
-	print('Hit Successful Called on Player:', get_multiplayer_authority(), ': ', Damage, 'from: ', Source)
-	take_damage(Source, Damage)
+	# print('Hit Successful Called on Player:', get_multiplayer_authority(), ': ', Damage, 'from: ', Source)
+	# This check effectively prevents self damage.
+	if Source != get_multiplayer_authority():  
+		take_damage(Source, Damage)
 
 @rpc("call_local")
 func spawn_death_head(pos, rot):
@@ -369,3 +391,18 @@ func spawn_death_head(pos, rot):
 		new_head.position = pos
 		new_head.set_linear_velocity(rot * 3.0)
 		get_parent().add_child(new_head, true)
+
+var picked_object;
+
+func pick_object():
+	var collider = WEAPON_CAST.get_collider()
+	if collider != null and collider.is_in_group('Head'): 
+		picked_object = collider
+		picked_object.reserve.rpc()
+		
+				
+func drop_object():
+	if picked_object != null:
+		picked_object.reserve.rpc()
+		picked_object = null
+

@@ -53,12 +53,11 @@ properties/0/spawn = true
 properties/0/replication_mode = 1
 properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
-properties/1/replication_mode = 1
+properties/1/replication_mode = 0
 
-[node name="bullet" type="RigidBody3D"]
+[node name="bullet" type="RigidBody3D" groups=["Bullet"]]
 top_level = true
 collision_layer = 4
-collision_mask = 5
 mass = 0.1
 gravity_scale = 0.1
 continuous_cd = true
@@ -76,7 +75,7 @@ mesh = SubResource("ArrayMesh_sqgwv")
 skeleton = NodePath("")
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 5.0
+wait_time = 3.0
 one_shot = true
 autostart = true
 

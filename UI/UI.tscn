@@ -240,7 +240,6 @@ custom_minimum_size = Vector2(400, 50)
 layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_y5mg5")
 theme_override_styles/fill = SubResource("StyleBoxFlat_2xrpu")
-value = 30.0
 show_percentage = false
 
 [connection signal="toggled" from="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer/HostIPButton" to="." method="_on_host_ip_button_toggled"]

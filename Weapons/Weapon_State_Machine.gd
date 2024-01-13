@@ -1,5 +1,6 @@
 extends Node3D
 
+
 class_name WeaponsManager
 
 signal Weapon_Changed
@@ -16,7 +17,7 @@ signal Connect_Weapon_To_HUD
 @onready var WORLD = get_tree().get_root().get_node('Main').get_node('World')
 @onready var PLAYER: Player = get_parent().get_parent().get_parent() 
 
-var BULLET_SCENE = preload("res://Weapons/Spawnable_Objects/bullet.tscn")
+@onready var BULLET_SCENE = preload("res://Weapons/Spawnable_Objects/bullet.tscn")
 
 # TODO: Refactor to use no proper case...
 
@@ -25,12 +26,12 @@ var Melee_Shake_Magnetude:= Vector4(1,1,1,1)
 
 #var Secondary_Mode = false
 
-var Current_Weapon = null
+@export var Current_Weapon: Weapon_Resource = null
 
 var WeaponStack = [] #An Array of weapons currently in possesion by the player
 
 #var WeaponIndicator = 0
-var Next_Weapon: String
+@export var Next_Weapon: String
 
 #WEAPON TYPE ENUMERATOR TO HELP WITH CODE READABILITY
 enum {NULL,HITSCAN, PROJECTILE}
@@ -45,7 +46,13 @@ var Weapons_List = {
 @export var _weapon_resources: Array[Weapon_Resource]
 @export var Start_Weapons: Array[String]
 
+
 func _ready():
+	set_process(get_multiplayer_authority() == multiplayer.get_unique_id())
+	set_physics_process(get_multiplayer_authority() == multiplayer.get_unique_id())
+	set_process_unhandled_input(get_multiplayer_authority() == multiplayer.get_unique_id())
+	set_process_input(get_multiplayer_authority() == multiplayer.get_unique_id())
+
 	Animation_Player.animation_finished.connect(_on_animation_finished)
 	Initialize(Start_Weapons) #current starts on the first weapon in the stack
 
@@ -58,11 +65,13 @@ func _input(event):
 	if event.is_action_pressed("Weapon_Up"):
 		var GetRef = WeaponStack.find(Current_Weapon.Weapon_Name)
 		GetRef = min(GetRef+1,WeaponStack.size()-1)
+		
 		exit(WeaponStack[GetRef])
 
 	if event.is_action_pressed("Weapon_Down"):
 		var GetRef = WeaponStack.find(Current_Weapon.Weapon_Name)
 		GetRef = max(GetRef-1,0)
+
 		exit(WeaponStack[GetRef])
 		
 	if event.is_action_pressed("Secondary_Fire"):
@@ -87,10 +96,12 @@ func _input(event):
 		melee()
 		
 func Initialize(_Start_Weapons: Array):
+	if not is_multiplayer_authority():
+		return
 	for Weapons in _weapon_resources:
 		Weapons.ready()
 		Weapons_List[Weapons.Weapon_Name] = Weapons
-		# Connect_Weapon_To_HUD.emit(Weapons)
+		Connect_Weapon_To_HUD.emit(Weapons)
 		
 	for child in _Start_Weapons:
 		WeaponStack.push_back(child)
@@ -101,12 +112,18 @@ func Initialize(_Start_Weapons: Array):
 	enter()
 
 func enter():
-	# Animation_Player.queue(Current_Weapon.Pick_Up_Anim)
+	if not is_multiplayer_authority():
+		return
+	Animation_Player.queue(Current_Weapon.Pick_Up_Anim)
 	Current_Weapon.Spray_Count_Update()
 	Weapon_Changed.emit(Current_Weapon.Weapon_Name)
 	Update_Ammo.emit([Current_Weapon.Current_Ammo, Current_Weapon.Reserve_Ammo])
 
 func exit(_next_weapon: String):
+	if not _next_weapon: 
+		return
+	if not is_multiplayer_authority():
+		return
 	if _next_weapon != Current_Weapon.Weapon_Name:
 		if Animation_Player.get_current_animation() != Current_Weapon.Change_Anim:
 			if Current_Weapon.Secondary_Mode == true:
@@ -115,10 +132,15 @@ func exit(_next_weapon: String):
 			Next_Weapon = _next_weapon
 
 func Change_Weapon(weapon_name: String):
-	Current_Weapon = Weapons_List[weapon_name]
+	if not weapon_name: 
+		return
+	if not is_multiplayer_authority():
+		return
+	Current_Weapon = Weapons_List[str(weapon_name)]
 	Next_Weapon = ""
 	enter()
-
+	Animation_Player.queue('weapon_animation/show_%s' % weapon_name)
+		
 func shoot():
 	if Current_Weapon.Current_Ammo != 0:
 		if not Animation_Player.is_playing():
@@ -159,6 +181,7 @@ func Calculate_Reload():
 	
 	Update_Ammo.emit([Current_Weapon.Current_Ammo, Current_Weapon.Reserve_Ammo])
 
+
 func melee():
 	if Current_Weapon.Secondary_Mode:
 		reset_secondary()
@@ -197,19 +220,32 @@ func drop(_name: String):
 		return
 		
 func _on_animation_finished(anim_name):
+	if anim_name == 'weapon_animation/show':
+		return
+	if not is_multiplayer_authority():
+		return
 	if anim_name == Current_Weapon.Shoot_Anim:
 		if Current_Weapon.AutoFire == true:
 				if Input.is_action_pressed("Primary_Fire"):
 					shoot()
-
-	if anim_name == Current_Weapon.Change_Anim:
-		Change_Weapon(Next_Weapon)
 	
+	if anim_name == Current_Weapon.Change_Anim and Next_Weapon:
+		Change_Weapon(Next_Weapon)
+
+		
 	if anim_name == Current_Weapon.Reload_Anim:
 		Calculate_Reload()
 	
-	# CheckSecondaryMode()
+	CheckSecondaryMode()
 	
+
+	
+func CheckSecondaryMode():	
+	if Current_Weapon.Secondary_Mode == true:
+		if !Input.is_action_pressed("Secondary_Fire"):
+			reset_secondary()	
+
+
 @onready var _Camera = get_node('%PlayerCamera')
 @onready var _Viewport = get_viewport().get_size()
 	
@@ -236,7 +272,6 @@ func GetCameraCollision(_fire_range: int)->Array:
 	else:
 		return [null,Ray_End]
 
-
 func HitScanCollision(Collision: Array):
 	var Point = Collision[1]
 	if Collision[0]:
@@ -259,8 +294,11 @@ func HitScanDamage(Collider, Direction, Position, Damage):
 	# TODO: Hitscan for objects.
 	# if Collider.is_in_group("Target") and Collider.has_method("Hit_Successful"):
 		
+var spread_min = 0.008
+var spread = 0.09
 func LaunchProjectile(Point: Vector3):
-	var Direction = (Point - Bullet_Point.global_transform.origin).normalized()
+	var Direction_To_Point = (Point - Bullet_Point.global_transform.origin).normalized()
+	var Direction = Direction_To_Point * Current_Weapon.Projectile_Velocity
 	#var Projectile = Current_Weapon.Projectile_To_Load.instantiate()
 #
 	#Bullet_Point.add_child(Projectile)
@@ -273,7 +311,11 @@ func LaunchProjectile(Point: Vector3):
 	#
 	#Projectile.set_linear_velocity(Direction*Current_Weapon.Projectile_Velocity)
 	#Projectile.Damage = Current_Weapon.Damage
-	spawn_bullet.rpc(Direction, Current_Weapon.Damage, Bullet_Point.global_transform.origin, PLAYER.WEAPON_CAST.global_basis)
+
+	if Current_Weapon.Count == 1:
+		spawn_bullet.rpc(Direction, Current_Weapon.Damage, Bullet_Point.global_transform.origin, PLAYER.WEAPON_CAST.global_basis)
+	else:	
+		spawn_cluster.rpc(Direction, Current_Weapon.Damage, Bullet_Point.global_transform.origin, PLAYER.WEAPON_CAST.global_basis, Current_Weapon.Count)
 
 @rpc('any_peer', 'call_local')
 func spawn_bullet(Direction, Damage, Position, Rotation):
@@ -281,8 +323,8 @@ func spawn_bullet(Direction, Damage, Position, Rotation):
 		var Projectile = BULLET_SCENE.instantiate()
 		Projectile.position = Position
 		Projectile.transform.basis = Rotation
-		Projectile.set_linear_velocity(Direction * Current_Weapon.Projectile_Velocity)
-		Projectile.Damage = Current_Weapon.Damage
+		Projectile.set_linear_velocity(Direction)
+		Projectile.Damage = Damage
 		Projectile.Source = multiplayer.get_remote_sender_id()
 		# I learned the hard way only the server should add things the MultiplayerSpawner will handle the rest.
 		WORLD.add_child(Projectile, true)
@@ -293,7 +335,25 @@ func spawn_bullet(Direction, Damage, Position, Rotation):
 		#bullet.is_burst = is_burst
 		#bullet.source = multiplayer.get_remote_sender_id()
 
-
+@rpc('any_peer', 'call_local')
+func spawn_cluster(Direction, Damage, Position, Rotation, Count):
+	if multiplayer.is_server():
+		for n in Count:
+			var random_negative = []
+			# randomize rotation in 3 directions
+			for n2 in 3:
+				if randi()%2 == 1:
+					random_negative.append(1)
+				else:
+					random_negative.append(-1)
+			var random_rotation = Basis.from_euler(Vector3(randf_range(spread_min, spread) * random_negative[0], randf_range(spread_min, spread) * random_negative[1], randf_range(spread_min, spread) * random_negative[2]))
+			var Projectile = BULLET_SCENE.instantiate()
+			Projectile.position = Position
+			Projectile.transform.basis = Rotation
+			Projectile.set_linear_velocity(Direction * random_rotation)
+			Projectile.Damage = Damage
+			Projectile.Source = multiplayer.get_remote_sender_id()
+			WORLD.add_child(Projectile, true)
 
 func Remove_Exclusion(_RID):
 	Collision_Exclusion.erase(_RID)
@@ -364,3 +424,8 @@ func Secondary_Shoot(secondary_resource):
 			"Projectile":
 				LaunchProjectile(CollissionPoint[1])
 	reset_secondary()
+
+
+
+#### NET NEW
+

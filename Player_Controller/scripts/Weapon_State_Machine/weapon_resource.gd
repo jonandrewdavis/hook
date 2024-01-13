@@ -25,6 +25,7 @@ signal Zoom
 @export var Melee_Damage: float
 @export var AutoFire: bool
 @export var Fire_Range: int
+@export var Count: int = 1
 
 @export_group("Weapon Behaviour")
 @export var Can_Be_Dropped: bool
