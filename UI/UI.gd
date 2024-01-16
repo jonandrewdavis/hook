@@ -8,7 +8,6 @@ extends Node
 # TODO: Make unique and use %, combine with debug, or use one or the other.
 @onready var menu_ref = $CanvasLayer/SettingsMenu
 @onready var players_label = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/Players
-@onready var score_label = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/Score
 @onready var host_ip_container = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer
 @onready var hidden_ip = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer/HiddenIP
 
@@ -18,18 +17,30 @@ extends Node
 @onready var HOOK_SPRITE = $CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle/HookSprite
 
 @onready var HEALTH_BAR: ProgressBar = $CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/HealthBar
+@onready var HELPER_TEXT: Label = $CanvasLayer/HUD/HelperText
+
+@onready var RED_PLAYERS_LABEL = $CanvasLayer/Scoreboard/MarginContainer/PanelContainer/TeamsMargin/Teams/Red/RedPlayers/RedPlayersLabel
+@onready var BLUE_PLAYERS_LABEL = $CanvasLayer/Scoreboard/MarginContainer/PanelContainer/TeamsMargin/Teams/Blue/BluePlayers/BluePlayersLabel
+
+@onready var BLOOD = $CanvasLayer/blood
 
 var player: Player
 
 
 func _process(_delta):
+	if player.WEAPON_CAST.get_collider() != null and player.picked_object == null: 
+		_update_picked_collision(player.WEAPON_CAST.get_collider())
+	else: 
+		_update_picked_collision(null)
+
 	if player.HOOK_CHARGES < player.HOOK_STARTING_CHARGES:
 		HOOK_RECHARGE_PROGRESS.value = player.HOOK_RECHARGE_TIMER.time_left * 100
-		
+
 		
 func _ready():
 	menu_ref.hide()
 	Store.e.connect(refresh)
+	player.health_changed.connect(flash_damage)
 	HOOK_RECHARGE_PROGRESS.max_value = player.HOOK_RECHARGE_TIMER.wait_time * 100
 	if Store.upnp_host_ip != '':
 		host_ip_container.visible = true
@@ -44,15 +55,27 @@ func update_health(new_value):
 	HEALTH_BAR.value = new_value
 
 func refresh():
-	score_label.text = str(Store.store.score)
-	var completePlayers = ""
+	var redPlayers = ""
+	var bluePlayers = ""
+
 	for id in Store.store.players: 
-		var single = ""
-		for k in Store.store.players[id]:
-			single += k + ': ' + str(Store.store.players[id][k]) + ', '
-		completePlayers += single + '\n'
-	players_label.text = completePlayers
+		var player_string = ""
+		var player_data = Store.store.players[id]
+		# k = key
+		for k in player_data:
+			player_string += str(player_data[k]) + ' | '
+
+		if player_data.team == "Red":
+			redPlayers += player_string + '\n'
+		else:
+			bluePlayers += player_string + '\n'		
+		 
+
+	RED_PLAYERS_LABEL.text = redPlayers
+	BLUE_PLAYERS_LABEL.text = bluePlayers
+
 	hooks_count.text = str(player.HOOK_CHARGES)
+		
 	if player.HOOK_CHARGES == 0:
 		HOOK_SPRITE.modulate = Color(0, 0, 0, 0.3)
 	else:
@@ -64,3 +87,17 @@ func toggle_debug():
 
 func _on_host_ip_button_toggled(toggled_on):
 	$CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer/HiddenIP.visible = toggled_on
+
+var help_head = 'Pick up (E)'
+
+func _update_picked_collision(collider):
+	if collider != null and collider.is_in_group('Head') and HELPER_TEXT.visible == false:
+		HELPER_TEXT.visible = true
+		HELPER_TEXT.text = help_head
+	elif collider == null and HELPER_TEXT.visible == true:
+		HELPER_TEXT.visible = false
+
+func flash_damage(_damage):
+	if _damage != 100:
+		$CanvasLayer/AnimationPlayer.stop()
+		$CanvasLayer/AnimationPlayer.play('blood')

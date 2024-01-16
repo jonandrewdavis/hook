@@ -1,7 +1,11 @@
-extends CharacterBody3D
 class_name Player
 
+extends CharacterBody3D
+
 signal health_changed(new_value)
+
+@export var TEAM = ''
+
 
 @onready var HEALTH_DEFAULT = 100
 @onready var max_health = HEALTH_DEFAULT
@@ -10,7 +14,7 @@ signal health_changed(new_value)
 
 @export var ACCELERATION_DEFAULT: float = 0.08
 @export var SPEED_DEFAULT: float = 4.0
-@export var SPEED_SPRINTING: float = 5.5
+@export var SPEED_SPRINTING: float = 6
 @export var SPEED_CROUCH: float = 1.5
 
 @export var ACCELERATION: float = 0.08
@@ -42,10 +46,15 @@ signal health_changed(new_value)
 @onready var FSM: Node = $PlayerStateMachine
 @onready var WEAPON_CAST: RayCast3D = $CameraControllerHolder/PlayerCamera/WeaponCast
 @onready var PICK_MARKER: Marker3D = $CameraControllerHolder/PlayerCamera/PickMarker
+@onready var AUDIO: AnimationPlayer = $PlayerAudio
 
 @export var UI_SCENE: PackedScene
+
+@export var is_damage_over_time = false
+
 var UI = null
 var id = null
+var my_team_ids = []
 
 var _speed: float
 var _rotation_input : float
@@ -60,7 +69,7 @@ var input_dir = Vector3.ZERO
 var direction = Vector3.ZERO
 var captured_by: Player
 
-var HEAD_SCENE = preload("res://Environment/Head.tscn")
+var HEAD_SCENE = load("res://Environment/SkullHead.tscn")
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -69,23 +78,33 @@ func _enter_tree():
 	set_multiplayer_authority(str(name).to_int())
 	id = str(name).to_int()
 
+# TODO: Probably want determinsitic lockstep on physics:
+# https://gafferongames.com/post/deterministic_lockstep/
 func _ready():
 	set_process(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_physics_process(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_unhandled_input(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_input(get_multiplayer_authority() == multiplayer.get_unique_id())
-
 	respawn()
-
-	if (is_multiplayer_authority()):
-		ready_client_only_nodes()
 	
+	if (is_multiplayer_authority()):
+		Store.e.connect(refresh)
+		if get_tree().get_nodes_in_group("Players").size() % 2 == 0:
+			add_to_group("Red")
+			TEAM = "Red"
+		else: 
+			add_to_group("Blue")
+			TEAM = "Blue"
+		ready_client_only_nodes()
+	await get_tree().create_timer(1).timeout
+	set_team()
+	
+
 # TODO: Clean all thes up, it's really a mashup of responsibilities. 
 func ready_client_only_nodes():
 	#$Sample.modulate = Store.client_join_info.color.lightened(0.2)
-	#$Nickname.text = Store.client_join_info.nickname
 	_speed = SPEED_DEFAULT
-	
+
 	# add crouch check shapecast collision exception
 	#CROUCH_SHAPECAST.add_exception($".")
 	CAMERA_CONTROLLER.current = true
@@ -97,6 +116,21 @@ func ready_client_only_nodes():
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	MODEL.hide()
+
+	if multiplayer.is_server() and id == 1:
+		Store.set_state('client_join', Store.client_join_info)
+
+	if Store.client_join_info.nickname != '':
+		$NameLabel.text = Store.client_join_info.nickname
+	else:
+		$NameLabel.text = 'Unnamed Noob'
+	$NameLabel.hide()
+	
+	
+func set_team():
+	# TODO: push down team mates to each player
+	Store.set_player.rpc(id, 'team', TEAM)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -112,6 +146,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
 	
 	# this is a menu in the top left corner
+	# Scoreboard
 	elif event.is_action_pressed('debug'):
 		UI.toggle_debug()
 
@@ -129,7 +164,8 @@ func get_input():
 		if HOOK_RECHARGE_TIMER.is_stopped():
 			$HookRecharge.start()
 		$HookInputTimer.start()
-
+		$HookMaxTimer.start()
+		AUDIO.play("extend")
 		HOOK.launch_hook()
 		UI.refresh()
 	elif Input.is_action_just_pressed("hook") and HOOK_CHARGES == 0:
@@ -208,6 +244,10 @@ func _update_camera(delta):
 # TODO: Essentially "Record input from mouse rotation, input from the time of connection?
 func _physics_process(delta):
 	_update_camera(delta)
+	if WEAPON_CAST.get_collider() != null and picked_object == null: 
+		UI._update_picked_collision(WEAPON_CAST.get_collider())
+	else: 
+		UI._update_picked_collision(null)
 	if FSM.CURRENT_STATE.name == 'Dead':
 		velocity.x = move_toward(velocity.x, 0, DECELERATION)
 		velocity.z = move_toward(velocity.z, 0, DECELERATION)
@@ -293,8 +333,10 @@ func set_movement_speed(state: String):
 		"crouching":
 			_speed = SPEED_CROUCH
 
+var invincible = false
+
 func take_damage(_last_damage_source, damage: int):
-	if FSM.CURRENT_STATE.name != 'Dead':
+	if invincible == false:
 		if _last_damage_source:
 			last_damage_source = _last_damage_source
 
@@ -306,11 +348,15 @@ func take_damage(_last_damage_source, damage: int):
 			health_changed.emit(health)
 
 func die():	
-	spawn_death_head.rpc(MODEL.HEAD.global_position, global_position.direction_to(LOOKPOINT.global_position))
-	HOOK.cancel_hook()
-	gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
-	FSM.set_state('Dead')
-	report_death()
+	if invincible == false:
+		drop_object()
+		HOOK.cancel_hook()
+		gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
+		FSM.set_state('Dead')
+		# TODO: Rules on spawn death head. Only if a player dies "offsides"
+		if FSM.CURRENT_STATE.name == "Dead":
+			report_death()
+			spawn_death_head.rpc(MODEL.HEAD.global_position, global_position.direction_to(LOOKPOINT.global_position))
 
 func report_death():
 	# Death occured, but no source to credit, we're done here
@@ -322,12 +368,17 @@ func report_death():
 		Store.set_player.rpc(id, 'deaths', null)
 
 func respawn():
+	set_collision_layer_value(6, true)
+	set_collision_layer_value(1, true)
+	$DOT.stop()
+	is_damage_over_time = false
 	health = HEALTH_DEFAULT
 	health_changed.emit(HEALTH_DEFAULT)
 	max_health = HEALTH_DEFAULT
 	last_damage_source = null
 	HOOK.ready_hook()
 	HOOK.show()
+
 	# does double reload first time, but necessary for respawning to reset.
 	# WEAPONS.Initialize(WEAPONS.Start_Weapons)
 	var level = get_parent().get_node('Level')
@@ -341,21 +392,22 @@ func respawn():
 	var rndZ = int(rng.randi_range(int(random_position.z) - 5, int(random_position.z) + 5))
 
 	var new_spawn = Vector3(rndX, random_position.y, rndZ)
-	position = new_spawn
-	print(id, ', spawned')
+	global_position = new_spawn
 
+	
 # Trying to make the hooked target look at the player
 # I don't understand basis / Eulers and shit, so this is brain breaking, but, I figured out since y is always 1, that this 
 # is a top down mapping of mouse movement. Mouse movement is on a 2D plane, this maps to the 3d in X and Z, so if we look at z
 # X is left and right
 # Z is up and down looking
 # Ended up just doing look_at and capturing that transform.basis and mapping it back to mouse somehow (in stunned) behavior.
-@rpc('any_peer')
+@rpc('call_local', 'any_peer')
 func get_hooked():
 	HOOK.cancel_hook()
 	FSM.set_state('Stunned')
 	# STUN TIMER
 	$HookStunnedTimer.start(0.45)
+	$HookMaxTimer.start()
 	var playerId = multiplayer.get_remote_sender_id()
 	captured_by = get_parent().get_node(str(playerId))
 	last_damage_source = playerId
@@ -380,10 +432,18 @@ func _on_hook_recharge_timeout():
 func Hit_Successful(Source, Damage, _Direction, _Position):
 	# print('Hit Successful Called on Player:', get_multiplayer_authority(), ': ', Damage, 'from: ', Source)
 	# This check effectively prevents self damage.
-	if Source != get_multiplayer_authority():  
-		take_damage(Source, Damage)
+	if Source != get_multiplayer_authority():
+		if my_team_ids.find(Source) == -1:
+			take_damage(Source, Damage)
 
-@rpc("call_local")
+func refresh():
+	var players_store = Store.store.players
+	my_team_ids = []
+	for key in players_store:
+		if players_store[key].team == TEAM:
+			my_team_ids.append(key)
+
+@rpc("call_local", "any_peer", "reliable")
 func spawn_death_head(pos, rot):
 	if multiplayer.is_server():
 		print('death head', pos, rot)
@@ -406,3 +466,25 @@ func drop_object():
 		picked_object.reserve.rpc()
 		picked_object = null
 
+func _on_hook_max_timer_timeout():
+	if FSM.CURRENT_STATE.name == 'Busy':
+		FSM.set_state("Idle")
+	if FSM.CURRENT_STATE.name == 'Stunned' and captured_by != null:
+		arrive_at_hook()
+	pass # Replace with function body.
+
+@rpc('any_peer', 'call_local')
+func toggle_damage_over_time(value):
+	is_damage_over_time = value
+	take_damage_over_time()
+
+func take_damage_over_time():
+	if is_damage_over_time != 0 and FSM.CURRENT_STATE.name != 'Dead':
+		take_damage(null, is_damage_over_time)
+		$DOT.start()
+		
+func _on_dot_timeout():
+	if is_damage_over_time != 0:
+		take_damage_over_time()
+	else:
+		$DOT.stop()

@@ -1,6 +1,6 @@
 extends Control
 
-const PORT = 8888
+const PORT = 9999
 var upnp_on = false
 var quick_quit_enabled = true
 
@@ -39,7 +39,7 @@ func prepare_server_or_client():
 		# OPTIONAL: Create a text file with this name, it won't be added to git.
 		# When you export, the server IP will be pre-filled for clients.  
 		# Try not to expose this IP, as I think bad actors could take advantage of open ports
-		ip_ref.text = read_secret_ip("res://DEDICATED_SERVER_SECRET.txt")
+		ip_ref.text = ''
 
 func _on_host_pressed():
 	var peer = ENetMultiplayerPeer.new()	
@@ -75,7 +75,7 @@ func start_game_host():
 		"color": color_button.color,
 		"kills": 0,
 		"deaths": 0, 
-		"team": 0
+		"team": ''
 	}
 	change_level(load("res://Levels/level_001.tscn"))
 
@@ -88,7 +88,7 @@ func start_game_client():
 		"color": color_button.color,
 		"kills": 0,
 		"deaths": 0,
-		"team": 0
+		"team": ''
 	}
 
 func change_level(scene: PackedScene):
@@ -151,7 +151,7 @@ func add_player_in_server(id: int):
 
 func delete_player_in_server(id: int):
 	var string_id = str(id)
-	if world_ref.get_node(string_id).is_in_group('players'):
+	if world_ref.get_node(string_id).is_in_group('Players'):
 		world_ref.get_node(string_id).queue_free()
 		Store.set_state.rpc('client_leave', id)
 

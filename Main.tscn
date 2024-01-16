@@ -1,6 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://cyp7bqax8lumo"]
+[gd_scene load_steps=6 format=3 uid="uid://cyp7bqax8lumo"]
 
 [ext_resource type="Script" path="res://MainMenu.gd" id="1_quv7y"]
+[ext_resource type="Texture2D" uid="uid://bidq6qyrhxbld" path="res://Assets/Skeleton-Hand-PNG-Transparent.png" id="2_cxou4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r5lca"]
+bg_color = Color(0.172549, 0.172549, 0.172549, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wjd7j"]
 bg_color = Color(0.6, 0, 0, 1)
@@ -8,6 +12,18 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6npfk"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 12
+border_width_top = 12
+border_width_right = 12
+border_width_bottom = 12
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 200
+corner_radius_top_right = 200
+corner_radius_bottom_right = 200
+corner_radius_bottom_left = 200
 
 [node name="Main" type="Node"]
 
@@ -22,7 +38,7 @@ _spawnable_scenes = PackedStringArray("res://Player3D/fps_controller.tscn")
 spawn_path = NodePath("../World")
 
 [node name="EnvironmentSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://Weapons/Spawnable_Objects/bullet.tscn", "res://Environment/Head.tscn")
+_spawnable_scenes = PackedStringArray("res://Weapons/Spawnable_Objects/bullet.tscn", "res://Environment/SkullHead.tscn")
 spawn_path = NodePath("../World")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -44,12 +60,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -128.0
-offset_top = -163.0
-offset_right = 128.0
-offset_bottom = 163.0
+offset_left = -230.5
+offset_top = -172.5
+offset_right = 230.5
+offset_bottom = 172.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_r5lca")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MainMenu/Panel"]
 layout_mode = 2
@@ -60,14 +77,16 @@ theme_override_constants/margin_bottom = 12
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MainMenu/Panel/MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 16
 
 [node name="Title" type="Label" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Hook"
+text = "\"Hook\""
 horizontal_alignment = 1
 
 [node name="Description" type="Label" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 text = "A Godot 4.2 multiplayer template
 
@@ -85,17 +104,20 @@ layout_mode = 2
 placeholder_text = "Nickname"
 
 [node name="Label" type="Label" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 text = "Color Picker:
 "
 
 [node name="ColorPickerButton" type="ColorPickerButton" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+visible = false
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 color = Color(1, 1, 1, 1)
 edit_alpha = false
 
 [node name="HSeparator" type="HSeparator" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -109,10 +131,6 @@ layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_wjd7j")
 text = "Join"
 
-[node name="HSeparator2" type="HSeparator" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
 [node name="Host" type="Button" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_wjd7j")
@@ -121,6 +139,20 @@ text = "Host"
 [node name="UPNP" type="CheckButton" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Host with UPNP"
+
+[node name="sprite" type="PanelContainer" parent="CanvasLayer/MainMenu"]
+layout_mode = 0
+offset_left = 1042.0
+offset_top = 252.0
+offset_right = 1342.0
+offset_bottom = 552.0
+scale = Vector2(0.7, 0.7)
+theme_override_styles/panel = SubResource("StyleBoxFlat_6npfk")
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer/MainMenu/sprite"]
+position = Vector2(144, 155)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_cxou4")
 
 [connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Join" to="CanvasLayer/MainMenu" method="_on_join_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Host" to="CanvasLayer/MainMenu" method="_on_host_pressed"]

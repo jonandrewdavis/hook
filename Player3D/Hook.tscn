@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c5io863yqwynd"]
+[gd_scene load_steps=15 format=3 uid="uid://c5io863yqwynd"]
 
 [ext_resource type="Script" path="res://Player3D/Hook.gd" id="1_pc0vx"]
 [ext_resource type="ArrayMesh" uid="uid://bl60vtxt3ouch" path="res://Assets/models/R_hand_Balled.obj" id="2_0wwig"]
@@ -11,7 +11,10 @@
 [ext_resource type="Texture2D" uid="uid://v6trsbpsq5fa" path="res://Assets/textures/worn_rock_natural_01_rough_4k.png" id="7_rqmbb"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_6r2nm"]
-radius = 0.4
+radius = 0.33
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_wauxr"]
+radius = 0.6
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_skrpr"]
 render_priority = 0
@@ -119,6 +122,14 @@ collision_mask = 5
 [node name="ClawCollision" type="CollisionShape3D" parent="HookMesh/Claw/ClawArea"]
 shape = SubResource("SphereShape3D_6r2nm")
 
+[node name="HookHurtBox" type="Area3D" parent="HookMesh/Claw"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.308709, -0.219614)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HookMesh/Claw/HookHurtBox"]
+shape = SubResource("SphereShape3D_wauxr")
+
 [node name="Arm" type="MeshInstance3D" parent="HookMesh"]
 visible = false
 material_override = SubResource("StandardMaterial3D_24oc8")
@@ -158,6 +169,7 @@ one_shot = true
 replication_config = SubResource("SceneReplicationConfig_w3nmj")
 
 [connection signal="body_entered" from="HookMesh/Claw/ClawArea" to="." method="_on_claw_area_body_entered"]
+[connection signal="body_entered" from="HookMesh/Claw/HookHurtBox" to="." method="_on_hook_hurt_box_body_entered"]
 [connection signal="timeout" from="GrappleTimer" to="." method="_on_grapple_timer_timeout"]
 [connection signal="timeout" from="HookTimer" to="." method="_on_hook_timer_timeout"]
 [connection signal="timeout" from="BlinkTimer" to="." method="_on_blink_timer_timeout"]

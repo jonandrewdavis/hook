@@ -1,6 +1,6 @@
 extends Node3D
 
-var DEFAULT_HOOK_HEALTH: int = 25
+var DEFAULT_HOOK_HEALTH: int = 17
 var hook_health = DEFAULT_HOOK_HEALTH
 
 @onready var player: Player = get_parent().get_parent().get_parent()
@@ -23,7 +23,6 @@ var hook_health = DEFAULT_HOOK_HEALTH
 
 var HOOK_SPEED = HOOK_SPEED_DEFAULT
 var HOOK_TIME = 1
-
 
 enum STATE {IDLE, SEEKING, PULLING_SELF, PULLING_ENEMY}
 var curr: STATE = STATE.IDLE
@@ -272,7 +271,7 @@ func ready_hook():
 	if is_multiplayer_authority():
 		LINE_REMOTE.visible = false
 		LINE_REMOTE.set_scale(Vector3(0, 0, 0))
-	CLAW_COLLISION.disabled = true
+	call_deferred('disable_collision')
 	HOOKBODY.look_at(LOOKPOINT.global_position)
 	fist()
 
@@ -308,31 +307,40 @@ func hand():
 	HAND_MODEL.show()
 
 func _on_claw_area_body_entered(body):
+	if not curr == STATE.SEEKING:
+		return
+	# this prevents claw from being called from peers.
+	if not is_multiplayer_authority():
+		return
 	if body == null:
 		return
 	
 	if body.is_in_group("Bullet"):
-		take_hook_damage(body.Source, body.Damage)
+		if body.Source != get_multiplayer_authority():
+			take_hook_damage.rpc(body.Source, body.Damage)
+		return
 	
 	# All targets can be grabbed.
 	if body.is_in_group("Target"):
 		if body.is_in_group("Players") and body.get_multiplayer_authority() != get_multiplayer_authority():
-			hook_player(body)
-		else:
-			if get_multiplayer_authority() == 1 and body.is_in_group("Players"):
-				return
-			else:
+			print('its me', player.TEAM, player.my_team_ids)
+			if player.my_team_ids.find(body.id) == -1:
 				hook_player(body)
-		return
-	
+		elif body.is_in_group("Head"):
+			hook_player(body)
+		return		
 	# TODO: Should move along/move & slide along the floor.
-	
-	# Slightly counterintuitively, Terrain "group" disallows terrain hooking.
-	if not body.is_in_group("Terrain"):
+	if body.is_in_group("SlowHook"):
+		HOOK_SPEED = 2
+		return
+
+	# IgnoreHook "group" disallows terrain hooking.
+	if not body.is_in_group("IgnoreHook"):
 		hook_terrain(body)
 		return
 
 func hook_player(body):
+	player.AUDIO.play('connect')	
 	$HookTimer.paused = true
 	call_deferred('disable_collision')
 	curr = STATE.PULLING_ENEMY
@@ -344,6 +352,7 @@ func hook_player(body):
 var max_hook_distance
 
 func hook_terrain(_body):
+	player.AUDIO.play('connect')
 	curr = STATE.PULLING_SELF
 	$HookTimer.paused = true
 	# THIS ALLOWS DEATH OF HOOK
@@ -390,14 +399,14 @@ func _on_blink_timer_timeout():
 	if curr == STATE.PULLING_SELF and blink == 0: 
 		cancel_hook()
 
-
+@rpc('any_peer', "call_local")
 func take_hook_damage(Source, Damage):
 	if Source != null:
 		player.last_damage_source = Source
-	if hook_health - Damage <= 0:
-		cancel_hook()
-	else:
-		hook_health -= Damage
+		if hook_health - Damage <= 0:
+			cancel_hook()
+		else:
+			hook_health -= Damage
 	
 #@rpc("any_peer", "call_local")
 #func Hit_Successful(Source, Damage, _Direction, _Position):
@@ -405,3 +414,11 @@ func take_hook_damage(Source, Damage):
 	## This check effectively prevents self damage.
 	#if Source != get_multiplayer_authority():  
 		#take_hook_damage(Source, Damage)
+
+func _on_hook_hurt_box_body_entered(body):
+	if body.is_in_group("Bullet"):
+		if body.Source != get_multiplayer_authority():
+			if player.my_team_ids.find(body.Source) == -1:
+				print('take hook damage wtfs')
+				take_hook_damage.rpc(body.Source, body.Damage)
+		return

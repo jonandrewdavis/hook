@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwdr56mhu8jlj"]
+
+[ext_resource type="ArrayMesh" uid="uid://dbujncuc0djd" path="res://Environment/Skeleton_Head.tres" id="1_hrqtv"]
+
+[node name="SkullHeadMesh" type="MeshInstance3D"]
+mesh = ExtResource("1_hrqtv")
+blend_shapes/Angry = 0.0
+blend_shapes/Happy = 0.0

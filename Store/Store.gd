@@ -22,7 +22,8 @@ var upnp_host_ip = ''
 
 var store = {
 	"players" : {},
-	"score": 0
+	"red_score": 0,
+	"blue_score": 0,
 }
 
 func _ready():

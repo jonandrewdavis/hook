@@ -1,16 +1,20 @@
-[gd_scene load_steps=14 format=3 uid="uid://b1yleqbb8tc7x"]
+[gd_scene load_steps=15 format=3 uid="uid://b1yleqbb8tc7x"]
 
 [ext_resource type="Environment" uid="uid://fffgfrct4uva" path="res://Levels/WorldEnv1.tres" id="1_k70i5"]
 [ext_resource type="Script" path="res://Levels/Level.gd" id="1_olixi"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="3_y40gl"]
 [ext_resource type="Texture2D" uid="uid://d1t8o3lfiydbi" path="res://Assets/environment/Lava 03 FULL.png" id="5_8odel"]
-[ext_resource type="Material" uid="uid://dkyq31w10b4dv" path="res://Assets/materials/lava.tres" id="7_4xne7"]
+[ext_resource type="PackedScene" uid="uid://dyi857vhdlaya" path="res://Environment/Goal.tscn" id="7_ltvuo"]
+[ext_resource type="PackedScene" uid="uid://btvv2hrt8xq6j" path="res://Levels/Platform.tscn" id="7_ub2wk"]
 [ext_resource type="PackedScene" uid="uid://b6k7s2ewcuk42" path="res://Levels/skull.tscn" id="11_olckj"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_lmmeb"]
 material = ExtResource("3_y40gl")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dub36"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fd5wm"]
+size = Vector3(100, 2, 100)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_haccd"]
 albedo_texture = ExtResource("5_8odel")
@@ -24,12 +28,8 @@ size = Vector3(100, 2, 100)
 [sub_resource type="BoxShape3D" id="BoxShape3D_83pc0"]
 size = Vector3(100, 2, 100)
 
-[sub_resource type="BoxMesh" id="BoxMesh_idjk1"]
-material = ExtResource("7_4xne7")
-size = Vector3(35, 0.2, 18)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_1shxj"]
-size = Vector3(35, 0.2, 18)
+[sub_resource type="SphereShape3D" id="SphereShape3D_ive2k"]
+radius = 4.0
 
 [node name="Level" type="Node3D"]
 script = ExtResource("1_olixi")
@@ -54,21 +54,28 @@ light_volumetric_fog_energy = 0.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.156684, 0)
 
 [node name="Marker3D" type="Marker3D" parent="Spawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.8822, 9.66506, 2.55209)
+gizmo_extents = 1.0
 
 [node name="Marker3D2" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.81886, 0, 2.3809)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.3436, 10.4, 5.20882)
+gizmo_extents = 1.0
 
 [node name="Marker3D3" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.2848, 0, 0)
-
-[node name="Marker3D4" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.2467, 0, 0)
-
-[node name="Marker3D5" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.42207, 0, 3.76438)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.0109, 9.93488, 4.44412)
+gizmo_extents = 1.0
 
 [node name="Marker3D6" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.37396, 0, -2.47932)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.5473, 10.6814, 7.13225)
+gizmo_extents = 1.0
+
+[node name="Marker3D4" type="Marker3D" parent="Spawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.7902, 8.85757, 5.06713)
+gizmo_extents = 1.0
+
+[node name="Marker3D5" type="Marker3D" parent="Spawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7272, 8.7356, 7.32563)
+gizmo_extents = 1.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.27235, 0)
@@ -95,6 +102,19 @@ mesh = SubResource("BoxMesh_lmmeb")
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D8"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D8/StaticBody3D"]
+shape = SubResource("BoxShape3D_dub36")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshInstance3D8/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7038, -3.62528, -9.43627)
+shape = SubResource("BoxShape3D_dub36")
+
+[node name="MeshInstance3D9" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.9054, 24.0575, 8.16233)
+mesh = SubResource("BoxMesh_lmmeb")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D9"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D9/StaticBody3D"]
 shape = SubResource("BoxShape3D_dub36")
 
 [node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
@@ -130,6 +150,18 @@ transform = Transform3D(-0.89111, 0, 0.453788, 0, 1, 0, -0.453788, 0, -0.89111, 
 [node name="Skull2" parent="." instance=ExtResource("11_olckj")]
 transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 3.71354, 5.77806, 4.6992)
 
+[node name="Skull7" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 17.7557, 14.8835, -3.425)
+
+[node name="Skull8" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 22.6032, 12.338, 20.9168)
+
+[node name="Skull9" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 22.6032, 19.8032, -7.20107)
+
+[node name="Skull10" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 11.8185, 23.9369, -7.20107)
+
 [node name="Skull5" parent="." instance=ExtResource("11_olckj")]
 transform = Transform3D(-0.94306, 0, 0.332622, 0, 1, 0, -0.332622, 0, -0.94306, -6.84653, 17.6187, 16.5135)
 
@@ -142,8 +174,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28473, 19.1307, 24.5266)
 [node name="Skull4" parent="." instance=ExtResource("11_olckj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6189, 20.6784, 19.6588)
 
+[node name="LavaCollision" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.60112, -92.1062, -0.140203)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LavaCollision"]
+shape = SubResource("BoxShape3D_fd5wm")
+
 [node name="LavaMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -51.5116, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.26616, -90.3538, 0)
 mesh = SubResource("BoxMesh_cngiy")
 
 [node name="LavaArea" type="Area3D" parent="LavaMesh"]
@@ -151,22 +189,21 @@ mesh = SubResource("BoxMesh_cngiy")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LavaMesh/LavaArea"]
 shape = SubResource("BoxShape3D_83pc0")
 
-[node name="Platform" type="StaticBody3D" parent="." groups=["Terrain"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.589872, 0)
+[node name="Platform3" parent="." instance=ExtResource("7_ub2wk")]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform"]
-mesh = SubResource("BoxMesh_idjk1")
+[node name="Platform4" parent="." instance=ExtResource("7_ub2wk")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 37.954, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform"]
-shape = SubResource("BoxShape3D_1shxj")
+[node name="Goal2" parent="." instance=ExtResource("7_ltvuo")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 18.8741, -5.2678, -0.966699)
 
-[node name="Platform2" type="StaticBody3D" parent="." groups=["Terrain"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.589872, 27.2037)
+[node name="GoalProtection" type="Area3D" parent="."]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2"]
-mesh = SubResource("BoxMesh_idjk1")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2"]
-shape = SubResource("BoxShape3D_1shxj")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoalProtection"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.9443, -5.20615, -0.646342)
+shape = SubResource("SphereShape3D_ive2k")
 
 [connection signal="body_entered" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_entered"]
+[connection signal="body_exited" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_exited"]
+[connection signal="body_entered" from="GoalProtection" to="." method="_on_goal_protection_body_entered"]
+[connection signal="body_exited" from="GoalProtection" to="." method="_on_goal_protection_body_exited"]

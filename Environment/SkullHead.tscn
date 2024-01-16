@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://c1061erqaur0"]
+
+[ext_resource type="PackedScene" uid="uid://bwdr56mhu8jlj" path="res://Environment/SkullHeadMesh.tscn" id="1_aqyh8"]
+[ext_resource type="Script" path="res://Environment/Head.gd" id="1_dgy30"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_k54v7"]
+radius = 0.44
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_54j46"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="SkullHead" type="RigidBody3D" groups=["Head", "Target"]]
+collision_layer = 129
+collision_mask = 129
+script = ExtResource("1_dgy30")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_k54v7")
+
+[node name="SkullHeadMesh" parent="." instance=ExtResource("1_aqyh8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.495328, 0)
+
+[node name="DestroyTimer" type="Timer" parent="."]
+wait_time = 45.0
+one_shot = true
+autostart = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_54j46")
+
+[node name="HookMax" type="Timer" parent="."]
+wait_time = 6.0
+one_shot = true
+
+[connection signal="timeout" from="HookMax" to="." method="_on_hook_max_timeout"]

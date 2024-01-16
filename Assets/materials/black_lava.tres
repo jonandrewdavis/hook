@@ -1,0 +1,19 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://bmde3e5hggx63"]
+
+[ext_resource type="Texture2D" uid="uid://frdr4i7tgn25" path="res://Assets/textures/HOT ROCK 03 FULL.png" id="1_nc3vh"]
+[ext_resource type="Texture2D" uid="uid://by16gnv2nxjvq" path="res://Assets/textures/HOT ROCK 03 FX.png" id="3_cyr80"]
+[ext_resource type="Texture2D" uid="uid://8v15jsb7yv2b" path="res://Assets/textures/HOT ROCK 03 BUMP.png" id="4_ffyvt"]
+
+[resource]
+albedo_texture = ExtResource("1_nc3vh")
+metallic_specular = 0.0
+metallic_texture = ExtResource("3_cyr80")
+emission_enabled = true
+emission = Color(0.34902, 0, 0, 1)
+emission_energy_multiplier = 5.45
+emission_operator = 1
+emission_texture = ExtResource("3_cyr80")
+normal_enabled = true
+normal_texture = ExtResource("4_ffyvt")
+uv1_scale = Vector3(0.2, 0.2, 0.2)
+uv1_triplanar = true

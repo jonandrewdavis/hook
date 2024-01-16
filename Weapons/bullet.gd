@@ -9,6 +9,9 @@ func _on_body_entered(body):
 		# id to hit,
 		# source, damage, position, rotation
 		body.Hit_Successful.rpc_id(hit_player, Source, Damage, null, null)
+	if body.is_in_group("Head") && body.has_method("Hit_Successful"):
+		body.Hit_Successful(Source, Damage, null, global_position)
+
 	if multiplayer.is_server(): 
 		queue_free()
 

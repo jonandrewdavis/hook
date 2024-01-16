@@ -15,6 +15,7 @@ signal Zoom
 @export var Drop_Anim: String
 @export var Out_Of_Ammo_Anim: String
 @export var Melee_Anim: String
+@export var Audio_Animation: String
 
 @export_group("Weapon Stats")
 @export var Current_Ammo: int

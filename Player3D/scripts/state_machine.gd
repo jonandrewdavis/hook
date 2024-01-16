@@ -27,6 +27,8 @@ func _physics_process(delta):
 	CURRENT_STATE.physics_process(delta)
 
 func on_child_transition(new_state_name: StringName) -> void:
+	if not is_multiplayer_authority(): 
+		return
 	var new_state = states.get(new_state_name)
 	if new_state != null:
 		if new_state != CURRENT_STATE:

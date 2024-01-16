@@ -80,7 +80,7 @@ func _input(event):
 	if event.is_action_released("Secondary_Fire"):
 		reset_secondary()
 		
-	if event.is_action_pressed("Primary_Fire"):
+	if event.is_action_pressed("Primary_Fire") and PLAYER.picked_object == null:
 		shoot()
 		
 	if event.is_action_released("Primary_Fire"):
@@ -144,6 +144,7 @@ func Change_Weapon(weapon_name: String):
 func shoot():
 	if Current_Weapon.Current_Ammo != 0:
 		if not Animation_Player.is_playing():
+			PLAYER.AUDIO.play(Current_Weapon.Audio_Animation)
 			Animation_Player.play(Current_Weapon.Shoot_Anim)
 			Current_Weapon.Current_Ammo -= 1
 			Update_Ammo.emit([Current_Weapon.Current_Ammo, Current_Weapon.Reserve_Ammo])
@@ -158,6 +159,7 @@ func shoot():
 	else:
 		reload()
 
+
 func reload():
 	if Current_Weapon.Current_Ammo == Current_Weapon.Magazine:
 		return
@@ -168,7 +170,7 @@ func reload():
 				reset_secondary()
 				
 			Animation_Player.queue(Current_Weapon.Reload_Anim)
-
+			PLAYER.AUDIO.queue("reload")
 		else:
 			Animation_Player.queue(Current_Weapon.Out_Of_Ammo_Anim)
 
@@ -193,6 +195,7 @@ func melee():
 		
 	if Current_Anim != Current_Weapon.Melee_Anim:
 		Animation_Player.play(Current_Weapon.Melee_Anim)
+		PLAYER.AUDIO.play('melee')
 		var Camera_Collission =  GetCameraCollision(2)
 		if Camera_Collission[0]:
 			var Direction = (Camera_Collission[1] - owner.global_transform.origin).normalized()
@@ -290,6 +293,9 @@ func HitScanDamage(Collider, Direction, Position, Damage):
 	if Collider.is_in_group("Players") and Collider.has_method("Hit_Successful"):
 		print('melee:', Collider.id, PLAYER.id, Damage, Direction, Position)
 		Collider.Hit_Successful.rpc_id(Collider.id, PLAYER.id, Damage, Direction, Position)
+
+	if Collider.is_in_group("Head") and Collider.has_method("Hit_Successful"):
+		Collider.Hit_Melee.rpc(PLAYER.id, Damage, Direction, Position)
 
 	# TODO: Hitscan for objects.
 	# if Collider.is_in_group("Target") and Collider.has_method("Hit_Successful"):

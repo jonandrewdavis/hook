@@ -1,15 +1,22 @@
-[gd_scene load_steps=29 format=3 uid="uid://c3ffql15mo0aj"]
+[gd_scene load_steps=44 format=3 uid="uid://c3ffql15mo0aj"]
 
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
 [ext_resource type="PackedScene" uid="uid://b8njiqmewnmd7" path="res://UI/UI.tscn" id="2_vsmbj"]
+[ext_resource type="AudioStream" uid="uid://80gfy4v1qlh0" path="res://Assets/sound/reload.mp3" id="3_hifq3"]
+[ext_resource type="AudioStream" uid="uid://bgxhbv74q0k6i" path="res://Assets/sound/gun-rifle-shot.mp3" id="3_lq48b"]
 [ext_resource type="Script" path="res://Weapons/Weapon_State_Machine.gd" id="5_a6g0p"]
+[ext_resource type="AudioStream" uid="uid://0tq7047q40qx" path="res://Assets/sound/shotgun-firing.mp3" id="5_mha3a"]
+[ext_resource type="AudioStream" uid="uid://oir2f36prcms" path="res://Assets/sound/fist-punch-or-kick.mp3" id="6_2mrjg"]
 [ext_resource type="Resource" uid="uid://2os2xoq5i5dj" path="res://Weapons/Weapon_Resources/blasterL.tres" id="6_2tdxl"]
 [ext_resource type="Script" path="res://Player3D/scripts/state_machine.gd" id="6_40av4"]
 [ext_resource type="AnimationLibrary" uid="uid://uybino34n0sj" path="res://Weapons/weapon_animation.res" id="7_fywwy"]
 [ext_resource type="PackedScene" uid="uid://nhffnkmnjehm" path="res://Weapons/Weapon_Models/blaster_a.tscn" id="7_heg3t"]
 [ext_resource type="Resource" uid="uid://cgr1r00inv1h8" path="res://Weapons/Weapon_Resources/blasterLShotGun.tres" id="7_ou6ul"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Idle.gd" id="7_sgjnc"]
+[ext_resource type="AudioStream" uid="uid://cm1pf6f53xe1i" path="res://Assets/sound/knuckles-crack10-105072.mp3" id="7_v4bki"]
+[ext_resource type="AudioStream" uid="uid://c8jcqr1s0kxck" path="res://Assets/sound/thwack.mp3" id="8_t5cxp"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Sprint.gd" id="9_4fvia"]
+[ext_resource type="AudioStream" uid="uid://csmhd4fyixgga" path="res://Assets/sound/splat2ogg-14668.mp3" id="9_84byn"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Walking.gd" id="9_cybia"]
 [ext_resource type="PackedScene" uid="uid://ddheglsbnaes" path="res://Weapons/Weapon_Models/BlasterGModelScene.tscn" id="9_vv4nr"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Stunned.gd" id="10_gogm3"]
@@ -45,6 +52,18 @@ properties/5/replication_mode = 2
 properties/6/path = NodePath("CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models/AnimationPlayer:current_animation")
 properties/6/spawn = true
 properties/6/replication_mode = 1
+properties/7/path = NodePath("CameraControllerHolder/PlayerCamera:visible")
+properties/7/spawn = true
+properties/7/replication_mode = 2
+properties/8/path = NodePath("NameLabel:text")
+properties/8/spawn = true
+properties/8/replication_mode = 2
+properties/9/path = NodePath(".:TEAM")
+properties/9/spawn = true
+properties/9/replication_mode = 2
+properties/10/path = NodePath("PlayerAudio:current_animation")
+properties/10/spawn = true
+properties/10/replication_mode = 1
 
 [sub_resource type="Animation" id="Animation_1ul0x"]
 length = 0.001
@@ -82,6 +101,149 @@ _data = {
 "crouch": SubResource("Animation_cgbks")
 }
 
+[sub_resource type="Animation" id="Animation_i8gin"]
+resource_name = "connect"
+length = 0.2
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AudioStreamPlayer3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.128761,
+"start_offset": 0.0460418,
+"stream": ExtResource("8_t5cxp")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = true
+
+[sub_resource type="Animation" id="Animation_8cppm"]
+resource_name = "extend"
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AudioStreamPlayer3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("7_v4bki")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = true
+
+[sub_resource type="Animation" id="Animation_4e6r3"]
+resource_name = "melee"
+length = 0.5
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AudioStreamPlayer3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.319566,
+"start_offset": 0.159335,
+"stream": ExtResource("6_2mrjg")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = false
+
+[sub_resource type="Animation" id="Animation_5bysu"]
+resource_name = "reload"
+length = 0.8
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AudioStreamPlayer3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.267601,
+"start_offset": 0.0837531,
+"stream": ExtResource("3_hifq3")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = false
+
+[sub_resource type="Animation" id="Animation_p2mbk"]
+resource_name = "shoot_rifle"
+length = 0.1
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AudioStreamPlayer3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0489955,
+"stream": ExtResource("3_lq48b")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = false
+
+[sub_resource type="Animation" id="Animation_x3fyl"]
+resource_name = "shoot_shotgun"
+length = 0.6
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AudioStreamPlayer3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0820276,
+"start_offset": 0.0,
+"stream": ExtResource("5_mha3a")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = false
+
+[sub_resource type="Animation" id="Animation_byttd"]
+resource_name = "splat"
+length = 0.5
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AudioStreamPlayer3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.415264,
+"start_offset": 0.0,
+"stream": ExtResource("9_84byn")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = false
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_y5tit"]
+_data = {
+"connect": SubResource("Animation_i8gin"),
+"extend": SubResource("Animation_8cppm"),
+"melee": SubResource("Animation_4e6r3"),
+"reload": SubResource("Animation_5bysu"),
+"shoot_rifle": SubResource("Animation_p2mbk"),
+"shoot_shotgun": SubResource("Animation_x3fyl"),
+"splat": SubResource("Animation_byttd")
+}
+
 [sub_resource type="Animation" id="Animation_st2v7"]
 length = 0.001
 tracks/0/type = "value"
@@ -114,12 +276,19 @@ radius = 0.3
 height = 0.6
 
 [node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER", "DEATH_CAM") groups=["Players", "Target"]]
+collision_layer = 8388641
+collision_mask = 8388609
 script = ExtResource("1_pgc1p")
 MOUSE_SENSITIVITY = 0.25
 CAMERA_CONTROLLER = NodePath("CameraControllerHolder/PlayerCamera")
 ANIMATIONPLAYER = NodePath("PlayerAnimationPlayer")
 DEATH_CAM = NodePath("DeathCam")
 UI_SCENE = ExtResource("2_vsmbj")
+
+[node name="NameLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.66968, 0)
+billboard = 1
+text = "Andrew"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.668644, 0)
@@ -131,6 +300,12 @@ replication_config = SubResource("SceneReplicationConfig_1x53u")
 [node name="PlayerAnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 "": SubResource("AnimationLibrary_nef7h")
+}
+
+[node name="PlayerAudio" type="AnimationPlayer" parent="."]
+reset_on_save = false
+libraries = {
+"": SubResource("AnimationLibrary_y5tit")
 }
 
 [node name="character_skeleton_mage" parent="." instance=ExtResource("11_elbq1")]
@@ -156,6 +331,7 @@ Start_Weapons = Array[String](["blasterL", "blasterI"])
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.118642, -1.53014, -0.159279)
 
 [node name="blasterL" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
+transform = Transform3D(-1, 0, -2.53518e-06, 0, 1, 0, 2.53518e-06, 0, -1, 0.117, 1.16, -0.512)
 visible = false
 
 [node name="blasterA" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models/blasterL" instance=ExtResource("7_heg3t")]
@@ -164,7 +340,7 @@ visible = false
 transform = Transform3D(-1, 0, 2.53518e-06, 0, 1, 0, -2.53518e-06, 0, -1, 0.193, 1.255, -0.643)
 
 [node name="blasterI" type="Node3D" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models"]
-transform = Transform3D(-1, 0, -2.53518e-06, 0, 1, 0, 2.53518e-06, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, -2.53518e-06, 0, 1, 0, 2.53518e-06, 0, -1, 0.166, 1.268, -0.569)
 visible = false
 
 [node name="blasterG" parent="CameraControllerHolder/PlayerCamera/Weapons_Manager/Weapons_Models/blasterI" instance=ExtResource("9_vv4nr")]
@@ -185,8 +361,9 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.386642, -0.239748, -0.567892)
 
 [node name="WeaponCast" type="RayCast3D" parent="CameraControllerHolder/PlayerCamera"]
-transform = Transform3D(0.986528, -0.00632548, 0.163471, 0.0246582, 0.993586, -0.110362, -0.161724, 0.112907, 0.980356, 0.380924, -0.258799, -0.368523)
-target_position = Vector3(0, 0, -2.5)
+transform = Transform3D(0.992529, -0.0111364, 0.1215, 0.0231275, 0.994944, -0.0977336, -0.119797, 0.0998143, 0.987768, 0.380924, -0.258799, -0.368523)
+target_position = Vector3(0, 0, -2.8)
+collision_mask = 128
 
 [node name="PickMarker" type="Marker3D" parent="CameraControllerHolder/PlayerCamera"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.439323, -0.240847, -1.63399)
@@ -218,6 +395,10 @@ script = ExtResource("15_ktyft")
 
 [node name="Idle" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("7_sgjnc")
+
+[node name="HookMaxTimer" type="Timer" parent="."]
+wait_time = 2.3
+one_shot = true
 
 [node name="HookInputTimer" type="Timer" parent="."]
 wait_time = 0.5
@@ -260,4 +441,16 @@ disabled = true
 visible = false
 mesh = SubResource("SphereMesh_hlhaw")
 
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.289769, 0.757879, -0.15212)
+volume_db = -8.0
+max_db = 1.0
+max_distance = 5.5
+
+[node name="DOT" type="Timer" parent="."]
+wait_time = 0.8
+one_shot = true
+
+[connection signal="timeout" from="HookMaxTimer" to="." method="_on_hook_max_timer_timeout"]
 [connection signal="timeout" from="HookRecharge" to="." method="_on_hook_recharge_timeout"]
+[connection signal="timeout" from="DOT" to="." method="_on_dot_timeout"]
