@@ -85,7 +85,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_r5lca")
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MainMenu/Panel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
+theme_override_constants/margin_top = 300
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
@@ -160,16 +160,31 @@ text = "Host"
 layout_mode = 2
 text = "Host with UPNP"
 
-[node name="sprite" type="PanelContainer" parent="CanvasLayer/MainMenu"]
-layout_mode = 0
-offset_left = 1042.0
-offset_top = 252.0
-offset_right = 1342.0
-offset_bottom = 552.0
-scale = Vector2(0.7, 0.7)
+[node name="Quit" type="Button" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_0b0al")
+text = "Quit"
+
+[node name="MarginContainer2" type="MarginContainer" parent="CanvasLayer/MainMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -354.0
+offset_right = 150.0
+offset_bottom = -54.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="sprite" type="PanelContainer" parent="CanvasLayer/MainMenu/MarginContainer2"]
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_6npfk")
 
-[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer/MainMenu/sprite"]
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer/MainMenu/MarginContainer2/sprite"]
 position = Vector2(144, 155)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_cxou4")
@@ -178,3 +193,4 @@ texture = ExtResource("2_cxou4")
 [connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Join" to="CanvasLayer/MainMenu" method="_on_join_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Host" to="CanvasLayer/MainMenu" method="_on_host_pressed"]
 [connection signal="toggled" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/UPNP" to="CanvasLayer/MainMenu" method="_on_upnp_toggled"]
+[connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Quit" to="CanvasLayer/MainMenu" method="_on_quit_pressed"]

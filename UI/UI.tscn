@@ -1,10 +1,13 @@
-[gd_scene load_steps=19 format=3 uid="uid://b8njiqmewnmd7"]
+[gd_scene load_steps=20 format=3 uid="uid://b8njiqmewnmd7"]
 
 [ext_resource type="Script" path="res://UI/UI.gd" id="1_eg6yc"]
 [ext_resource type="Script" path="res://UI/reticle.gd" id="2_twk2u"]
 [ext_resource type="Texture2D" uid="uid://bidq6qyrhxbld" path="res://Assets/Skeleton-Hand-PNG-Transparent.png" id="3_kxe1s"]
 [ext_resource type="Texture2D" uid="uid://ctobs3kw8k5vp" path="res://Assets/textures/debris2 Blood Overlay.png" id="4_gvqyp"]
 [ext_resource type="AudioStream" uid="uid://c6en6i3rmugwr" path="res://Assets/sound/haunted.mp3" id="5_bew5n"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_dd3th"]
+diffuse_texture = ExtResource("4_gvqyp")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ibchv"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -87,7 +90,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("blood/HBoxContainer/Sprite2D:modulate")
+tracks/1/path = NodePath("blood/BloodSprite:modulate")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -115,22 +118,16 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 mouse_filter = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/blood"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer/blood/HBoxContainer"]
+[node name="BloodSprite" type="Sprite2D" parent="CanvasLayer/blood"]
 modulate = Color(1, 1, 1, 0.854902)
 position = Vector2(-288, -180)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("4_gvqyp")
-centered = false
+texture = SubResource("CanvasTexture_dd3th")
+offset = Vector2(960, 510)
 
 [node name="HUD" type="Control" parent="CanvasLayer"]
 layout_mode = 3
@@ -145,11 +142,11 @@ mouse_filter = 1
 layout_mode = 1
 offset_left = 9.0
 offset_top = 3.0
-offset_right = 376.0
-offset_bottom = 240.0
+offset_right = 506.0
+offset_bottom = 306.0
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_outline_size = 1
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 
 [node name="HelperText" type="Label" parent="CanvasLayer/HUD"]
 visible = false
@@ -366,7 +363,16 @@ horizontal_alignment = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.290196, 0.541176, 1, 1)
 
+[node name="LastKill" type="Label" parent="CanvasLayer/Scoreboard"]
+layout_mode = 2
+offset_left = 35.0
+offset_top = 32.0
+offset_right = 489.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 12
+
 [node name="SettingsMenu" type="Control" parent="CanvasLayer"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

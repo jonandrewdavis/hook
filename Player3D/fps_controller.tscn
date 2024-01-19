@@ -71,6 +71,12 @@ properties/11/replication_mode = 2
 properties/12/path = NodePath("CameraControllerHolder/PlayerCamera/Hook:visible")
 properties/12/spawn = true
 properties/12/replication_mode = 2
+properties/13/path = NodePath("NameLabel:visible")
+properties/13/spawn = true
+properties/13/replication_mode = 2
+properties/14/path = NodePath(".:collision_mask")
+properties/14/spawn = true
+properties/14/replication_mode = 2
 
 [sub_resource type="Animation" id="Animation_1ul0x"]
 length = 0.001
@@ -462,6 +468,16 @@ bus = &"SFX"
 wait_time = 0.8
 one_shot = true
 
+[node name="Health" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
+[node name="Recover" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
 [connection signal="timeout" from="HookMaxTimer" to="." method="_on_hook_max_timer_timeout"]
 [connection signal="timeout" from="HookRecharge" to="." method="_on_hook_recharge_timeout"]
 [connection signal="timeout" from="DOT" to="." method="_on_dot_timeout"]
+[connection signal="timeout" from="Health" to="." method="_on_health_timeout"]
+[connection signal="timeout" from="Recover" to="." method="_on_recover_timeout"]

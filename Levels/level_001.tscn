@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://b1yleqbb8tc7x"]
+[gd_scene load_steps=22 format=3 uid="uid://b1yleqbb8tc7x"]
 
 [ext_resource type="Environment" uid="uid://fffgfrct4uva" path="res://Levels/WorldEnv1.tres" id="1_k70i5"]
 [ext_resource type="Script" path="res://Levels/Level.gd" id="1_olixi"]
@@ -31,6 +31,21 @@ size = Vector3(300, 2, 300)
 [sub_resource type="SphereShape3D" id="SphereShape3D_ive2k"]
 radius = 4.0
 
+[sub_resource type="Animation" id="Animation_rfbxw"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CamHolder:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
 [sub_resource type="Animation" id="Animation_58mam"]
 resource_name = "camera rotate"
 length = 60.0
@@ -48,12 +63,18 @@ tracks/0/keys = {
 "values": [Vector3(0, 0, 0), Vector3(0, 3.14159, 0), Vector3(0, 6.26573, 0)]
 }
 
-[sub_resource type="Animation" id="Animation_rfbxw"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_6cgv2"]
+_data = {
+"RESET": SubResource("Animation_rfbxw"),
+"camera rotate": SubResource("Animation_58mam")
+}
+
+[sub_resource type="Animation" id="Animation_tqoc8"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("CamHolder:rotation")
+tracks/0/path = NodePath("Goal2:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -62,12 +83,88 @@ tracks/0/keys = {
 "update": 0,
 "values": [Vector3(0, 0, 0)]
 }
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_6cgv2"]
-_data = {
-"RESET": SubResource("Animation_rfbxw"),
-"camera rotate": SubResource("Animation_58mam")
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Goal2:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(18.8741, -2.35055, 1.89407)]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("GoalProtection:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 2.82726, 2.38507)]
+}
+
+[sub_resource type="Animation" id="Animation_10d50"]
+resource_name = "new_animation"
+length = 40.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Goal2:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 20.1, 30.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [Vector3(18.8741, -5.2678, -0.966699), Vector3(18.8741, 1.72013, 20.9628), Vector3(18.8741, 1.72013, -21.7519)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("GoalProtection:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 20, 30.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [Vector3(0, 0, 0), Vector3(0, 7.40222, 21.5875), Vector3(0, 7.40222, -20.8163)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Goal2:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 20.1, 30.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [Vector3(0, 0, 0), Vector3(-0.571997, 0, 0), Vector3(0.572468, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_5vur6"]
+_data = {
+"RESET": SubResource("Animation_tqoc8"),
+"goals": SubResource("Animation_10d50")
+}
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_iwh2i"]
+properties/0/path = NodePath("Goal2:position")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath("Goal2:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath("GoalProtection:position")
+properties/2/spawn = true
+properties/2/replication_mode = 2
 
 [node name="Level" type="Node3D"]
 script = ExtResource("1_olixi")
@@ -311,9 +408,10 @@ shape = SubResource("BoxShape3D_83pc0")
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 37.954, 0, 0)
 
 [node name="Goal2" parent="." instance=ExtResource("7_ltvuo")]
-transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 18.8741, -5.2678, -0.966699)
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 18.8741, -2.35055, 1.89407)
 
 [node name="GoalProtection" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.82726, 2.38507)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="GoalProtection"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.9443, -5.20615, -0.646342)
@@ -331,6 +429,15 @@ libraries = {
 "": SubResource("AnimationLibrary_6cgv2")
 }
 autoplay = "camera rotate"
+
+[node name="GoalsAnimation" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_5vur6")
+}
+speed_scale = 0.2
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_iwh2i")
 
 [connection signal="body_entered" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_entered"]
 [connection signal="body_exited" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_exited"]

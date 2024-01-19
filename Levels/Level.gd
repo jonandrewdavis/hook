@@ -1,11 +1,14 @@
 extends Node3D
 
 @onready var LAVA_AREA = $LavaMesh/LavaArea
-
 @onready var LEVEL_CAM = $CamHolder/LevelCam
 
 func _ready():
 	pass
+	
+func play_goal_animation():
+	if multiplayer.is_server():
+		$GoalsAnimation.play('goals')
 
 func _on_lava_area_body_entered(body):
 	if body.is_in_group("Players"): 

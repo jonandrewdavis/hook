@@ -66,6 +66,7 @@ func _on_connected_fail():
 	multiplayer.multiplayer_peer = null
 	error_ref.show()
 	show()
+	get_tree().quit()
 
 func start_game_host():
 	# If we're a client, we just hide and send our join info.
@@ -141,6 +142,8 @@ func ready_server_world():
 		
 		if Store.is_headless_mode == false:
 			add_player_in_server(1)
+			
+		world_ref.get_node('Level').play_goal_animation()
 
 func add_player_in_server(id: int):
 	var character_scene = load("res://Player3D/fps_controller.tscn")
@@ -173,3 +176,7 @@ func _on_nickname_text_changed(new_text):
 	else:
 		$Panel/MarginContainer/VBoxContainer/Join.disabled = true
 
+
+func _on_quit_pressed():
+	get_tree().quit()
+	pass # Replace with function body.

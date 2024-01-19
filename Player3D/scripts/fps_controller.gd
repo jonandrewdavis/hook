@@ -3,6 +3,8 @@ class_name Player
 extends CharacterBody3D
 
 signal health_changed(new_value)
+signal health_healed(new_value)
+signal last_kill(by)
 
 @export var TEAM = ''
 
@@ -32,6 +34,7 @@ signal health_changed(new_value)
 
 @export var CAPTURE_SPEED = 21
 
+@onready var NAMELABEL = $NameLabel
 @onready var LOOKPOINT = $CameraControllerHolder/PlayerCamera/LOOKPOINT 
 @onready var COLLISION: CollisionShape3D = $CollisionShape3D
 @onready var MODEL: Node3D = $character_skeleton_mage
@@ -46,6 +49,9 @@ signal health_changed(new_value)
 @onready var WEAPON_CAST: RayCast3D = $CameraControllerHolder/PlayerCamera/WeaponCast
 @onready var PICK_MARKER: Marker3D = $CameraControllerHolder/PlayerCamera/PickMarker
 @onready var AUDIO: AnimationPlayer = $PlayerAudio
+
+@onready var HEALTH_TIMER = $Health
+@onready var HEALTH_RECOVER_TIMER = $Recover
 
 @export var UI_SCENE: PackedScene
 
@@ -84,15 +90,15 @@ func _ready():
 	set_physics_process(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_unhandled_input(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_input(get_multiplayer_authority() == multiplayer.get_unique_id())
-	
+	invincible = true
 	if (is_multiplayer_authority()):
 		Store.e.connect(refresh)
 		ready_client_only_nodes()
 
 	await get_tree().create_timer(1).timeout
+	invincible = false
 	set_team()
-
-
+	NAMELABEL.show()
 
 # TODO: Clean all thes up, it's really a mashup of responsibilities. 
 func ready_client_only_nodes():
@@ -187,13 +193,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_rotation_input = -event.relative.x * MOUSE_SENSITIVITY
 			_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
-	
-	# this is a menu in the top left corner
-	# Scoreboard
+
 	elif event.is_action_pressed('score'):
 		UI.toggle_scoreboard()
-	elif event.is_action_pressed('menu'):
+	elif not ['Dead', 'Stunned', 'Busy'].has(FSM.CURRENT_STATE.name) and event.is_action_pressed('menu'):
 		UI.toggleMenu()
+
 
 func _process(_delta):
 	if not ['Dead', 'Stunned', 'Busy', 'Locked'].has(FSM.CURRENT_STATE.name):
@@ -239,11 +244,13 @@ func get_input():
 		elif picked_object != null:
 			drop_object()
 
-	if Input.is_action_just_pressed('Primary_Fire') and picked_object != null:
+	if Input.is_action_just_pressed('Primary_Fire') and picked_object != null and global_position.distance_to(picked_object.global_position) < 3:
 		picked_object.launch.rpc()
 		picked_object = null
-
-
+	elif Input.is_action_just_pressed('Primary_Fire') and picked_object != null and global_position.distance_to(picked_object.global_position) > 3:
+		picked_object = null
+		
+		
 	# CROUCH logic
 	if Input.is_action_pressed("crouch") and TOGGLE_CROUCH == true:
 		toggle_crouch()
@@ -381,8 +388,10 @@ func set_movement_speed(state: String):
 var invincible = false
 
 func take_damage(_last_damage_source, damage: int):
+	if _last_damage_source == 0:
+		return
 	if invincible == false:
-		if _last_damage_source != null:
+		if _last_damage_source != null and _last_damage_source != 0:
 			last_damage_source = _last_damage_source
 
 		if health - damage <= 0 and FSM.CURRENT_STATE.name != 'Stunned':
@@ -391,9 +400,11 @@ func take_damage(_last_damage_source, damage: int):
 		else:
 			health -= damage
 			health_changed.emit(health)
-
+			HEALTH_TIMER.start()
+			
 func die():	
 	if invincible == false:
+		gravity = 0	
 		drop_object()
 		HOOK.cancel_hook()
 		gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -417,6 +428,8 @@ func report_death():
 		Store.set_player.rpc(id, 'deaths', null)
 	else:
 		# We have a source, so credit the kill and report the death.
+		if Store.store.players.has(last_damage_source):
+			last_kill.emit(Store.store.players[last_damage_source].nickname)
 		Store.set_player.rpc(last_damage_source, 'kills', null)
 		Store.set_player.rpc(id, 'deaths', null)
 
@@ -424,6 +437,7 @@ func respawn():
 	CAMERA_CONTROLLER.current = true
 	set_collision_layer_value(6, true)
 	set_collision_layer_value(1, true)
+	set_collision_mask_value(1, true)
 	$DOT.stop()
 	is_damage_over_time = false
 	health = HEALTH_DEFAULT
@@ -433,6 +447,7 @@ func respawn():
 	HOOK.ready_hook()
 	HOOK.show()
 	show_mesh()
+	NAMELABEL.show()
 	# does double reload first time, but necessary for respawning to reset.
 	# WEAPONS.Initialize(WEAPONS.Start_Weapons)
 
@@ -465,8 +480,10 @@ func get_hooked():
 		$HookMaxTimer.start()
 		var playerId = multiplayer.get_remote_sender_id()
 		captured_by = get_parent().get_node(str(playerId))
-		last_damage_source = playerId
+		take_damage(playerId, 1)
 		# captured_by.HOOK.hide_hook()
+	else: 
+		captured_by = null
 
 func arrive_at_hook():
 	FSM.set_state("Busy")
@@ -512,12 +529,12 @@ func pick_object():
 	var collider = WEAPON_CAST.get_collider()
 	if collider != null and collider.is_in_group('Head'): 
 		picked_object = collider
-		picked_object.reserve.rpc()
+		picked_object.reserve.rpc(true)
 		
 				
 func drop_object():
 	if picked_object != null:
-		picked_object.reserve.rpc()
+		picked_object.reserve.rpc(false)
 		picked_object = null
 
 func _on_hook_max_timer_timeout():
@@ -546,3 +563,23 @@ func _on_dot_timeout():
 func set_level_cam():
 	var level = get_parent().get_node('Level')
 	level.LEVEL_CAM.current = true
+
+
+func _on_health_timeout():
+	if not ['Dead', 'Stunned', 'Busy', 'Locked'].has(FSM.CURRENT_STATE.name):
+		print(FSM.CURRENT_STATE.name)
+		HEALTH_RECOVER_TIMER.start()
+	elif health < HEALTH_DEFAULT:
+		HEALTH_TIMER.start() 
+	pass # Replace with function body.
+
+
+func _on_recover_timeout():
+	if not ['Dead', 'Stunned', 'Busy', 'Locked'].has(FSM.CURRENT_STATE.name) and HEALTH_TIMER.is_stopped() and health < HEALTH_DEFAULT:
+			health += 2
+			HEALTH_RECOVER_TIMER.start()
+			health_healed.emit(health)
+
+@rpc('any_peer', 'call_local')
+func drop_object_server():
+	drop_object()

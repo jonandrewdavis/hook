@@ -16,6 +16,7 @@ func get_hooked():
 	$DestroyTimer.start()
 	$HookMax.start()
 	freeze_near()
+
 	if captured_by == null:
 		$DestroyTimer.start()
 		var playerId = multiplayer.get_remote_sender_id()
@@ -33,13 +34,18 @@ func get_hooked():
 				picked_up = false
 
 @rpc('any_peer', 'call_local', 'reliable')
-func reserve():
+func reserve(action):
 	$HookMax.stop()
 	# Note: can be id or null
 	$DestroyTimer.start()
 	# only allow an update if currently null.
 	var playerId = multiplayer.get_remote_sender_id()
 	# print(playerId, 'reservering', picked_up)
+	if action == false and captured_by != null and playerId == captured_by.id and picked_up == true:
+		picked_up = false
+		captured_by = null
+		return
+
 	if playerId != null:
 		if captured_by == null and picked_up == false:
 			picked_up = true

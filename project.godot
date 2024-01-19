@@ -28,6 +28,7 @@ shapes/collision/contact_color=Color(1, 0.2, 0.101961, 0.94902)
 
 window/size/viewport_width=2304
 window/size/viewport_height=1296
+window/size/resizable=false
 window/vsync/vsync_mode=2
 
 [input]
@@ -184,3 +185,4 @@ common/physics_jitter_fix=0.0
 [rendering]
 
 driver/threads/thread_model=0
+anti_aliasing/quality/msaa_3d=1

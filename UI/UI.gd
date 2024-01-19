@@ -53,6 +53,8 @@ var volume_music_value
 var volume_sfx_value
 		
 func _ready():
+	stretch_blood()
+	
 	SETTINGS_MENU.hide()
 	SCOREBOARD.hide()
 
@@ -64,6 +66,8 @@ func _ready():
 		#hidden_ip.text = Store.upnp_host_ip
 	refresh()
 	player.health_changed.connect(update_health)
+	player.health_healed.connect(update_health)
+	player.last_kill.connect(update_last_killed_by)
 	HEALTH_BAR.max_value = player.HEALTH_DEFAULT
 	HEALTH_BAR.value = player.HEALTH_DEFAULT
 
@@ -207,3 +211,15 @@ func _on_team_timer_timeout():
 	SWITCH.disabled = false
 	RESPAWN.disabled = false	
 	pass # Replace with function body.
+
+func update_last_killed_by(player_name):
+	if player_name:
+		$CanvasLayer/Scoreboard/LastKill.text = 'Last killed by: ' + player_name
+
+@onready var base_size = Vector2(1920, 1080)
+
+func stretch_blood():
+	var window_size = DisplayServer.window_get_size()
+	var scale = min(window_size.x / base_size.x, window_size.y / base_size.y)
+	$CanvasLayer/blood/BloodSprite.scale.x = scale * 1.15
+	$CanvasLayer/blood/BloodSprite.scale.y = scale * 1.2

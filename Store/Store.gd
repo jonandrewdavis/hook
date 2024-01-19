@@ -48,7 +48,6 @@ func set_state(key, value):
 		else:
 			store.log_count = 0
 			store.log = ""
-				
 		if key == 'client_join':
 			store.players[value.id] = value
 		elif key == 'client_leave':
@@ -68,12 +67,13 @@ func set_player(id, key, _value):
 	if id == 0:
 		return
 	if multiplayer.is_server():
+		if store.players.has(id) == false:
+			return
 		if store.log_count < 11:
 			store.log_count += 1
 		else:
 			store.log_count = 0
 			store.log = ""
-		
 		if key == 'kills':
 			store.log += str(store.players[id].nickname) + ' got a kill' + '\n'
 			store.players[id][key] += 1

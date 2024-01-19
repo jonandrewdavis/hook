@@ -10,7 +10,6 @@ func _ready():
 		$Timer.start()
 
 func _on_body_entered(body):
-
 	if body.is_in_group("Players") && body.has_method("Hit_Successful"):
 		var hit_player = body.get_multiplayer_authority()
 		# id to hit,
