@@ -36,19 +36,26 @@ func on_player_join(_id):
 
 # Called from any client, or peer.
 # TODO: Create an enum of "reducer" actions like "client_join" and "client_leave" 
+# NOTE: Always do elif, or 2 conditions can fire...
 @rpc("any_peer", "call_local", "reliable")
 func set_state(key, value):
 	if multiplayer.is_server():
 		if key == 'client_join':
 			store.players[value.id] = value
-		if key == 'client_leave':
+		elif key == 'client_leave':
 			store.players.erase(value)
+		elif key == 'blue_score':
+			store.blue_score += 1
+		elif key == 'red_score':
+			store.red_score += 1
 		else:
 			store[key] = value
 		set_store.rpc(store)
 		
 @rpc("any_peer", "call_local", "reliable")
 func set_player(id, key, _value):
+	if id == 0:
+		return
 	if multiplayer.is_server():
 		if key == 'kills' or key == 'deaths':
 			store.players[id][key] += 1

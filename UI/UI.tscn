@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b8njiqmewnmd7"]
+[gd_scene load_steps=18 format=3 uid="uid://b8njiqmewnmd7"]
 
 [ext_resource type="Script" path="res://UI/UI.gd" id="1_eg6yc"]
 [ext_resource type="Script" path="res://UI/reticle.gd" id="2_twk2u"]
@@ -58,6 +58,15 @@ bg_color = Color(1, 0, 0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a4ixf"]
 bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wacxy"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k8v64"]
+bg_color = Color(0.352941, 0.592157, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2tpgm"]
+bg_color = Color(0.6, 0, 0, 1)
 
 [sub_resource type="Animation" id="Animation_kiwjk"]
 resource_name = "blood"
@@ -121,63 +130,6 @@ position = Vector2(-288, -180)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("4_gvqyp")
 centered = false
-
-[node name="SettingsMenu" type="Control" parent="CanvasLayer"]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
-
-[node name="Panel" type="PanelContainer" parent="CanvasLayer/SettingsMenu"]
-layout_mode = 1
-offset_right = 232.0
-offset_bottom = 173.0
-
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/SettingsMenu/Panel"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer"]
-visible = false
-layout_mode = 2
-
-[node name="SettingsMenuLabel" type="Label" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "Settings Menu"
-
-[node name="PlayersLabel" type="Label" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Players List:"
-
-[node name="Players" type="Label" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="HostIPContainer" type="HBoxContainer" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-
-[node name="HostIPLabel" type="Label" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer"]
-layout_mode = 2
-text = "Host IP:
-"
-
-[node name="HostIPButton" type="CheckButton" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer"]
-layout_mode = 2
-focus_mode = 0
-text = "Show Host IP"
-
-[node name="HiddenIP" type="LineEdit" parent="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer"]
-visible = false
-layout_mode = 2
 
 [node name="HUD" type="Control" parent="CanvasLayer"]
 layout_mode = 3
@@ -305,6 +257,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_2xrpu")
 show_percentage = false
 
 [node name="Scoreboard" type="Control" parent="CanvasLayer"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -407,9 +360,160 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.290196, 0.541176, 1, 1)
 text = "Andrew | 0 | 0 | 0"
 
+[node name="SettingsMenu" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/SettingsMenu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -486.5
+offset_right = 486.5
+offset_bottom = 678.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 400
+theme_override_constants/margin_top = 200
+theme_override_constants/margin_right = 400
+theme_override_constants/margin_bottom = 200
+
+[node name="Panel" type="PanelContainer" parent="CanvasLayer/SettingsMenu/MarginContainer"]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wacxy")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="SettingsMenuLabel" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Settings (ESC)"
+
+[node name="SensitivityLabel" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "Look Sensitivity"
+
+[node name="SensitivitySlider" type="HSlider" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+step = 0.01
+
+[node name="SettingsMenuLabel2" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Sound"
+
+[node name="MasterLabel" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Master"
+
+[node name="Master" type="HSlider" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+step = 0.1
+
+[node name="SFXLabel" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "SFX
+"
+
+[node name="SFX" type="HSlider" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+step = 0.1
+
+[node name="MusicLabel" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Music"
+
+[node name="Music" type="HSlider" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+step = 0.1
+
+[node name="Label" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Controls"
+
+[node name="RichTextLabel" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Left Click: Fire
+Middle Mouse Button  /  F: Hook
+Mouse Thumb Button /  V: Melee
+Scroll Down:  Rifle
+Scroll Up: Shotgun
+CRTL / C: Crouch
+E: Pick up 
+(When holding: Left Click to throw, E to drop)
+
+(Note: No remapping. Controller not supported)"
+
+[node name="buttons" type="HBoxContainer" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Switch" type="Button" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_k8v64")
+text = "Switch Team
+"
+
+[node name="Respawn" type="Button" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_k8v64")
+text = "Respawn
+"
+
+[node name="Quit" type="Button" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_2tpgm")
+text = "Quit
+"
+
+[node name="HostIPContainer" type="HBoxContainer" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="HostIPLabel" type="Label" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/HostIPContainer"]
+layout_mode = 2
+text = "Host IP:
+"
+
+[node name="HostIPButton" type="CheckButton" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/HostIPContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Show Host IP"
+
+[node name="HiddenIP" type="LineEdit" parent="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/HostIPContainer"]
+visible = false
+layout_mode = 2
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer"]
 libraries = {
 "": SubResource("AnimationLibrary_41tna")
 }
 
-[connection signal="toggled" from="CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer/HostIPButton" to="." method="_on_host_ip_button_toggled"]
+[connection signal="value_changed" from="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/SensitivitySlider" to="." method="_on_sensitivity_slider_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/Master" to="." method="_on_master_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/SFX" to="." method="_on_sfx_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/Music" to="." method="_on_music_value_changed"]
+[connection signal="pressed" from="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/buttons/Switch" to="." method="_on_switch_pressed"]
+[connection signal="pressed" from="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/buttons/Respawn" to="." method="_on_respawn_pressed"]
+[connection signal="pressed" from="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
+[connection signal="toggled" from="CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/HostIPContainer/HostIPButton" to="." method="_on_host_ip_button_toggled"]

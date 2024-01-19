@@ -1,7 +1,6 @@
-[gd_scene load_steps=20 format=3 uid="uid://btvv2hrt8xq6j"]
+[gd_scene load_steps=19 format=3 uid="uid://btvv2hrt8xq6j"]
 
 [ext_resource type="PackedScene" uid="uid://b8gwe7qvxiuta" path="res://Assets/models/r1.glb" id="1_a8qr6"]
-[ext_resource type="Material" uid="uid://dakxqq0s4qgwi" path="res://Assets/materials/FlatGray.tres" id="1_slir1"]
 [ext_resource type="Material" uid="uid://bmde3e5hggx63" path="res://Assets/materials/black_lava.tres" id="2_nndgm"]
 [ext_resource type="BoxMesh" uid="uid://dac8fna1yxnt4" path="res://Assets/materials/Platform.tres" id="2_pyljv"]
 [ext_resource type="PackedScene" uid="uid://j5k2asjmqmq7" path="res://Assets/models/r2.glb" id="3_m37r7"]
@@ -15,7 +14,7 @@
 size = Vector3(14, 1, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_tl1ul"]
-material = ExtResource("1_slir1")
+material = ExtResource("2_nndgm")
 size = Vector3(14, 1, 10)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_b2fdk"]

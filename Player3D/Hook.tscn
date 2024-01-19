@@ -124,6 +124,7 @@ shape = SubResource("SphereShape3D_6r2nm")
 
 [node name="HookHurtBox" type="Area3D" parent="HookMesh/Claw"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.308709, -0.219614)
+visible = false
 collision_layer = 0
 collision_mask = 4
 

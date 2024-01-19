@@ -59,7 +59,7 @@ func _ready():
 func _input(event):
 	if not is_multiplayer_authority():
 		return
-	if ['Dead', 'Stunned', 'Busy'].has(PLAYER.FSM.CURRENT_STATE.name):
+	if ['Dead', 'Stunned', 'Busy', 'Locked'].has(PLAYER.FSM.CURRENT_STATE.name):
 		return
 
 	if event.is_action_pressed("Weapon_Up"):

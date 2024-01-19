@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://c3ffql15mo0aj"]
+[gd_scene load_steps=45 format=3 uid="uid://c3ffql15mo0aj"]
 
 [ext_resource type="Script" path="res://Player3D/scripts/fps_controller.gd" id="1_pgc1p"]
 [ext_resource type="PackedScene" uid="uid://b8njiqmewnmd7" path="res://UI/UI.tscn" id="2_vsmbj"]
@@ -25,6 +25,7 @@
 [ext_resource type="PackedScene" uid="uid://blvg7sk4onp3u" path="res://Player3D/mage.tscn" id="11_elbq1"]
 [ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="12_ojq38"]
 [ext_resource type="Script" path="res://Player3D/scripts/states/Dead.gd" id="15_ktyft"]
+[ext_resource type="Script" path="res://Player3D/scripts/states/Locked.gd" id="25_gttio"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ynut6"]
 radius = 0.28
@@ -395,6 +396,9 @@ script = ExtResource("15_ktyft")
 
 [node name="Idle" type="Node" parent="PlayerStateMachine"]
 script = ExtResource("7_sgjnc")
+
+[node name="Locked" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("25_gttio")
 
 [node name="HookMaxTimer" type="Timer" parent="."]
 wait_time = 2.3

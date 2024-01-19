@@ -6,7 +6,6 @@ signal health_changed(new_value)
 
 @export var TEAM = ''
 
-
 @onready var HEALTH_DEFAULT = 100
 @onready var max_health = HEALTH_DEFAULT
 @export var health = 100
@@ -85,7 +84,7 @@ func _ready():
 	set_physics_process(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_unhandled_input(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_input(get_multiplayer_authority() == multiplayer.get_unique_id())
-	respawn()
+	
 	
 	if (is_multiplayer_authority()):
 		Store.e.connect(refresh)
@@ -98,7 +97,7 @@ func _ready():
 		ready_client_only_nodes()
 	await get_tree().create_timer(1).timeout
 	set_team()
-	
+
 
 # TODO: Clean all thes up, it's really a mashup of responsibilities. 
 func ready_client_only_nodes():
@@ -107,7 +106,6 @@ func ready_client_only_nodes():
 
 	# add crouch check shapecast collision exception
 	#CROUCH_SHAPECAST.add_exception($".")
-	CAMERA_CONTROLLER.current = true
 	# add some ui
 	var newUI = UI_SCENE.instantiate()
 	newUI.player = self
@@ -125,12 +123,29 @@ func ready_client_only_nodes():
 	else:
 		$NameLabel.text = 'Unnamed Noob'
 	$NameLabel.hide()
-	
+
+var	spawns = []
 	
 func set_team():
-	# TODO: push down team mates to each player
+	# TODO: push down team mates to each player, calling refresh, removing team ids 
 	Store.set_player.rpc(id, 'team', TEAM)
+	set_team_spawns()
+	respawn()
 
+
+func set_team_spawns():
+	var level = get_parent().get_node('Level')
+	var spawn_nodes = null
+	# clear out possible spawns
+	spawns = []
+
+	if TEAM == 'Red':
+		spawn_nodes = level.get_node('SpawnsRed').get_children()
+	elif TEAM == 'Blue':
+		spawn_nodes = level.get_node('SpawnsBlue').get_children()
+
+	for spawn_position in spawn_nodes:
+		spawns.append(spawn_position)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -147,11 +162,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	# this is a menu in the top left corner
 	# Scoreboard
-	elif event.is_action_pressed('debug'):
-		UI.toggle_debug()
+	elif event.is_action_pressed('score'):
+		UI.toggle_scoreboard()
+	elif event.is_action_pressed('menu'):
+		UI.toggleMenu()
 
 func _process(_delta):
-	if not ['Dead', 'Stunned', 'Busy'].has(FSM.CURRENT_STATE.name):
+	if not ['Dead', 'Stunned', 'Busy', 'Locked'].has(FSM.CURRENT_STATE.name):
 		get_input()
 
 func get_input():
@@ -337,7 +354,7 @@ var invincible = false
 
 func take_damage(_last_damage_source, damage: int):
 	if invincible == false:
-		if _last_damage_source:
+		if _last_damage_source != null:
 			last_damage_source = _last_damage_source
 
 		if health - damage <= 0:
@@ -368,6 +385,7 @@ func report_death():
 		Store.set_player.rpc(id, 'deaths', null)
 
 func respawn():
+	CAMERA_CONTROLLER.current = true
 	set_collision_layer_value(6, true)
 	set_collision_layer_value(1, true)
 	$DOT.stop()
@@ -380,12 +398,9 @@ func respawn():
 	HOOK.show()
 
 	# does double reload first time, but necessary for respawning to reset.
-	# WEAPONS.Initialize(WEAPONS.Start_Weapons)
-	var level = get_parent().get_node('Level')
-	var spawns = []
-	for spawn_position in level.get_node('Spawns').get_children():
-		spawns.append(spawn_position)
-	
+	WEAPONS.Initialize(WEAPONS.Start_Weapons)
+
+
 	var rng = RandomNumberGenerator.new()
 	var random_position =  spawns[rng.randi_range(0, int(spawns.size() - 1))].global_position
 	var rndX = int(rng.randi_range(int(random_position.x) - 5, int(random_position.x) + 5))
@@ -394,6 +409,9 @@ func respawn():
 	var new_spawn = Vector3(rndX, random_position.y, rndZ)
 	global_position = new_spawn
 
+
+func change_team():
+	pass
 	
 # Trying to make the hooked target look at the player
 # I don't understand basis / Eulers and shit, so this is brain breaking, but, I figured out since y is always 1, that this 

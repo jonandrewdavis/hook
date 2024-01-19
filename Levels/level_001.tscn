@@ -14,7 +14,7 @@ material = ExtResource("3_y40gl")
 [sub_resource type="BoxShape3D" id="BoxShape3D_dub36"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fd5wm"]
-size = Vector3(100, 2, 100)
+size = Vector3(300, 2, 300)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_haccd"]
 albedo_texture = ExtResource("5_8odel")
@@ -23,10 +23,10 @@ uv1_triplanar = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_cngiy"]
 material = SubResource("StandardMaterial3D_haccd")
-size = Vector3(100, 2, 100)
+size = Vector3(300, 2, 300)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_83pc0"]
-size = Vector3(100, 2, 100)
+size = Vector3(300, 2, 300)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ive2k"]
 radius = 4.0
@@ -39,42 +39,75 @@ environment = ExtResource("1_k70i5")
 
 [node name="DirectionalLightSun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 22, 21)
-light_color = Color(1, 0.905882, 0.882353, 1)
-light_energy = 1.247
-light_indirect_energy = 2.327
 
 [node name="DirectionalLightLava" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -8.87097, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 19.851, -26.7385, 0)
 light_color = Color(1, 0.207843, 0, 1)
-light_energy = 0.2
-light_indirect_energy = 0.0
+light_energy = 2.0
+light_indirect_energy = 2.0
 light_volumetric_fog_energy = 0.0
+sky_mode = 1
 
-[node name="Spawns" type="Node3D" parent="."]
+[node name="SpawnsRed" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.156684, 0)
 
-[node name="Marker3D" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.8822, 9.66506, 2.55209)
+[node name="Marker3D" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.8021, 9.66506, 2.26249)
 gizmo_extents = 1.0
 
-[node name="Marker3D2" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.3436, 10.4, 5.20882)
+[node name="Marker3D2" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.2639, 12.1868, 6.95462)
 gizmo_extents = 1.0
 
-[node name="Marker3D3" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.0109, 9.93488, 4.44412)
+[node name="Marker3D3" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.5345, 10.9395, 4.44412)
 gizmo_extents = 1.0
 
-[node name="Marker3D6" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.5473, 10.6814, 7.13225)
+[node name="Marker3D6" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.2294, 12.3626, 8.09616)
 gizmo_extents = 1.0
 
-[node name="Marker3D4" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.7902, 8.85757, 5.06713)
+[node name="Marker3D4" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.1501, 8.85757, 5.06713)
 gizmo_extents = 1.0
 
-[node name="Marker3D5" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7272, 8.7356, 7.32563)
+[node name="Marker3D5" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.186, 8.7356, 7.32563)
+gizmo_extents = 1.0
+
+[node name="Marker3D7" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7346, 11.5096, 9.17735)
+gizmo_extents = 1.0
+
+[node name="SpawnsBlue" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 39.3728, 0.156684, 0)
+
+[node name="Marker3D" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.8021, 9.66506, 2.26249)
+gizmo_extents = 1.0
+
+[node name="Marker3D2" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.2639, 12.1868, 6.95462)
+gizmo_extents = 1.0
+
+[node name="Marker3D3" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.5345, 10.9395, 4.44412)
+gizmo_extents = 1.0
+
+[node name="Marker3D6" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.2294, 12.3626, 8.09616)
+gizmo_extents = 1.0
+
+[node name="Marker3D4" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.1501, 8.85757, 5.06713)
+gizmo_extents = 1.0
+
+[node name="Marker3D5" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.186, 8.7356, 7.32563)
+gizmo_extents = 1.0
+
+[node name="Marker3D7" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7346, 11.5096, 9.17735)
 gizmo_extents = 1.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
@@ -178,10 +211,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6189, 20.6784, 19.6588)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.60112, -92.1062, -0.140203)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LavaCollision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.283, 0, -6.48582)
 shape = SubResource("BoxShape3D_fd5wm")
 
 [node name="LavaMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.26616, -90.3538, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.9382, -90.3538, -5.8726)
 mesh = SubResource("BoxMesh_cngiy")
 
 [node name="LavaArea" type="Area3D" parent="LavaMesh"]
@@ -202,6 +236,10 @@ transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 18.8741, -5.2678, -0.96
 [node name="CollisionShape3D" type="CollisionShape3D" parent="GoalProtection"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.9443, -5.20615, -0.646342)
 shape = SubResource("SphereShape3D_ive2k")
+
+[node name="LevelCam" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.914769, 0.403976, 0, -0.403976, 0.914769, 15.5206, 39.6676, 31.3418)
+current = true
 
 [connection signal="body_entered" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_entered"]
 [connection signal="body_exited" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_exited"]

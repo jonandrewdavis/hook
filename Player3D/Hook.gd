@@ -1,5 +1,7 @@
 extends Node3D
 
+# TODO: Redo hook as a physics body.
+
 var DEFAULT_HOOK_HEALTH: int = 17
 var hook_health = DEFAULT_HOOK_HEALTH
 
@@ -197,8 +199,9 @@ var aim_rot
 
 func launch_hook():
 	is_on_cooldown = true
-	
-	CLAW_COLLISION.set_scale(Vector3(1,1,1))
+	CLAW_COLLISION.set_scale(Vector3(0.3,0.3,0.3))
+	CLAW_COLLISION.disabled = true	
+	# CLAW_COLLISION.set_scale(Vector3(1,1,1))
 	HOOK_SPEED = HOOK_SPEED_DEFAULT
 	player.gravity = 9.8
 	# TODO: Only allow hook in idle state
@@ -206,7 +209,6 @@ func launch_hook():
 	$HookTimer.wait_time = HOOK_TIME
 	$HookTimer.paused = false
 	$HookTimer.start()
-	CLAW.hide()
 	
 	aim_pos = GRAPPLECAST.global_position
 	aim_rot = GRAPPLECAST.global_transform.basis
@@ -215,20 +217,22 @@ func launch_hook():
 	CLAW.transform.basis = aim_rot
 	CLAW.look_at(LOOKPOINT.global_position)
 	curr = STATE.SEEKING
-	
-
+	CLAW.show()
+	LINE.show()
+	# We mess with scale instead of collision to allow closer, accurate hooks.
 	await get_tree().create_timer(0.03).timeout
 	# Only "Expand" the hook if we're in motion (unpaused), otherwise the scale blacks out the playerview
 	if $HookTimer.paused == false:
-		CLAW.show()
-		LINE.show()
-		CLAW.set_scale(Vector3(1.3, 1.3, 1.3))
+		CLAW_COLLISION.disabled = false	
+		CLAW_COLLISION.set_scale(Vector3(0.8,0.8,0.8))
 		hand()
 
-	await get_tree().create_timer(0.05).timeout
+	await get_tree().create_timer(0.3).timeout
 	# Only "Expand" the hook if we're in motion (unpaused), otherwise the scale blacks out the playerview
 	if $HookTimer.paused == false:
-		CLAW_COLLISION.disabled = false
+		CLAW_COLLISION.set_scale(Vector3(1.3,1.3,1.3))
+		hand()
+
 
 func init():
 	pass

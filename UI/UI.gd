@@ -6,10 +6,11 @@ extends Node
 # TODO: Use that tutorial's FPS and stats settings thing
 
 # TODO: Make unique and use %, combine with debug, or use one or the other.
-@onready var menu_ref = $CanvasLayer/SettingsMenu
-@onready var players_label = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/Players
-@onready var host_ip_container = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer
-@onready var hidden_ip = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer/HiddenIP
+@onready var SETTINGS_MENU = $CanvasLayer/SettingsMenu
+@onready var SCOREBOARD = $CanvasLayer/Scoreboard
+# @onready var players_label = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/Players
+#@onready var host_ip_container = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer
+#@onready var hidden_ip = $CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer/HiddenIP
 
 @onready var HOOK_PANEL_CIRCLE = $CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle
 @onready var hooks_count = $CanvasLayer/HUD/BottomLeft/MarginContainer/VBoxContainer/PanelCircle/Panel/HookCount
@@ -22,10 +23,60 @@ extends Node
 @onready var RED_PLAYERS_LABEL = $CanvasLayer/Scoreboard/MarginContainer/PanelContainer/TeamsMargin/Teams/Red/RedPlayers/RedPlayersLabel
 @onready var BLUE_PLAYERS_LABEL = $CanvasLayer/Scoreboard/MarginContainer/PanelContainer/TeamsMargin/Teams/Blue/BluePlayers/BluePlayersLabel
 
+@onready var BLUE_SCORE = $CanvasLayer/Scoreboard/MarginContainer/PanelContainer/TeamsMargin/Teams/Blue/BlueScore
+@onready var RED_SCORE = $CanvasLayer/Scoreboard/MarginContainer/PanelContainer/TeamsMargin/Teams/Red/RedScore
+
 @onready var BLOOD = $CanvasLayer/blood
 
 var player: Player
 
+# settings
+@onready var sensitivity_slider: HSlider = $CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/SensitivitySlider
+
+@onready var master_slider: HSlider = $CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/Master
+@onready var music_slider: HSlider = $CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/Music
+@onready var sfx_slider: HSlider = $CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/SFX
+
+var bus_master = AudioServer.get_bus_index("Master")
+var bus_music = AudioServer.get_bus_index("Music")
+var bus_sfx = AudioServer.get_bus_index("SFX")
+
+# TODO: programatically do all this from a List[]
+var volume_master_value
+var volume_music_value
+var volume_sfx_value
+		
+func _ready():
+	SETTINGS_MENU.hide()
+	SCOREBOARD.hide()
+
+	Store.e.connect(refresh)
+	player.health_changed.connect(flash_damage)
+	HOOK_RECHARGE_PROGRESS.max_value = player.HOOK_RECHARGE_TIMER.wait_time * 100
+	#if Store.upnp_host_ip != '':
+		#host_ip_container.visible = true
+		#hidden_ip.text = Store.upnp_host_ip
+	refresh()
+	player.health_changed.connect(update_health)
+	HEALTH_BAR.max_value = player.HEALTH_DEFAULT
+	HEALTH_BAR.value = player.HEALTH_DEFAULT
+
+	volume_master_value = db_to_linear(AudioServer.get_bus_volume_db(bus_master))
+	volume_music_value = db_to_linear(AudioServer.get_bus_volume_db(bus_music))
+	volume_sfx_value = db_to_linear(AudioServer.get_bus_volume_db(bus_sfx))
+
+	sensitivity_slider.max_value = player.MOUSE_SENSITIVITY * 2
+	sensitivity_slider.value = player.MOUSE_SENSITIVITY
+	
+	# sliders
+	print(volume_master_value)
+	master_slider.max_value = volume_master_value * 2
+	music_slider.max_value = volume_music_value * 2
+	sfx_slider.max_value = volume_sfx_value * 2
+	# values
+	master_slider.value = volume_master_value 
+	music_slider.value = volume_music_value
+	sfx_slider.value = volume_sfx_value
 
 func _process(_delta):
 	if player.WEAPON_CAST.get_collider() != null and player.picked_object == null: 
@@ -35,20 +86,6 @@ func _process(_delta):
 
 	if player.HOOK_CHARGES < player.HOOK_STARTING_CHARGES:
 		HOOK_RECHARGE_PROGRESS.value = player.HOOK_RECHARGE_TIMER.time_left * 100
-
-		
-func _ready():
-	menu_ref.hide()
-	Store.e.connect(refresh)
-	player.health_changed.connect(flash_damage)
-	HOOK_RECHARGE_PROGRESS.max_value = player.HOOK_RECHARGE_TIMER.wait_time * 100
-	if Store.upnp_host_ip != '':
-		host_ip_container.visible = true
-		hidden_ip.text = Store.upnp_host_ip
-	refresh()
-	player.health_changed.connect(update_health)
-	HEALTH_BAR.max_value = player.HEALTH_DEFAULT
-	HEALTH_BAR.value = player.HEALTH_DEFAULT
 
 
 func update_health(new_value):
@@ -69,22 +106,32 @@ func refresh():
 			redPlayers += player_string + '\n'
 		else:
 			bluePlayers += player_string + '\n'		
-		 
 
 	RED_PLAYERS_LABEL.text = redPlayers
 	BLUE_PLAYERS_LABEL.text = bluePlayers
 
 	hooks_count.text = str(player.HOOK_CHARGES)
+	RED_SCORE.text = str(Store.store.red_score)
+	BLUE_SCORE.text = str(Store.store.blue_score)
 		
 	if player.HOOK_CHARGES == 0:
 		HOOK_SPRITE.modulate = Color(0, 0, 0, 0.3)
 	else:
 		HOOK_SPRITE.modulate = Color(0, 0, 0, 1)
 	
-func toggle_debug():
-	if menu_ref.visible: menu_ref.hide()
-	else: menu_ref.show()
+func toggle_scoreboard():
+	if SCOREBOARD.visible: SCOREBOARD.hide()
+	else: SCOREBOARD.show()
 
+func toggleMenu():
+	SETTINGS_MENU.visible = !SETTINGS_MENU.visible
+	if (SETTINGS_MENU.visible == true):
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		player.FSM.set_state("Locked")		
+	else: 
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		player.FSM.set_state("Idle")		
+		
 func _on_host_ip_button_toggled(toggled_on):
 	$CanvasLayer/SettingsMenu/Panel/MarginContainer/VBoxContainer/HostIPContainer/HiddenIP.visible = toggled_on
 
@@ -101,3 +148,39 @@ func flash_damage(_damage):
 	if _damage != 100:
 		$CanvasLayer/AnimationPlayer.stop()
 		$CanvasLayer/AnimationPlayer.play('blood')
+
+
+func _on_quit_pressed():
+	get_tree().quit()	
+	pass # Replace with function body.
+
+
+func _on_sensitivity_slider_value_changed(value):
+	player.MOUSE_SENSITIVITY = value
+	pass # Replace with function body.
+
+func _on_master_value_changed(value):
+	AudioServer.set_bus_volume_db(bus_master, linear_to_db(value))
+	pass # Replace with function body.
+
+
+func _on_sfx_value_changed(value):
+	AudioServer.set_bus_volume_db(bus_music, linear_to_db(value))
+	pass # Replace with function body.
+
+
+func _on_music_value_changed(value):
+	AudioServer.set_bus_volume_db(bus_sfx, linear_to_db(value))
+	pass # Replace with function body.
+
+
+func _on_switch_pressed():
+	
+	pass # Replace with function body.
+
+
+func _on_respawn_pressed():
+	toggleMenu()
+	await get_tree().create_timer(0.2).timeout
+	player.die()
+	pass # Replace with function body.
