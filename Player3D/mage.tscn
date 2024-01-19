@@ -1,7 +1,33 @@
-[gd_scene load_steps=8 format=3 uid="uid://blvg7sk4onp3u"]
+[gd_scene load_steps=14 format=3 uid="uid://blvg7sk4onp3u"]
 
 [ext_resource type="PackedScene" uid="uid://b1tmdv5engi7u" path="res://Assets/models/character_skeleton_mage.gltf" id="1_81v58"]
 [ext_resource type="Script" path="res://Player3D/mage.gd" id="2_7v6x4"]
+[ext_resource type="Material" uid="uid://dn31p8smrsl71" path="res://Assets/materials/red_team.tres" id="3_b1lpo"]
+[ext_resource type="Material" uid="uid://d2xxom0uw73cl" path="res://Assets/materials/blue_team.tres" id="3_h8idm"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ggvdy"]
+material = ExtResource("3_h8idm")
+radius = 0.22
+height = 0.8
+
+[sub_resource type="TorusMesh" id="TorusMesh_nkcxm"]
+material = ExtResource("3_h8idm")
+inner_radius = 0.1
+outer_radius = 0.2
+rings = 32
+ring_segments = 16
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_dfugw"]
+material = ExtResource("3_b1lpo")
+radius = 0.22
+height = 0.8
+
+[sub_resource type="TorusMesh" id="TorusMesh_hyfkf"]
+material = ExtResource("3_b1lpo")
+inner_radius = 0.1
+outer_radius = 0.2
+rings = 32
+ring_segments = 16
 
 [sub_resource type="Animation" id="Animation_ywxvb"]
 length = 0.001
@@ -77,10 +103,22 @@ tracks/5/keys = {
 "update": 1,
 "values": [true]
 }
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("character_skeleton_mage_body:visible")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
 
 [sub_resource type="Animation" id="Animation_tjyjt"]
 resource_name = "death"
-length = 3.0
+length = 11.8
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -140,6 +178,42 @@ tracks/4/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [false]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("character_skeleton_mage_body/MESH_BLUE:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("character_skeleton_mage_body/MESH_RED:visible")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("character_skeleton_mage_body:visible")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 4.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
 }
 
 [sub_resource type="Animation" id="Animation_a4rcx"]
@@ -206,24 +280,53 @@ _data = {
 properties/0/path = NodePath("AnimationPlayer:current_animation")
 properties/0/spawn = true
 properties/0/replication_mode = 1
+properties/1/path = NodePath("character_skeleton_mage_body/MESH_BLUE:visible")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("character_skeleton_mage_body/MESH_RED:visible")
+properties/2/spawn = true
+properties/2/replication_mode = 1
 
 [node name="character_skeleton_mage" instance=ExtResource("1_81v58")]
 script = ExtResource("2_7v6x4")
 
-[node name="character_skeleton_mage_armLeft" parent="character_skeleton_mage_body" index="0"]
+[node name="MESH_BLUE" type="MeshInstance3D" parent="character_skeleton_mage_body" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.403108, 0)
+visible = false
+mesh = SubResource("CapsuleMesh_ggvdy")
+skeleton = NodePath("../MESH_RED")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="character_skeleton_mage_body/MESH_BLUE" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.14685, 0)
+mesh = SubResource("TorusMesh_nkcxm")
+
+[node name="MESH_RED" type="MeshInstance3D" parent="character_skeleton_mage_body" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.403108, 0)
+visible = false
+mesh = SubResource("CapsuleMesh_dfugw")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="character_skeleton_mage_body/MESH_RED" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.14685, 0)
+mesh = SubResource("TorusMesh_hyfkf")
+skeleton = NodePath("../../MESH_BLUE")
+
+[node name="character_skeleton_mage_armLeft" parent="character_skeleton_mage_body" index="2"]
 visible = false
 
-[node name="character_skeleton_mage_armRight" parent="character_skeleton_mage_body" index="1"]
+[node name="character_skeleton_mage_armRight" parent="character_skeleton_mage_body" index="3"]
 visible = false
 
-[node name="character_skeleton_mage_cloak" parent="character_skeleton_mage_body" index="2"]
+[node name="character_skeleton_mage_cloak" parent="character_skeleton_mage_body" index="4"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.704536, 1.49012e-08)
 
-[node name="character_skeleton_mage_head" parent="character_skeleton_mage_body" index="3"]
+[node name="character_skeleton_mage_head" parent="character_skeleton_mage_body" index="5"]
 transform = Transform3D(0.8, 0, 0, 0, 0.800001, 0, 0, 0, 0.800001, 0, 0.704536, 0)
 
 [node name="character_skeleton_mage_cowl" parent="character_skeleton_mage_body/character_skeleton_mage_head" index="0"]
 visible = false
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="character_skeleton_mage_body/character_skeleton_mage_head" index="3"]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="1"]
 libraries = {

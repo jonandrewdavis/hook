@@ -10,7 +10,6 @@ func enter():
 	player.MODEL.show()
 	player.WEAPONS.hide()
 	player.invincible = true
-	
 
 # TODO: Move hook states into the actual FSM.
 func update(_delta):

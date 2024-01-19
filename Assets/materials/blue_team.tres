@@ -1,0 +1,20 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://d2xxom0uw73cl"]
+
+[ext_resource type="Shader" path="res://Assets/materials/outlineV2SMALL.gdshader" id="1_hfv00"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vqb7d"]
+render_priority = 0
+shader = ExtResource("1_hfv00")
+shader_parameter/outline_color = null
+shader_parameter/scissor_value = 0.5
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/outline_size = 0.01
+shader_parameter/offset_fres = 0.3
+shader_parameter/fps = 5.0
+
+[resource]
+next_pass = SubResource("ShaderMaterial_vqb7d")
+albedo_color = Color(0, 0.819608, 1, 1)
+emission_enabled = true
+emission = Color(0.145098, 0.145098, 1, 1)
+emission_energy_multiplier = 1.43

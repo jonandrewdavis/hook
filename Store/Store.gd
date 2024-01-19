@@ -20,10 +20,13 @@ var upnp_host_ip = ''
 #		"nickname": nickname.text,
 #		"color": color_button.color,
 
+
 var store = {
 	"players" : {},
 	"red_score": 0,
 	"blue_score": 0,
+	"log": '',
+	"log_count": 0,
 }
 
 func _ready():
@@ -40,13 +43,21 @@ func on_player_join(_id):
 @rpc("any_peer", "call_local", "reliable")
 func set_state(key, value):
 	if multiplayer.is_server():
+		if store.log_count < 14:
+			store.log_count += 1
+		else:
+			store.log_count = 0
+			store.log = ""
+				
 		if key == 'client_join':
 			store.players[value.id] = value
 		elif key == 'client_leave':
 			store.players.erase(value)
 		elif key == 'blue_score':
+			store.log += 'Blue just scored!' + '\n'
 			store.blue_score += 1
 		elif key == 'red_score':
+			store.log += 'Red just scored!' + '\n'
 			store.red_score += 1
 		else:
 			store[key] = value
@@ -57,7 +68,17 @@ func set_player(id, key, _value):
 	if id == 0:
 		return
 	if multiplayer.is_server():
-		if key == 'kills' or key == 'deaths':
+		if store.log_count < 11:
+			store.log_count += 1
+		else:
+			store.log_count = 0
+			store.log = ""
+		
+		if key == 'kills':
+			store.log += str(store.players[id].nickname) + ' got a kill' + '\n'
+			store.players[id][key] += 1
+		elif key == 'deaths':
+			store.log += str(store.players[id].nickname) + ' died a terrible death' + '\n'
 			store.players[id][key] += 1
 		else:
 			store.players[id][key] = _value

@@ -2,6 +2,8 @@ extends Node3D
 
 @onready var LAVA_AREA = $LavaMesh/LavaArea
 
+@onready var LEVEL_CAM = $CamHolder/LevelCam
+
 func _ready():
 	pass
 

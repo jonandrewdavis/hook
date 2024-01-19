@@ -85,18 +85,13 @@ func _ready():
 	set_process_unhandled_input(get_multiplayer_authority() == multiplayer.get_unique_id())
 	set_process_input(get_multiplayer_authority() == multiplayer.get_unique_id())
 	
-	
 	if (is_multiplayer_authority()):
 		Store.e.connect(refresh)
-		if get_tree().get_nodes_in_group("Players").size() % 2 == 0:
-			add_to_group("Red")
-			TEAM = "Red"
-		else: 
-			add_to_group("Blue")
-			TEAM = "Blue"
 		ready_client_only_nodes()
+
 	await get_tree().create_timer(1).timeout
 	set_team()
+
 
 
 # TODO: Clean all thes up, it's really a mashup of responsibilities. 
@@ -124,15 +119,48 @@ func ready_client_only_nodes():
 		$NameLabel.text = 'Unnamed Noob'
 	$NameLabel.hide()
 
+	if get_tree().get_nodes_in_group("Players").size() % 2 == 0:
+		add_to_group("Red")
+		TEAM = "Red"
+	else: 
+		add_to_group("Blue")
+		TEAM = "Blue"
+
+
 var	spawns = []
 	
 func set_team():
-	# TODO: push down team mates to each player, calling refresh, removing team ids 
-	Store.set_player.rpc(id, 'team', TEAM)
-	set_team_spawns()
-	respawn()
+	Store.set_player.rpc(id, 'team', TEAM)	
+	if is_multiplayer_authority():
+		# TODO: push down team mates to each player, calling refresh, removing team ids 
+		set_team_spawns()
+		respawn()
+		show_mesh()
+		
+func swap_team():
+	if is_multiplayer_authority():
+		if TEAM == 'Red':
+			remove_from_group('Red')
+			add_to_group('Blue')
+			TEAM = 'Blue'
+			await get_tree().create_timer(0.2).timeout
+			set_team()
+		elif TEAM == 'Blue':
+			remove_from_group('Blue')
+			add_to_group('Red')
+			TEAM = 'Red'
+			await get_tree().create_timer(0.2).timeout
+			set_team()
 
-
+		
+func show_mesh():
+	if TEAM == 'Red':
+		MODEL.MESH_BLUE.visible = false
+		MODEL.MESH_RED.visible = true
+	elif TEAM == 'Blue':
+		MODEL.MESH_BLUE.visible = true
+		MODEL.MESH_RED.visible = false
+	
 func set_team_spawns():
 	var level = get_parent().get_node('Level')
 	var spawn_nodes = null
@@ -357,7 +385,7 @@ func take_damage(_last_damage_source, damage: int):
 		if _last_damage_source != null:
 			last_damage_source = _last_damage_source
 
-		if health - damage <= 0:
+		if health - damage <= 0 and FSM.CURRENT_STATE.name != 'Stunned':
 			die()
 			health_changed.emit(0)
 		else:
@@ -374,6 +402,14 @@ func die():
 		if FSM.CURRENT_STATE.name == "Dead":
 			report_death()
 			spawn_death_head.rpc(MODEL.HEAD.global_position, global_position.direction_to(LOOKPOINT.global_position))
+
+		if FSM.CURRENT_STATE.name == "Dead":	
+			await get_tree().create_timer(5).timeout
+			show_level_cam()
+			
+func show_level_cam():
+	if FSM.CURRENT_STATE.name == "Dead":
+		set_level_cam()
 
 func report_death():
 	# Death occured, but no source to credit, we're done here
@@ -396,9 +432,9 @@ func respawn():
 	last_damage_source = null
 	HOOK.ready_hook()
 	HOOK.show()
-
+	show_mesh()
 	# does double reload first time, but necessary for respawning to reset.
-	WEAPONS.Initialize(WEAPONS.Start_Weapons)
+	# WEAPONS.Initialize(WEAPONS.Start_Weapons)
 
 
 	var rng = RandomNumberGenerator.new()
@@ -421,15 +457,16 @@ func change_team():
 # Ended up just doing look_at and capturing that transform.basis and mapping it back to mouse somehow (in stunned) behavior.
 @rpc('call_local', 'any_peer')
 func get_hooked():
-	HOOK.cancel_hook()
-	FSM.set_state('Stunned')
-	# STUN TIMER
-	$HookStunnedTimer.start(0.45)
-	$HookMaxTimer.start()
-	var playerId = multiplayer.get_remote_sender_id()
-	captured_by = get_parent().get_node(str(playerId))
-	last_damage_source = playerId
-	# captured_by.HOOK.hide_hook()
+	if captured_by == null:
+		HOOK.cancel_hook()
+		FSM.set_state('Stunned')
+		# STUN TIMER
+		$HookStunnedTimer.start(0.45)
+		$HookMaxTimer.start()
+		var playerId = multiplayer.get_remote_sender_id()
+		captured_by = get_parent().get_node(str(playerId))
+		last_damage_source = playerId
+		# captured_by.HOOK.hide_hook()
 
 func arrive_at_hook():
 	FSM.set_state("Busy")
@@ -464,7 +501,6 @@ func refresh():
 @rpc("call_local", "any_peer", "reliable")
 func spawn_death_head(pos, rot):
 	if multiplayer.is_server():
-		print('death head', pos, rot)
 		var new_head = HEAD_SCENE.instantiate()
 		new_head.position = pos
 		new_head.set_linear_velocity(rot * 3.0)
@@ -506,3 +542,7 @@ func _on_dot_timeout():
 		take_damage_over_time()
 	else:
 		$DOT.stop()
+
+func set_level_cam():
+	var level = get_parent().get_node('Level')
+	level.LEVEL_CAM.current = true

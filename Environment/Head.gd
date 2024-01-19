@@ -10,7 +10,6 @@ var last_captured_by: String = ''
 
 func _ready():
 	pass
-#	print('head ready')
 
 @rpc("any_peer", "call_local")
 func get_hooked():

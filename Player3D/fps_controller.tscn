@@ -65,6 +65,12 @@ properties/9/replication_mode = 2
 properties/10/path = NodePath("PlayerAudio:current_animation")
 properties/10/spawn = true
 properties/10/replication_mode = 1
+properties/11/path = NodePath("CameraControllerHolder/PlayerCamera/Weapons_Manager:visible")
+properties/11/spawn = true
+properties/11/replication_mode = 2
+properties/12/path = NodePath("CameraControllerHolder/PlayerCamera/Hook:visible")
+properties/12/spawn = true
+properties/12/replication_mode = 2
 
 [sub_resource type="Animation" id="Animation_1ul0x"]
 length = 0.001
@@ -287,7 +293,7 @@ DEATH_CAM = NodePath("DeathCam")
 UI_SCENE = ExtResource("2_vsmbj")
 
 [node name="NameLabel" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.66968, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.80737, 0)
 billboard = 1
 text = "Andrew"
 
@@ -450,6 +456,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.289769, 0.757879, -0.15212
 volume_db = -8.0
 max_db = 1.0
 max_distance = 5.5
+bus = &"SFX"
 
 [node name="DOT" type="Timer" parent="."]
 wait_time = 0.8

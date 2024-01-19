@@ -30,6 +30,12 @@ extends Node
 
 var player: Player
 
+# Buttons
+@onready var RESPAWN = $CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/buttons/Respawn
+@onready var SWITCH = $CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/buttons/Switch
+
+
+
 # settings
 @onready var sensitivity_slider: HSlider = $CanvasLayer/SettingsMenu/MarginContainer/Panel/MarginContainer/VBoxContainer/SensitivitySlider
 
@@ -69,7 +75,6 @@ func _ready():
 	sensitivity_slider.value = player.MOUSE_SENSITIVITY
 	
 	# sliders
-	print(volume_master_value)
 	master_slider.max_value = volume_master_value * 2
 	music_slider.max_value = volume_music_value * 2
 	sfx_slider.max_value = volume_sfx_value * 2
@@ -100,15 +105,18 @@ func refresh():
 		var player_data = Store.store.players[id]
 		# k = key
 		for k in player_data:
-			player_string += str(player_data[k]) + ' | '
+			if k == 'id':
+				pass
+			else:
+				player_string += str(player_data[k]) + ' | '
 
 		if player_data.team == "Red":
 			redPlayers += player_string + '\n'
-		else:
+			RED_PLAYERS_LABEL.text = redPlayers
+		elif player_data.team == "Blue":
 			bluePlayers += player_string + '\n'		
+			BLUE_PLAYERS_LABEL.text = bluePlayers
 
-	RED_PLAYERS_LABEL.text = redPlayers
-	BLUE_PLAYERS_LABEL.text = bluePlayers
 
 	hooks_count.text = str(player.HOOK_CHARGES)
 	RED_SCORE.text = str(Store.store.red_score)
@@ -118,6 +126,8 @@ func refresh():
 		HOOK_SPRITE.modulate = Color(0, 0, 0, 0.3)
 	else:
 		HOOK_SPRITE.modulate = Color(0, 0, 0, 1)
+		
+	$CanvasLayer/HUD/Log.text = Store.store.log
 	
 func toggle_scoreboard():
 	if SCOREBOARD.visible: SCOREBOARD.hide()
@@ -173,14 +183,27 @@ func _on_music_value_changed(value):
 	AudioServer.set_bus_volume_db(bus_sfx, linear_to_db(value))
 	pass # Replace with function body.
 
-
 func _on_switch_pressed():
-	
+	SWITCH.disabled = true
+	RESPAWN.disabled = true
+	$TeamTimer.start()
+	toggleMenu()
+	await get_tree().create_timer(0.2).timeout
+	player.swap_team()
 	pass # Replace with function body.
 
 
 func _on_respawn_pressed():
+	SWITCH.disabled = true
+	RESPAWN.disabled = true
+	$TeamTimer.start()
 	toggleMenu()
 	await get_tree().create_timer(0.2).timeout
 	player.die()
+	pass # Replace with function body.
+
+
+func _on_team_timer_timeout():
+	SWITCH.disabled = false
+	RESPAWN.disabled = false	
 	pass # Replace with function body.

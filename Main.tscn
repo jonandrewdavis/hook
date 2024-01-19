@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://cyp7bqax8lumo"]
+[gd_scene load_steps=8 format=3 uid="uid://cyp7bqax8lumo"]
 
 [ext_resource type="Script" path="res://MainMenu.gd" id="1_quv7y"]
 [ext_resource type="Texture2D" uid="uid://bidq6qyrhxbld" path="res://Assets/Skeleton-Hand-PNG-Transparent.png" id="2_cxou4"]
@@ -6,8 +6,22 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r5lca"]
 bg_color = Color(0.172549, 0.172549, 0.172549, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0b0al"]
+bg_color = Color(1, 0, 0, 0.627451)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v3f21"]
+bg_color = Color(0.541176, 0, 0.2, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wjd7j"]
-bg_color = Color(0.6, 0, 0, 1)
+bg_color = Color(0, 0, 0, 0.321569)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
@@ -102,6 +116,7 @@ text = "Error: Couldn't connect to the multiplayer server."
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 placeholder_text = "Nickname"
+max_length = 32
 
 [node name="Label" type="Label" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
 visible = false
@@ -113,6 +128,7 @@ text = "Color Picker:
 visible = false
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+disabled = true
 color = Color(1, 1, 1, 1)
 edit_alpha = false
 
@@ -128,7 +144,11 @@ placeholder_text = "IP Address (Blank for local)"
 
 [node name="Join" type="Button" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_wjd7j")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_0b0al")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_v3f21")
+disabled = true
 text = "Join"
 
 [node name="Host" type="Button" parent="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer"]
@@ -154,6 +174,7 @@ position = Vector2(144, 155)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_cxou4")
 
+[connection signal="text_changed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Nickname" to="CanvasLayer/MainMenu" method="_on_nickname_text_changed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Join" to="CanvasLayer/MainMenu" method="_on_join_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/Host" to="CanvasLayer/MainMenu" method="_on_host_pressed"]
 [connection signal="toggled" from="CanvasLayer/MainMenu/Panel/MarginContainer/VBoxContainer/UPNP" to="CanvasLayer/MainMenu" method="_on_upnp_toggled"]

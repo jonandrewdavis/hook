@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b1yleqbb8tc7x"]
+[gd_scene load_steps=18 format=3 uid="uid://b1yleqbb8tc7x"]
 
 [ext_resource type="Environment" uid="uid://fffgfrct4uva" path="res://Levels/WorldEnv1.tres" id="1_k70i5"]
 [ext_resource type="Script" path="res://Levels/Level.gd" id="1_olixi"]
@@ -30,6 +30,44 @@ size = Vector3(300, 2, 300)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ive2k"]
 radius = 4.0
+
+[sub_resource type="Animation" id="Animation_58mam"]
+resource_name = "camera rotate"
+length = 60.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CamHolder:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 30, 60),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 3.14159, 0), Vector3(0, 6.26573, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_rfbxw"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CamHolder:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_6cgv2"]
+_data = {
+"RESET": SubResource("Animation_rfbxw"),
+"camera rotate": SubResource("Animation_58mam")
+}
 
 [node name="Level" type="Node3D"]
 script = ExtResource("1_olixi")
@@ -79,6 +117,26 @@ gizmo_extents = 1.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7346, 11.5096, 9.17735)
 gizmo_extents = 1.0
 
+[node name="Marker3D8" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.7559, 8.7359, 8.64061)
+gizmo_extents = 1.0
+
+[node name="Marker3D9" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.2335, 8.67203, 4.01314)
+gizmo_extents = 1.0
+
+[node name="Marker3D11" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.4178, 9.52343, 6.42048)
+gizmo_extents = 1.0
+
+[node name="Marker3D12" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.4178, 9.52343, 2.43036)
+gizmo_extents = 1.0
+
+[node name="Marker3D10" type="Marker3D" parent="SpawnsRed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.9473, 10.9493, 0.598398)
+gizmo_extents = 1.0
+
 [node name="SpawnsBlue" type="Node3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 39.3728, 0.156684, 0)
 
@@ -100,6 +158,30 @@ gizmo_extents = 1.0
 
 [node name="Marker3D4" type="Marker3D" parent="SpawnsBlue"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.1501, 8.85757, 5.06713)
+gizmo_extents = 1.0
+
+[node name="Marker3D8" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.5702, 8.85757, 5.06713)
+gizmo_extents = 1.0
+
+[node name="Marker3D9" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.5702, 8.85757, 2.39818)
+gizmo_extents = 1.0
+
+[node name="Marker3D10" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.4571, 9.48646, 8.71516)
+gizmo_extents = 1.0
+
+[node name="Marker3D11" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.4571, 6.99742, 1.02165)
+gizmo_extents = 1.0
+
+[node name="Marker3D13" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.3278, 7.57342, -0.35478)
+gizmo_extents = 1.0
+
+[node name="Marker3D12" type="Marker3D" parent="SpawnsBlue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.4571, 8.41988, 5.73451)
 gizmo_extents = 1.0
 
 [node name="Marker3D5" type="Marker3D" parent="SpawnsBlue"]
@@ -237,9 +319,18 @@ transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 18.8741, -5.2678, -0.96
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.9443, -5.20615, -0.646342)
 shape = SubResource("SphereShape3D_ive2k")
 
-[node name="LevelCam" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.914769, 0.403976, 0, -0.403976, 0.914769, 15.5206, 39.6676, 31.3418)
+[node name="CamHolder" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.2913, 0, 0)
+
+[node name="LevelCam" type="Camera3D" parent="CamHolder"]
+transform = Transform3D(1, 0, 0, 0, 0.914769, 0.403976, 0, -0.403976, 0.914769, 0, 26.853, 38.467)
 current = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_6cgv2")
+}
+autoplay = "camera rotate"
 
 [connection signal="body_entered" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_entered"]
 [connection signal="body_exited" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_exited"]

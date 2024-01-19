@@ -291,7 +291,7 @@ func HitScanCollision(Collision: Array):
 
 func HitScanDamage(Collider, Direction, Position, Damage):
 	if Collider.is_in_group("Players") and Collider.has_method("Hit_Successful"):
-		print('melee:', Collider.id, PLAYER.id, Damage, Direction, Position)
+		# print('melee:', Collider.id, PLAYER.id, Damage, Direction, Position)
 		Collider.Hit_Successful.rpc_id(Collider.id, PLAYER.id, Damage, Direction, Position)
 
 	if Collider.is_in_group("Head") and Collider.has_method("Hit_Successful"):
@@ -301,7 +301,7 @@ func HitScanDamage(Collider, Direction, Position, Damage):
 	# if Collider.is_in_group("Target") and Collider.has_method("Hit_Successful"):
 		
 var spread_min = 0.008
-var spread = 0.09
+var spread = 0.07
 func LaunchProjectile(Point: Vector3):
 	var Direction_To_Point = (Point - Bullet_Point.global_transform.origin).normalized()
 	var Direction = Direction_To_Point * Current_Weapon.Projectile_Velocity
@@ -354,6 +354,7 @@ func spawn_cluster(Direction, Damage, Position, Rotation, Count):
 					random_negative.append(-1)
 			var random_rotation = Basis.from_euler(Vector3(randf_range(spread_min, spread) * random_negative[0], randf_range(spread_min, spread) * random_negative[1], randf_range(spread_min, spread) * random_negative[2]))
 			var Projectile = BULLET_SCENE.instantiate()
+			Projectile.shell = true
 			Projectile.position = Position
 			Projectile.transform.basis = Rotation
 			Projectile.set_linear_velocity(Direction * random_rotation)

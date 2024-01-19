@@ -327,7 +327,6 @@ func _on_claw_area_body_entered(body):
 	# All targets can be grabbed.
 	if body.is_in_group("Target"):
 		if body.is_in_group("Players") and body.get_multiplayer_authority() != get_multiplayer_authority():
-			print('its me', player.TEAM, player.my_team_ids)
 			if player.my_team_ids.find(body.id) == -1:
 				hook_player(body)
 		elif body.is_in_group("Head"):
@@ -423,6 +422,5 @@ func _on_hook_hurt_box_body_entered(body):
 	if body.is_in_group("Bullet"):
 		if body.Source != get_multiplayer_authority():
 			if player.my_team_ids.find(body.Source) == -1:
-				print('take hook damage wtfs')
 				take_hook_damage.rpc(body.Source, body.Damage)
 		return

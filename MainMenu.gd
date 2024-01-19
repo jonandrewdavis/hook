@@ -16,7 +16,8 @@ func _ready():
 	prepare_server_or_client()
 	prepare_color_picker()
 	multiplayer.connection_failed.connect(_on_connected_fail)
-	multiplayer.server_disconnected.connect(_on_connected_fail)	
+	multiplayer.server_disconnected.connect(_on_connected_fail)
+	
 
 func _unhandled_input(_event):
 	if (Input.is_action_just_pressed("exit") 
@@ -72,7 +73,6 @@ func start_game_host():
 	Store.client_join_info = {
 		"id": multiplayer.get_unique_id(),
 		"nickname": nickname.text,
-		"color": color_button.color,
 		"kills": 0,
 		"deaths": 0, 
 		"team": ''
@@ -85,7 +85,6 @@ func start_game_client():
 	Store.client_join_info = {
 		"id": multiplayer.get_unique_id(),
 		"nickname": nickname.text,
-		"color": color_button.color,
 		"kills": 0,
 		"deaths": 0,
 		"team": ''
@@ -165,3 +164,12 @@ func prepare_color_picker():
 	var picker = color_button.get_picker()
 	for p in props:
 		picker[p] = false
+
+
+
+func _on_nickname_text_changed(new_text):
+	if new_text != "":
+		$Panel/MarginContainer/VBoxContainer/Join.disabled = false
+	else:
+		$Panel/MarginContainer/VBoxContainer/Join.disabled = true
+
