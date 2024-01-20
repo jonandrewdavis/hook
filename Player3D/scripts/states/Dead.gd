@@ -7,6 +7,8 @@ func enter():
 	player.DEATH_CAM.current = true	
 	player.set_collision_layer_value(1, false)
 	player.set_collision_mask_value(1, false)
+	player.set_collision_mask_value(24, false)
+	player.set_collision_layer_value(24, false)
 	player.MODEL.play('death')
 	player.MODEL.show()
 	player.WEAPONS.hide()

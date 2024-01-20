@@ -26,7 +26,7 @@ shape = SubResource("SphereShape3D_k54v7")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.495328, 0)
 
 [node name="DestroyTimer" type="Timer" parent="."]
-wait_time = 45.0
+wait_time = 20.0
 one_shot = true
 autostart = true
 
@@ -37,4 +37,5 @@ replication_config = SubResource("SceneReplicationConfig_54j46")
 wait_time = 6.0
 one_shot = true
 
+[connection signal="timeout" from="DestroyTimer" to="." method="_on_destroy_timer_timeout"]
 [connection signal="timeout" from="HookMax" to="." method="_on_hook_max_timeout"]

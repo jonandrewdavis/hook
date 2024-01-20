@@ -55,7 +55,7 @@ signal last_kill(by)
 
 @export var UI_SCENE: PackedScene
 
-@export var is_damage_over_time = false
+@export var is_damage_over_time = 0
 
 var UI = null
 var id = null
@@ -412,7 +412,8 @@ func die():
 		# TODO: Rules on spawn death head. Only if a player dies "offsides"
 		if FSM.CURRENT_STATE.name == "Dead":
 			report_death()
-			spawn_death_head.rpc(MODEL.HEAD.global_position, global_position.direction_to(LOOKPOINT.global_position))
+			if is_damage_over_time == 2:
+				spawn_death_head.rpc(MODEL.HEAD.global_position, global_position.direction_to(LOOKPOINT.global_position))
 
 		if FSM.CURRENT_STATE.name == "Dead":	
 			await get_tree().create_timer(5).timeout
@@ -438,8 +439,9 @@ func respawn():
 	set_collision_layer_value(6, true)
 	set_collision_layer_value(1, true)
 	set_collision_mask_value(1, true)
+	set_collision_mask_value(24, true)
 	$DOT.stop()
-	is_damage_over_time = false
+	is_damage_over_time = 0
 	health = HEALTH_DEFAULT
 	health_changed.emit(HEALTH_DEFAULT)
 	max_health = HEALTH_DEFAULT

@@ -35,3 +35,43 @@ func _on_lava_area_body_exited(body):
 	if multiplayer.is_server() and  body.is_in_group('Players'):
 		body.toggle_damage_over_time.rpc(0)
 	pass # Replace with function body.
+
+
+
+
+
+
+
+
+
+
+
+
+
+# home
+
+
+func _on_red_home_body_entered(body):
+	if multiplayer.is_server() and body.is_in_group('Players') and body.TEAM == 'Blue':
+		body.toggle_damage_over_time.rpc(2)
+	pass # Replace with function body.
+
+
+func _on_red_home_body_exited(body):
+	if multiplayer.is_server() and body.is_in_group('Players') and body.TEAM == 'Blue':
+		body.toggle_damage_over_time.rpc(0)
+	pass # Replace with function body.
+
+
+# Blue hurts red players
+#
+func _on_blue_home_body_entered(body):
+	if multiplayer.is_server() and body.is_in_group('Players') and body.TEAM == 'Red':
+		body.toggle_damage_over_time.rpc(2)
+	pass # Replace with function body.
+
+
+func _on_blue_home_body_exited(body):
+	if multiplayer.is_server() and body.is_in_group('Players') and body.TEAM == 'Red':
+		body.toggle_damage_over_time.rpc(0)
+	pass # Replace with function body.

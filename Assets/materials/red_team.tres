@@ -16,5 +16,6 @@ shader_parameter/fps = 5.0
 next_pass = SubResource("ShaderMaterial_2t531")
 albedo_color = Color(1, 0, 0.0156863, 1)
 emission_enabled = true
-emission = Color(0.772549, 0.145098, 0, 1)
+emission = Color(0.654902, 0.117647, 0, 1)
 emission_energy_multiplier = 1.43
+emission_operator = 1

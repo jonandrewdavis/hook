@@ -100,9 +100,6 @@ func freeze_near():
 	await get_tree().create_timer(0.1).timeout
 	freeze = false
 
-func _on_timer_timeout():
-	if multiplayer.is_server():
-		queue_free()
 
 func destroy():
 	if multiplayer.is_server():
@@ -129,3 +126,9 @@ func get_team(id):
 func _on_hook_max_timeout():
 	captured_by = null
 	picked_up = false
+
+
+func _on_destroy_timer_timeout():
+	if multiplayer.is_server():
+		queue_free()
+

@@ -2,16 +2,12 @@
 
 [ext_resource type="Environment" uid="uid://fffgfrct4uva" path="res://Levels/WorldEnv1.tres" id="1_k70i5"]
 [ext_resource type="Script" path="res://Levels/Level.gd" id="1_olixi"]
-[ext_resource type="Material" uid="uid://b4gwd5h7ixvct" path="res://Assets/materials/player.tres" id="3_y40gl"]
 [ext_resource type="Texture2D" uid="uid://d1t8o3lfiydbi" path="res://Assets/environment/Lava 03 FULL.png" id="5_8odel"]
+[ext_resource type="PackedScene" uid="uid://dqspqeyn8a2p3" path="res://Environment/Team.tscn" id="7_8vki1"]
+[ext_resource type="PackedScene" uid="uid://ylqiyerbcgch" path="res://Environment/TeamRedRing.tscn" id="7_58r4k"]
 [ext_resource type="PackedScene" uid="uid://dyi857vhdlaya" path="res://Environment/Goal.tscn" id="7_ltvuo"]
 [ext_resource type="PackedScene" uid="uid://btvv2hrt8xq6j" path="res://Levels/Platform.tscn" id="7_ub2wk"]
 [ext_resource type="PackedScene" uid="uid://b6k7s2ewcuk42" path="res://Levels/skull.tscn" id="11_olckj"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_lmmeb"]
-material = ExtResource("3_y40gl")
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_dub36"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fd5wm"]
 size = Vector3(300, 2, 300)
@@ -166,6 +162,9 @@ properties/2/path = NodePath("GoalProtection:position")
 properties/2/spawn = true
 properties/2/replication_mode = 2
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_pqvs5"]
+size = Vector3(60, 45, 60)
+
 [node name="Level" type="Node3D"]
 script = ExtResource("1_olixi")
 
@@ -289,73 +288,6 @@ gizmo_extents = 1.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7346, 11.5096, 9.17735)
 gizmo_extents = 1.0
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.27235, 0)
-mesh = SubResource("BoxMesh_lmmeb")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
-shape = SubResource("BoxShape3D_dub36")
-
-[node name="MeshInstance3D7" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.783, 8.16233)
-mesh = SubResource("BoxMesh_lmmeb")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D7"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D7/StaticBody3D"]
-shape = SubResource("BoxShape3D_dub36")
-
-[node name="MeshInstance3D8" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.0575, 8.16233)
-mesh = SubResource("BoxMesh_lmmeb")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D8"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D8/StaticBody3D"]
-shape = SubResource("BoxShape3D_dub36")
-
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshInstance3D8/StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7038, -3.62528, -9.43627)
-shape = SubResource("BoxShape3D_dub36")
-
-[node name="MeshInstance3D9" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.9054, 24.0575, 8.16233)
-mesh = SubResource("BoxMesh_lmmeb")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D9"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D9/StaticBody3D"]
-shape = SubResource("BoxShape3D_dub36")
-
-[node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6904, 8.39228, 0)
-mesh = SubResource("BoxMesh_lmmeb")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D4"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D4/StaticBody3D"]
-shape = SubResource("BoxShape3D_dub36")
-
-[node name="MeshInstance3D5" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18229, 8.39228, 0)
-mesh = SubResource("BoxMesh_lmmeb")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D5"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D5/StaticBody3D"]
-shape = SubResource("BoxShape3D_dub36")
-
-[node name="MeshInstance3D6" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.18229, 8.39228, -8.8932)
-mesh = SubResource("BoxMesh_lmmeb")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D6"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D6/StaticBody3D"]
-shape = SubResource("BoxShape3D_dub36")
-
 [node name="Skull" parent="." instance=ExtResource("11_olckj")]
 transform = Transform3D(-0.89111, 0, 0.453788, 0, 1, 0, -0.453788, 0, -0.89111, -1.82408, 12.6907, 15.58)
 
@@ -366,16 +298,43 @@ transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 
 transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 17.7557, 14.8835, -3.425)
 
 [node name="Skull8" parent="." instance=ExtResource("11_olckj")]
-transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 22.6032, 12.338, 20.9168)
+transform = Transform3D(0.848796, 0, 0.528719, 0, 1, 0, -0.528719, 0, 0.848796, 20.0148, 13.3063, -23.9793)
 
 [node name="Skull9" parent="." instance=ExtResource("11_olckj")]
-transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 22.6032, 19.8032, -7.20107)
+transform = Transform3D(0.916878, 0, -0.399165, 0, 1, 0, 0.399165, 0, 0.916878, 22.6032, 19.8032, -7.20107)
 
 [node name="Skull10" parent="." instance=ExtResource("11_olckj")]
 transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 11.8185, 23.9369, -7.20107)
 
+[node name="Skull17" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.757633, 0, -0.65268, 0, 1, 0, 0.65268, 0, -0.757633, 24.4675, 41.3428, -4.15769)
+
+[node name="Skull18" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.757633, 0, -0.65268, 0.119143, 0.983198, -0.138302, 0.641713, -0.182544, -0.744903, 31.031, 41.3428, 17.088)
+
+[node name="Skull19" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.96339, 0.148173, 0.223435, 0.119143, 0.983198, -0.138302, -0.240173, -0.106618, -0.964857, 19.7422, 45.0887, 17.088)
+
+[node name="Skull20" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(0.888439, -0.0433852, 0.456938, 0.119143, 0.983198, -0.138302, -0.44326, 0.177314, 0.87868, 19.7422, 32.4339, -11.3647)
+
+[node name="Skull21" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.69596, 0.182045, 0.694621, 0.119143, 0.983198, -0.138302, -0.708127, -0.0134931, -0.705955, 6.78891, 32.4339, -11.3647)
+
 [node name="Skull5" parent="." instance=ExtResource("11_olckj")]
-transform = Transform3D(-0.94306, 0, 0.332622, 0, 1, 0, -0.332622, 0, -0.94306, -6.84653, 17.6187, 16.5135)
+transform = Transform3D(-0.94306, 0, 0.332622, -0.0282496, 0.996387, -0.0800941, -0.33142, -0.0849301, -0.939653, 15.497, -13.7462, 16.5135)
+
+[node name="Skull15" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(0.558367, 0.114284, 0.821684, 0.0679727, 0.980833, -0.18261, -0.826804, 0.157816, 0.539897, 7.71982, -12.1062, -7.44234)
+
+[node name="Skull24" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(0.379087, -0.194697, -0.904647, 0.0679727, 0.980833, -0.18261, 0.922861, 0.00773358, 0.385055, 23.6047, -16.247, -14.9877)
+
+[node name="Skull25" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(0.99085, -0.0449753, 0.127253, 0.0679727, 0.980833, -0.18261, -0.116601, 0.189589, 0.974915, 15.5114, 75.81, -8.71283)
+
+[node name="Skull16" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(0.890795, -0.419047, 0.175739, 0.223459, 0.740723, 0.633558, -0.395664, -0.5251, 0.753471, 18.4148, -2.04864, -26.4137)
 
 [node name="Skull6" parent="." instance=ExtResource("11_olckj")]
 transform = Transform3D(-0.996321, 0, -0.0856951, 0, 1, 0, 0.0856951, 0, -0.996321, 4.80946, 17.6187, 16.5135)
@@ -385,6 +344,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.28473, 19.1307, 24.5266)
 
 [node name="Skull4" parent="." instance=ExtResource("11_olckj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6189, 20.6784, 19.6588)
+
+[node name="Skull11" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.94306, 0, 0.332622, 0, 1, 0, -0.332622, 0, -0.94306, 23.4534, 14.2858, 7.67845)
+
+[node name="Skull12" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.996321, 0, -0.0856951, 0, 1, 0, 0.0856951, 0, -0.996321, 35.1094, 14.2858, 7.67845)
+
+[node name="Skull13" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.0152, 15.7978, 15.6916)
+
+[node name="Skull14" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.9189, 17.3455, 10.8238)
 
 [node name="LavaCollision" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.60112, -92.1062, -0.140203)
@@ -439,7 +410,37 @@ speed_scale = 0.2
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_iwh2i")
 
+[node name="RedHome" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.8425, 9.87612, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RedHome"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.342117, 2.37108, 0)
+shape = SubResource("BoxShape3D_pqvs5")
+
+[node name="BlueHome" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.2932, 9.87612, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BlueHome"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.342117, 2.37108, 0)
+shape = SubResource("BoxShape3D_pqvs5")
+
+[node name="Skull23" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(0.138965, 0, 2.99678, 0, 3, 0, -2.99678, 0, 0.138965, 3.63755, 23.2917, 0.670052)
+
+[node name="TeamRingRed" parent="." instance=ExtResource("7_58r4k")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 4.38023, 31.9361, 1.17426)
+
+[node name="Skull22" parent="." instance=ExtResource("11_olckj")]
+transform = Transform3D(-0.00675429, 0, -2.99999, 0, 3, 0, 2.99999, 0, -0.00675429, 32.9732, 23.0841, 0.670052)
+
+[node name="TeamRing" parent="." instance=ExtResource("7_8vki1")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 32.4127, 32.5965, 1.17426)
+
 [connection signal="body_entered" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_entered"]
 [connection signal="body_exited" from="LavaMesh/LavaArea" to="." method="_on_lava_area_body_exited"]
 [connection signal="body_entered" from="GoalProtection" to="." method="_on_goal_protection_body_entered"]
 [connection signal="body_exited" from="GoalProtection" to="." method="_on_goal_protection_body_exited"]
+[connection signal="body_entered" from="RedHome" to="." method="_on_red_home_body_entered"]
+[connection signal="body_exited" from="RedHome" to="." method="_on_red_home_body_exited"]
+[connection signal="body_entered" from="BlueHome" to="." method="_on_blue_home_body_entered"]
+[connection signal="body_exited" from="BlueHome" to="." method="_on_blue_home_body_exited"]
